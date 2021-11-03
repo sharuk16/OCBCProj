@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -6,9 +6,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Views\FundTransferMain\" />
-    <Folder Include="Views\FundTransferReview\" />
-    <Folder Include="Views\FundTransferInsufficientBalance\" />
+    <Compile Remove="Views\FundTransferMain\**" />
+    <Compile Remove="Views\FundTransferReview\**" />
+    <Content Remove="Views\FundTransferMain\**" />
+    <Content Remove="Views\FundTransferReview\**" />
+    <EmbeddedResource Remove="Views\FundTransferMain\**" />
+    <EmbeddedResource Remove="Views\FundTransferReview\**" />
+    <None Remove="Views\FundTransferMain\**" />
+    <None Remove="Views\FundTransferReview\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
   </ItemGroup>
 
 </Project>

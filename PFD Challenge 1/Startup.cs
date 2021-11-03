@@ -60,7 +60,7 @@ namespace PFD_Challenge_1
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=FundTransfer}/{action=FundTransfer}/{id?}");
             });
         }
     }
