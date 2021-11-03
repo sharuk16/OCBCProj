@@ -5,4 +5,10 @@
     <RootNamespace>PFD_Challenge_1</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\FundTransferMain\" />
+    <Folder Include="Views\FundTransferReview\" />
+    <Folder Include="Views\FundTransferInsufficientBalance\" />
+  </ItemGroup>
+
 </Project>
