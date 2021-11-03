@@ -1,19 +1,18 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using System.IO;
-using System.Data.SqlClient;
-using PFD_Challenge_1;
-using PFD_Challenge_1.Models;
+
 namespace PFD_Challenge_1.DAL
 {
-    public class UserDAL
+    public class BankUserDAL
     {
         private IConfiguration Configuration { get; }
         private SqlConnection conn;
-        public UserDAL()
+        public BankUserDAL()
         {
             //Read ConnectionString from appsettings.json file
             var builder = new ConfigurationBuilder()
