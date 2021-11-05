@@ -5,6 +5,7 @@
 
 @section css{ 
 @*Add specific css script here*@
+<style src="~/css/futuretransfer.css"></style>
 }
 <div class="container" id="mainContainer2">
     <div class="first-container">
@@ -26,6 +27,14 @@
                                 </div>
                             </form>
                         </div>
+                        <!-- Login Button -->
+                        <div class="every" style="padding-right:110px;padding-left:20px; display: inline-block;">
+                            <div class="form-group row">
+                                <div class="col-sm-9 offset-sm-3">
+                                    <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn third">Make a Transfer</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -34,4 +43,5 @@
 </div>
 @section scripts{ 
 @*Add JavaScripts specifically for this view here*@ 
+<script src="~/js/futuretransfer.js"></script>
 }
