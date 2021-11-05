@@ -24,8 +24,8 @@ namespace PFD_Challenge_1.Models
 
         [Required(ErrorMessage = "You must enter an amount to be sent.")]
         [Display(Name = "Amount Sent")]
-        [Range(1, int.MaxValue, ErrorMessage = "Please enter a value bigger than {1}")]
-        public int Amount { get; set; }
+        [Range(1, double.MaxValue, ErrorMessage = "Please enter a value bigger than {1}")]
+        public double Amount { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
