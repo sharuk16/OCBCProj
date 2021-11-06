@@ -24,7 +24,7 @@ namespace PFD_Challenge_1.Models
         [Display(Name = "Plan Time")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd hh:mm:ss}")]
-        public DateTime PlanTime { get; set; }
+        public DateTime? PlanTime { get; set; }
 
         [Display(Name = "Notified")]
         public bool Notified { get; set; }

@@ -6,9 +6,9 @@
 .btn {
     box-sizing: border-box;
     background-color: transparent;
-    border: 2px solid #5D18C5;
+    border: 2px solid white;
     border-radius: 0.6em;
-    color: #5D18C5;
+    color: white;
     cursor: pointer;
     /*display: flex;*/
     align-self: center;
@@ -28,4 +28,7 @@
         color: #000;
         outline: 0;
     }
+
+h1{
+    color:white;
 }

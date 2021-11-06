@@ -1,5 +1,68 @@
 ﻿@*
-    View for review of transfer
+    *Main page for transfer
+    Remember to declare model used
 *@
-@{
+
+@model IEnumerable<PFD_Challenge_1.Models.FutureTransferViewModel>
+
+@section css{
+    @*Add specific css script here*@
+    <link rel="stylesheet" href="~/css/futuretransfer.css" />
+}
+
+
+<div class="container" id="mainContainer2">
+    <div class="first-container">
+        <div style="text-align: center; margin-top:2%">
+            <img id="imgLogo" src="~/images/FutureTransferReview(1).jpeg"
+                 style="width: 50%" />
+            <h1>Transfer</h1>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <div class="container">
+                <form style="text-align: left">
+                    <div class="form-group" style="color: white">
+                        <label for="to">To</label>
+                        <input type="text" class="form-control" id="to">
+                    </div>
+                    <div class="form-group" style="color: white">
+                        <label for="from">From</label>
+                        <input type="text" class="form-control" id="from">
+                    </div>
+                    <div class="form-group" style="color: white">
+                        <label for="accountbalance">Account Balance</label>
+                        <input type="text" class="form-control" id="accontbalance">
+                    </div>
+                    <div class="form-group" style="color: white">
+                        <label for="transfer">Transfer</label>
+                        <input type="text" class="form-control" id="transfer">
+                    </div>
+                    <div class="form-group" style="color: white; text-align: center">
+                        <label for="transferdate">Date</label>
+                        <input type="date" id="transferdate" name="transferdate">
+                    </div>
+                </form>
+            </div>
+            <!-- Login Button -->
+            <div class="every" style="padding-right:110px;padding-left:20px; display: inline-block;">
+                <div class="form-group row">
+                    <div class="col-sm-9 offset-sm-3">
+                        <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn third">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts{
+    @*Add JavaScripts specifically for this view here*@
+    <script src="~/js/futuretransfer.js"></script>
 }

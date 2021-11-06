@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using PFD_Challenge_1.Models;
 
 namespace PFD_Challenge_1.DAL
 {
@@ -25,5 +26,77 @@ namespace PFD_Challenge_1.DAL
             //Connection String read.
             conn = new SqlConnection(strConn);
         }
+
+        public List<BankAccount> GetAllBankAccount()
+        {
+            //Create a SqlCommand object from connection object
+            SqlCommand cmd = conn.CreateCommand();
+            //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM BankAccount ORDER BY AccNo";
+            //Open a database connection
+            conn.Open();
+            //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            //Read all records until the end, save data into a competition list
+            List<BankAccount> bankAccountList = new List<BankAccount>();
+            while (reader.Read())
+            {
+                bankAccountList.Add(
+                    new BankAccount
+                    {
+                        AccNo = reader.GetString(0),
+                        Balance = reader.GetInt32(1),
+                        Nric = reader.GetInt32(2),
+                    }
+                );
+            }
+
+            //Close DataReader
+            reader.Close();
+            //Close the database connection
+            conn.Close();
+            return bankAccountList;
+        }
+
+        public List<FutureTransfer> GetAllFutureTransfer()
+        {
+            //Create a SqlCommand object from connection object
+            SqlCommand cmd = conn.CreateCommand();
+            //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM FutureTransfer ORDER BY FutureID";
+            //Open a database connection
+            conn.Open();
+            //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            //Read all records until the end, save data into a future transfer list
+            List<FutureTransfer> futureTransferList = new List<FutureTransfer>();
+            while (reader.Read())
+            {
+                futureTransferList.Add(
+                    new FutureTransfer
+                    {
+                        FutureId = reader.GetInt32(0), //0: 1st column
+                        Recipient = !reader.IsDBNull(1) ?
+                                    reader.GetString(1) : null,
+                        Sender = !reader.IsDBNull(2) ?
+                                    reader.GetString(2) : null,
+                        Amount = reader.GetInt32(3),
+                        PlanTime = !reader.IsDBNull(4) ?
+                                   reader.GetDateTime(4) : (DateTime?) null,
+                        Notified = !reader.IsDBNull(5),
+                        Completed = !reader.IsDBNull(6),
+                    }
+                );
+            }
+
+            //Close DataReader
+            reader.Close();
+            //Close the database connection
+            conn.Close();
+            return futureTransferList;
+        }
+
     }
 }
