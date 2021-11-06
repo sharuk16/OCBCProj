@@ -3,7 +3,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500&display=swap");
 
 /*Button CSS*/
-.btn {
+.btn a{
     box-sizing: border-box;
     background-color: transparent;
     border: 2px solid white;
@@ -24,7 +24,7 @@
     font-weight: 700;
 }
 
-    .btn:hover, .btn:focus {
+    .btn a:hover, .btn a:focus {
         color: #000;
         outline: 0;
     }

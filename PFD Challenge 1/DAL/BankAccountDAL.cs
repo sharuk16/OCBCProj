@@ -58,5 +58,35 @@ namespace PFD_Challenge_1.DAL
             conn.Close();
             return bankAccountList;
         }
+        public BankAccount GetBankAccount(string nric)
+        {
+            BankAccount ba = null;
+            //Create a SqlCommand object from connection object
+            SqlCommand cmd = conn.CreateCommand();
+            //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM BankAccount Where NRIC = @selectNRIC";
+            cmd.Parameters.AddWithValue("@selectNRIC", nric);
+            //Open a database connection
+            conn.Open();
+            //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    ba = new BankAccount
+                    {
+                        AccNo = reader.GetString(0),
+                        Balance = reader.GetDecimal(1),
+                        Nric = reader.GetString(2),
+                    };
+                }
+            }
+            //Close DataReader
+            reader.Close();
+            //Close the database connection
+            conn.Close();
+            return ba;
+        }
     }
 }

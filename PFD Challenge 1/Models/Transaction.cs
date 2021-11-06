@@ -25,18 +25,18 @@ namespace PFD_Challenge_1.Models
         [Required(ErrorMessage = "You must enter an amount to be sent.")]
         [Display(Name = "Amount Sent")]
         [Range(1, double.MaxValue, ErrorMessage = "Please enter a value bigger than {1}")]
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MMM-dd}")]
-        public DateTime PlannedTime { get; set; }
+        public DateTime TimeTransfer { get; set; }
 
         [Required]
-        public bool Notified { get; set; }
+        public string Notified { get; set; }
 
         [Required]
-        public bool Completed { get; set; }
+        public string Completed { get; set; }
 
         [Required]
         [ValidateTransactionType]
