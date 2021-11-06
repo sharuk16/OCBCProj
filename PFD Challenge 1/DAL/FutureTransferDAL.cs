@@ -47,7 +47,7 @@ namespace PFD_Challenge_1.DAL
                     {
                         AccNo = reader.GetString(0),
                         Balance = reader.GetInt32(1),
-                        Nric = reader.GetInt32(2),
+                        Nric = reader.GetString(2),
                     }
                 );
             }
@@ -83,8 +83,7 @@ namespace PFD_Challenge_1.DAL
                         Sender = !reader.IsDBNull(2) ?
                                     reader.GetString(2) : null,
                         Amount = reader.GetInt32(3),
-                        PlanTime = !reader.IsDBNull(4) ?
-                                   reader.GetDateTime(4) : (DateTime?) null,
+                        PlanTime = reader.GetDateTime(4),
                         Notified = !reader.IsDBNull(5),
                         Completed = !reader.IsDBNull(6),
                     }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using PFD_Challenge_1.DAL;
 using PFD_Challenge_1.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Http;
 
 namespace PFD_Challenge_1.Controllers
 {
@@ -15,34 +16,15 @@ namespace PFD_Challenge_1.Controllers
         BankUserDAL bankUserContext = new BankUserDAL();
         FutureTransferDAL futureTransferContext = new FutureTransferDAL();
         TransactionDAL transactionDAL = new TransactionDAL();
-
-        /*
-        public ActionResult Index()
-        {
-            if ((HttpContext.Session.GetString("Account") == null) ||
-            (HttpContext.Session.GetString("Account") != "User"))
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            List<BankUser> bUList = bankUserContext.GetAllBankUser();
-            return View(bUList);
-        }
-        */
-
-        private List<BankAccount> GetAllBankAccount()
-        {
-            // Get a list of competition from database
-            List<BankAccount> bankAccountList = bankAccountContext.GetAllBankAccount();
-            // Adding a select prompt at the first row of the competition list
-            bankAccountList.Insert(0, new BankAccount
-            {
-                Balance = 0,
-            });
-            return bankAccountList;
-        }
-
         public IActionResult FundTransfer()
         {
+            //if ((HttpContext.Session.GetString("Account") == null) ||
+            //(HttpContext.Session.GetString("Account") != "User"))
+            //{
+            //    return RedirectToAction("Index", "Home");
+            //}
+            //ADD in a hard-coded NRIC
+
             return View();
         }
         public IActionResult FundTransferReview()

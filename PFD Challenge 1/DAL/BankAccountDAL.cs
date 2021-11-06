@@ -47,7 +47,7 @@ namespace PFD_Challenge_1.DAL
                     {
                         AccNo = reader.GetString(0),
                         Balance = reader.GetInt32(1),
-                        Nric = reader.GetInt32(2),
+                        Nric = reader.GetString(2),
                     }
                 );
             }

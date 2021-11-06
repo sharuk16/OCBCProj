@@ -12,9 +12,9 @@ namespace PFD_Challenge_1.Models
         public string AccNo { get; set; }
 
         [Display(Name = "Balance")]
-        public double Balance { get; set; }
+        public decimal Balance { get; set; }
 
         [Display(Name = "NRIC")]
-        public int Nric { get; set; }
+        public string Nric { get; set; }
     }
 }

@@ -45,11 +45,11 @@ namespace PFD_Challenge_1.DAL
                 bankUserList.Add(
                     new BankUser
                     {
-                        Nric = reader.GetInt32(0),
+                        Nric = reader.GetString(0),
                         Email = reader.GetString(1),
-                        Phone = reader.GetInt32(2),
+                        Phone = reader.GetString(2),
                         Name = reader.GetString(3),
-                        TransLimit = reader.GetInt32(4),
+                        TransLimit = reader.GetDecimal(4),
                         Password = reader.GetString(5),
                     }
                 );
