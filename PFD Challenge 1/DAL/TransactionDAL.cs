@@ -61,5 +61,90 @@ namespace PFD_Challenge_1.DAL
             conn.Close();
             return t;
         }
+
+        public bool UpdateSender(BankAccount senderAcc, decimal moneySent) 
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE BankAccount SET Balance = Balance - @moneySent
+                                WHERE AccNo = @AccNo"; //Updates the Sender's Balance
+            cmd.Parameters.AddWithValue("@moneySent", moneySent);
+            cmd.Parameters.AddWithValue("@AccNo", senderAcc.AccNo);
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateRecipient(BankAccount recipientAcc, decimal moneySent)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE BankAccount SET Balance = Balance + @moneySent
+                                WHERE AccNo = @AccNo"; //Updates the Recipient's Balance
+            cmd.Parameters.AddWithValue("@moneySent", moneySent);
+            cmd.Parameters.AddWithValue("@AccNo", recipientAcc.AccNo);
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateTransactionComplete(Transaction transac)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE Transactions SET Completed = 'T'
+                                WHERE TransacID = @TransacID"; //Updates the Transactions's Completed Status
+            cmd.Parameters.AddWithValue("@TransacID", transac.TransacID);
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool ReverseTransactionChanges //Reverses database changes from the current transaction
+            (BankAccount recipientAcc, BankAccount senderAcc, decimal moneySent)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE BankAccount SET Balance = CASE AccNo
+                                    WHEN @senderID THEN Balance + @moneySent
+                                    WHEN @recipientID THEN Balance - @moneySent
+                                    ELSE Balance
+                                    END
+                                WHERE AccNo IN(@senderID, @recipientID)";
+            cmd.Parameters.AddWithValue("@senderID", senderAcc.AccNo);
+            cmd.Parameters.AddWithValue("@recipientID", recipientAcc.AccNo);
+            cmd.Parameters.AddWithValue("@moneySent", moneySent);
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

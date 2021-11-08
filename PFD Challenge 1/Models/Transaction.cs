@@ -24,7 +24,8 @@ namespace PFD_Challenge_1.Models
 
         [Required(ErrorMessage = "You must enter an amount to be sent.")]
         [Display(Name = "Amount Sent")]
-        [Range(1, double.MaxValue, ErrorMessage = "Please enter a value bigger than {1}")]
+        [RegularExpression(@"^\d+(\.\d{1,2})?$")] //Validation for maximum 2 decimal places
+        [Range(1, 9999999999999999.99, ErrorMessage = "Please enter a value bigger than 0")] //Validation for transfer amount more than 0
         public decimal Amount { get; set; }
 
         [Required]
