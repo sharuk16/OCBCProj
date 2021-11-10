@@ -13,7 +13,7 @@
     <div class="first-container">
         <div style="text-align: center; margin-top:10%">
             <img id="imgLogo" src="~/images/Home Page (after login).jpeg"
-                 style="width: 70%" />
+                 style="width: 50%" />
         </div>
     </div>
 </div>
@@ -42,8 +42,12 @@
                 </form>
             </div>
             <!-- Login Button -->
-            <div class="every" style="padding-top: 20px; padding-right: 20px; padding-left: 20px; display: inline-block;">
-                <div class="btn">@Html.ActionLink("Make a Transfer", "FundTransferReview", "FundTransfer")</div>
+            <div class="every" style="padding-right:110px;padding-left:20px; display: inline-block;">
+                <div class="form-group row">
+                    <div class="col-sm-9 offset-sm-3">
+                        <div class="btn">@Html.ActionLink("Make a Transfer", "FundTransferReview", "FundTransfer")</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
