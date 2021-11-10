@@ -1,0 +1,14 @@
+﻿@model IEnumerable<PFD_Challenge_1.Models.TransactionHistory>
+@{
+    ViewData["Title"] = "View Transfers";
+}
+@{
+    foreach (var item in Model)
+    {
+        <div class="form-container" style="margin-bottom: 20px;" onclick="location.href = '#'">
+            <div>Sender: @item.Name</div>
+            <div>Amount: $@string.Format("{0:0.00}", item.Amount)</div>
+
+        </div>
+    }
+}
