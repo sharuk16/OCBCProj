@@ -24,7 +24,7 @@ namespace PFD_Challenge_1.Controllers
             //{
             //    return RedirectToAction("Index", "Home");
             //}
-            
+            //Remove v below line 28
             HttpContext.Session.SetString("NRIC", "T1234567A");
             BankAccount ba = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
             if (ba == null)
@@ -54,6 +54,12 @@ namespace PFD_Challenge_1.Controllers
             //BankAccount ba = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
             //BankAccount ba = bankAccountContext.GetBankAccountPH(HttpContext.Session.GetString("NRIC"));
             //if (ftvm.recipient)
+            //string type = "";
+            //Regex bankacc = new Regex(@"[0-9]{3}-[0-9]{6}-[0-9]{3}");
+            //if (bankacc.IsMatch(ftvm.account))
+            //{
+            //    type = "AccNo";
+            //}
             return View();
         }
     }
