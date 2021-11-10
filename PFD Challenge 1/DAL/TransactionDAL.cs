@@ -62,13 +62,19 @@ namespace PFD_Challenge_1.DAL
             return t;
         }
 
-        public bool UpdateSender(BankAccount senderAcc, decimal moneySent) 
+        public bool UpdateTransactionChanges //Updates recipient and sender BankAccount
+            (BankAccount recipientAcc, BankAccount senderAcc, decimal moneySent)
         {
             SqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = @"UPDATE BankAccount SET Balance = Balance - @moneySent
-                                WHERE AccNo = @AccNo"; //Updates the Sender's Balance
+            cmd.CommandText = @"UPDATE BankAccount SET Balance = CASE AccNo
+                                    WHEN @senderID THEN Balance - @moneySent
+                                    WHEN @recipientID THEN Balance + @moneySent
+                                    ELSE Balance
+                                    END
+                                WHERE AccNo IN(@senderID, @recipientID)";
+            cmd.Parameters.AddWithValue("@senderID", senderAcc.AccNo);
+            cmd.Parameters.AddWithValue("@recipientID", recipientAcc.AccNo);
             cmd.Parameters.AddWithValue("@moneySent", moneySent);
-            cmd.Parameters.AddWithValue("@AccNo", senderAcc.AccNo);
             conn.Open();
             int count = cmd.ExecuteNonQuery();
             conn.Close();
@@ -81,26 +87,7 @@ namespace PFD_Challenge_1.DAL
                 return false;
             }
         }
-
-        public bool UpdateRecipient(BankAccount recipientAcc, decimal moneySent)
-        {
-            SqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = @"UPDATE BankAccount SET Balance = Balance + @moneySent
-                                WHERE AccNo = @AccNo"; //Updates the Recipient's Balance
-            cmd.Parameters.AddWithValue("@moneySent", moneySent);
-            cmd.Parameters.AddWithValue("@AccNo", recipientAcc.AccNo);
-            conn.Open();
-            int count = cmd.ExecuteNonQuery();
-            conn.Close();
-            if (count > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+       
 
         public int AddTransactionRecord(Transaction transac)
         {
