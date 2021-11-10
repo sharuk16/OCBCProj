@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using PFD_Challenge_1.Models;
+using System.Text.RegularExpressions;
 
 namespace PFD_Challenge_1.DAL
 {
@@ -26,7 +27,46 @@ namespace PFD_Challenge_1.DAL
             //Connection String read.
             conn = new SqlConnection(strConn);
         }
-
+        public BankUser GetBankUser(string pattern)
+        {
+            BankUser user = null;
+            SqlCommand cmd = conn.CreateCommand();
+            string text = "SELECT * FROM BankUser Where NRIC = @select";
+            Regex email = new Regex(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}");
+            Regex ph = new Regex(@"[0-9]{8}");
+            if (email.IsMatch(pattern))
+            {
+                text = "SELECT * FROM BankUser Where Email = @select";
+            }else if (ph.IsMatch(pattern))
+            {
+                text = "SELECT * FROM BankUser Where Phone = @select";
+            }
+            cmd.CommandText = @""+text;
+            cmd.Parameters.AddWithValue("@select", pattern);
+            conn.Open();
+            //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    user = new BankUser
+                    {
+                        Nric = reader.GetString(0),
+                        Email = reader.GetString(1),
+                        Phone = reader.GetString(2),
+                        Name = reader.GetString(3),
+                        TransLimit = reader.GetDecimal(4),
+                        Password = reader.GetString(5),
+                    };
+                }
+            }
+            //Close DataReader
+            reader.Close();
+            //Close the database connection
+            conn.Close();
+            return user;
+        }
         public List<BankUser> GetAllBankUser()
         {
             //Create a SqlCommand object from connection object
