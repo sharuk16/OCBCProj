@@ -14,12 +14,12 @@ namespace PFD_Challenge_1.Models
 
         [Required(ErrorMessage = "You must enter the name of the recipient.")]
         [Display(Name = "Recipient")]
-        [StringLength(11, ErrorMessage = "Invalid Account Number")]
+        [StringLength(15, ErrorMessage = "Invalid Account Number")]
         public string Recipient { get; set; }
 
         [Required]
         [Display(Name = "Sender")]
-        [StringLength(11, ErrorMessage = "Invalid Account Number")]
+        [StringLength(15, ErrorMessage = "Invalid Account Number")]
         public string Sender { get; set; }
 
         [Required(ErrorMessage = "You must enter an amount to be sent.")]
