@@ -43,24 +43,20 @@ namespace PFD_Challenge_1.Controllers
         {
             return View();
         }
-        //[HttpPost]
-        //public IActionResult FundTransferReview(FutureTransferViewModel ftvm)
-        //{
-        //    //Regex rgx = new Regex(@"[A-Za-z0-9._%+-]+@lcu.edu.sg");
-        //    //if (rgx.IsMatch(ftvm.recipient))
-        //    //{
-        //    //    //BankAccount ba = bankAccountContext.GetBankAccountEmail(HttpContext.Session.GetString("NRIC"));
-        //    //}
-        //    //BankAccount ba = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
-        //    //BankAccount ba = bankAccountContext.GetBankAccountPH(HttpContext.Session.GetString("NRIC"));
-        //    //if (ftvm.recipient)
-        //    //string type = "";
-        //    //Regex bankacc = new Regex(@"[0-9]{3}-[0-9]{6}-[0-9]{3}");
-        //    //if (bankacc.IsMatch(ftvm.account))
-        //    //{
-        //    //    type = "AccNo";
-        //    //}
-        //    return View();
-        //}
+        [HttpPost]
+        public IActionResult FundTransferReview(IFormCollection formData)
+        {
+            
+            return View();
+        }
+        public IActionResult Confirmation()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult Confirmation(FundTransferReview ftr)
+        {
+            return View();
+        }
     }
 }
