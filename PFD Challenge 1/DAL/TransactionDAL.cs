@@ -102,6 +102,31 @@ namespace PFD_Challenge_1.DAL
             }
         }
 
+        public int AddTransactionRecord(Transaction transac)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"INSERT INTO Transactions
+                                (Recipient, Sender, Amount, 
+                                TimeTransfer, Notified, Completed, Type)
+                                OUTPUT INSERTED.TransacID
+                                VALUES(@transacID, @recipient, @sender, @amount,
+                                @timetransfer, @notified, @completed, @type)";
+            cmd.Parameters.AddWithValue("@recipient", transac.Recipient);
+            cmd.Parameters.AddWithValue("@sender", transac.Sender);
+            cmd.Parameters.AddWithValue("@amount", transac.Amount);
+            cmd.Parameters.AddWithValue("@timetransfer", transac.TimeTransfer);
+            cmd.Parameters.AddWithValue("@notified", "N");
+            cmd.Parameters.AddWithValue("@completed", "N");
+            cmd.Parameters.AddWithValue("@type", transac.Type);
+
+            conn.Open();
+
+            transac.TransacID = (int)cmd.ExecuteScalar();
+
+            conn.Close();
+
+            return transac.TransacID;
+        }
         public bool UpdateTransactionComplete(Transaction transac)
         {
             SqlCommand cmd = conn.CreateCommand();
@@ -120,6 +145,7 @@ namespace PFD_Challenge_1.DAL
                 return false;
             }
         }
+
         public List<Transaction> GetAllTransaction(string accNo)
         {
             List<Transaction> t = new List<Transaction>();
@@ -173,6 +199,25 @@ namespace PFD_Challenge_1.DAL
             int count = cmd.ExecuteNonQuery();
             conn.Close();
             if (count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateTransactionNotified(Transaction transac) //Insert transaction object
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE Transactions SET Notified = 'T'
+                                WHERE TransacID = @TransacID"; //Updates the Transactions's Notified Status
+            cmd.Parameters.AddWithValue("@TransacID", transac.TransacID);
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (count > 0)  //Returns true/false based on whether update is successful
             {
                 return true;
             }
