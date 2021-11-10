@@ -120,7 +120,42 @@ namespace PFD_Challenge_1.DAL
                 return false;
             }
         }
-
+        public List<Transaction> GetAllTransaction(string accNo)
+        {
+            List<Transaction> t = new List<Transaction>();
+            //Create a SqlCommand object from connection object
+            SqlCommand cmd = conn.CreateCommand();
+            //Specify the SELECT SQL statement
+            cmd.CommandText = @"Select * from Transactions where Sender = @AccNo or Recipient = @AccNo order by TimeTransfer desc";
+            cmd.Parameters.AddWithValue("@AccNo", accNo);
+            //Open a database connection
+            conn.Open();
+            //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    t.Add(new Transaction
+                    {
+                        TransacID = reader.GetInt32(0),
+                        Recipient = reader.GetString(1),
+                        Sender = reader.GetString(2),
+                        Amount = reader.GetDecimal(3),
+                        TimeTransfer = reader.GetDateTime(4),
+                        Notified = reader.GetString(5),
+                        Completed = reader.GetString(6),
+                        Type = reader.GetString(7),
+                    }
+                    );
+                }
+            }
+            //Close DataReader
+            reader.Close();
+            //Close the database connection
+            conn.Close();
+            return t;
+        }
         public bool ReverseTransactionChanges //Reverses database changes from the current transaction
             (BankAccount recipientAcc, BankAccount senderAcc, decimal moneySent)
         {
