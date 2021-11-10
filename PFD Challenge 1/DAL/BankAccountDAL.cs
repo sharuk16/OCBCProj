@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using PFD_Challenge_1.Models;
+using System.Text.RegularExpressions;
 
 namespace PFD_Challenge_1.DAL
 {
@@ -58,14 +59,20 @@ namespace PFD_Challenge_1.DAL
             conn.Close();
             return bankAccountList;
         }
-        public BankAccount GetBankAccount(string nric)
+        public BankAccount GetBankAccount(string pattern)
         {
             BankAccount ba = null;
             //Create a SqlCommand object from connection object
             SqlCommand cmd = conn.CreateCommand();
             //Specify the SELECT SQL statement
-            cmd.CommandText = @"SELECT * FROM BankAccount Where NRIC = @selectNRIC";
-            cmd.Parameters.AddWithValue("@selectNRIC", nric);
+            string text = "SELECT * FROM BankAccount Where NRIC = @select";
+            Regex bankacc = new Regex(@"[0-9]{3}-[0-9]{6}-[0-9]{3}");
+            if (bankacc.IsMatch(pattern))
+            {
+                text = "SELECT * FROM BankAccount Where AccNo = @select";
+            }
+            cmd.CommandText = @""+text;
+            cmd.Parameters.AddWithValue("@select", pattern);
             //Open a database connection
             conn.Open();
             //Execute the SELECT SQL through a DataReader
