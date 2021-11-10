@@ -66,6 +66,7 @@ namespace PFD_Challenge_1.DAL
             (BankAccount recipientAcc, BankAccount senderAcc, decimal moneySent)
         {
             SqlCommand cmd = conn.CreateCommand();
+            //SQL query to update both Balances from Recipient and Sender
             cmd.CommandText = @"UPDATE BankAccount SET Balance = CASE AccNo
                                     WHEN @senderID THEN Balance - @moneySent
                                     WHEN @recipientID THEN Balance + @moneySent
@@ -92,6 +93,7 @@ namespace PFD_Challenge_1.DAL
         public int AddTransactionRecord(Transaction transac)
         {
             SqlCommand cmd = conn.CreateCommand();
+            //SQL query to create a new Transactions object in the database for records.
             cmd.CommandText = @"INSERT INTO Transactions
                                 (Recipient, Sender, Amount, 
                                 TimeTransfer, Notified, Completed, Type)
@@ -173,6 +175,7 @@ namespace PFD_Challenge_1.DAL
             (BankAccount recipientAcc, BankAccount senderAcc, decimal moneySent)
         {
             SqlCommand cmd = conn.CreateCommand();
+            //SQL query to reverse both Balances from Recipient and Sender to the state before the transaction.
             cmd.CommandText = @"UPDATE BankAccount SET Balance = CASE AccNo
                                     WHEN @senderID THEN Balance + @moneySent
                                     WHEN @recipientID THEN Balance - @moneySent
