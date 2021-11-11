@@ -1,4 +1,5 @@
-﻿<!-- A grey navbar that expands horizontally at medium device -->
+﻿@using Microsoft.AspNetCore.Http;
+<!-- A grey navbar that expands horizontally at medium device -->
 <nav class="navbar navbar-expand-md bg-light navbar-light">
     <!-- The brand(or icon) of the navbar -->
     <a class="navbar-brand" href="~/Home/Index"
@@ -12,19 +13,18 @@
     <!-- Links in the navbar, displayed as drop-down list when collapsed -->
     <div class="collapse navbar-collapse" id="staffNavbar">
         <!-- Links that are aligned to the left, mr-auto: right margin auto-adjusted -->
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <!--Orginal version-->
-                <a class="nav-link" href="~/FundTransfer/FundTransfer">Transfer</a>
-            </li>
-            <li class="nav-item">
-                <!--Orginal version-->
-                <a class="nav-link" href="~/Transaction/index">History</a>
-            </li>
-            <li class="=nav-item">
-                <a class="nav-link" href="~/BatchProcess/index">Schedule Payment</a>
-
-            </li>
-        </ul>
+        @if (Context.Session.GetString("NRIC") != null)
+        {
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <!--Orginal version-->
+                    <a class="nav-link" href="~/FundTransfer/FundTransfer">Transfer</a>
+                </li>
+                <li class="nav-item">
+                    <!--Orginal version-->
+                    <a class="nav-link" href="~/Transaction/index">History</a>
+                </li>
+            </ul>
+        }
     </div>
 </nav>

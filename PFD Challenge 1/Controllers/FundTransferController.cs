@@ -19,12 +19,6 @@ namespace PFD_Challenge_1.Controllers
         TransactionDAL transactionContext = new TransactionDAL();
         public IActionResult FundTransfer()
         {
-            //if ((HttpContext.Session.GetString("Account") == null) ||
-            //(HttpContext.Session.GetString("Account") != "User"))
-            //{
-            //    return RedirectToAction("Index", "Home");
-            //}
-            //Remove v below line 28
             HttpContext.Session.SetString("NRIC", "T1234567A");
             BankAccount ba = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
             if (ba == null)

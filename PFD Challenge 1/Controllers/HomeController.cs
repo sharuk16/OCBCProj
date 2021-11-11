@@ -28,6 +28,15 @@ namespace PFD_Challenge_1.Controllers
         {
             return View();
         }
+        public IActionResult faceLogin(int id)
+        {
+            if (id > 28000 && id < 31000)
+            {
+                HttpContext.Session.SetString("NRIC", "T1234567A");
+                return RedirectToAction("FundTransfer", "FundTransfer");
+            }
+            return RedirectToAction("Index", "Home");
+        }
 
       
         public IActionResult Privacy()

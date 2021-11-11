@@ -28,7 +28,33 @@
         outline: 0;
     }
 
-h1{
+/*Button CSS*/
+.btn2 {
+    box-sizing: border-box;
+    background-color: #BA2B43;
+    border-radius: 0.6em;
+    color: white;
+    cursor: pointer;
+    /*display: flex;*/
+    align-self: center;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1;
+    margin: 20px;
+    padding: 1.2em 2.8em;
+    text-decoration: none;
+    text-align: center;
+    text-transform: uppercase;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+    .btn a:hover, .btn a:focus {
+        color: #000;
+        outline: 0;
+    }
+
+h1, h6{
     color:white;
 }
 
@@ -53,3 +79,17 @@ h1{
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
 }
+
+
+input:read-only, textarea:read-only {
+    border: 0;
+    box-shadow: none;
+    color: white;
+
+}
+
+textarea:read-write {
+    box-shadow: inset 1px 1px 3px #ccc;
+    border-radius: 5px;
+}
+

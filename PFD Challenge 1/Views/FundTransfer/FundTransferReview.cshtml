@@ -11,9 +11,9 @@
 
 <div class="container" id="mainContainer2">
     <div class="first-container">
-        <div style="text-align: center; margin-top:2%">
+        <div style="text-align: center; margin-top:5%">
             <img id="imgLogo" src="~/images/FutureTransferReview(1).jpeg"
-                 style="width: 50%" />
+                 style="width: 35%" />
             <h1>Transfer</h1>
         </div>
     </div>
@@ -22,7 +22,7 @@
 <div class="container">
     <div class="row">
         <div class="col text-center">
-            <form asp-action="FundTransferReview" style="text-align: left">
+            <form asp-action="FundTransferReview" style="text-align: center">
                 <div class="container">
 
                     <div class="form-group" style="color: white">
@@ -38,43 +38,43 @@
                         <input asp-for="TransferAmount" type="text" class="form-control" id="transfer">
                     </div>
                     <div class="form-group form-check-inline" style="margin-top:15px">
-                        <label class="col-form-label">
-                            @if (Model.FutureTransfer == "false")
-                            {
-                                <input name="futureTransfer" type="radio" value="immediate" class="form-check-input" id="immediateRadio" checked="checked" />
-                            }
-                            else
-                            {
-                                <input name="futureTransfer" type="radio" value="immediate" class="form-check-input" id="immediateRadio" />
-                            }
-                            <span style="font-weight:normal; padding-right:20px">Immediate</span>
-                        </label>
-                        <label class="col-form-label">
-                            @if (Model.FutureTransfer == "false")
-                            {
-                                <input name="futureTransfer" type="radio" value="future" class="form-check-input" id="futureRadio" />
-                            }
-                            else
-                            {
-                                <input name="futureTransfer" type="radio" value="future" class="form-check-input" id="futureRadio" checked="checked" />
-                            }
-                            <span style="font-weight:normal; padding-right:20px">Schedule</span>
-                        </label>
-                        <input asp-for="FutureTransfer" hidden readonly />
+                        <div class="form-group" style="color: white">
+                            <div>Date</div>
+                            <div>
+                                <label class="col-form-label">
+                                    @if (Model.FutureTransfer == "false")
+                                    {
+                                        <input name="futureTransfer" type="radio" value="immediate" class="form-check-input" id="immediateRadio" checked="checked" />
+                                    }
+                                    else
+                                    {
+                                        <input name="futureTransfer" type="radio" value="immediate" class="form-check-input" id="immediateRadio" />
+                                    }
+                                    <span style="font-weight:normal; padding-right:20px">Immediate</span>
+                                </label>
+                                <label class="col-form-label">
+                                    @if (Model.FutureTransfer == "false")
+                                    {
+                                        <input name="futureTransfer" type="radio" value="future" class="form-check-input" id="futureRadio" />
+                                    }
+                                    else
+                                    {
+                                        <input name="futureTransfer" type="radio" value="future" class="form-check-input" id="futureRadio" checked="checked" />
+                                    }
+                                    <span style="font-weight:normal; padding-right:20px">Schedule</span>
+                                </label>
+                                <input asp-for="FutureTransfer" hidden readonly />
+                            </div>
+                        </div>
                     </div>
                     <div id="futureTime">
                         <label asp-for="TimeTransfer" class="form-label"></label>
                         <input asp-for="TimeTransfer" /><br />
                         <span asp-validation-for="TimeTransfer" class="text-danger small"></span>
                     </div>
-                    <div class="every" style="padding-right:110px;padding-left:20px; display: inline-block;">
-                        <div class="form-group row">
-                            <div class="col-sm-9 offset-sm-3">
-                                <button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn third">Confirm</button>
-                            </div>
-                        </div>
+                    <div class="every" style="padding-right:50px;padding-left:50px; display: inline-block;">
+                        <div><button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2">Confirm</button></div>
                     </div>
-
                 </div>
             </form>
         </div>
