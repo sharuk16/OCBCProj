@@ -41,13 +41,24 @@ namespace PFD_Challenge_1.Controllers
         }
         public IActionResult FundTransferReview()
         {
-            return View();
+            //Get bank Account details
+            BankAccount ba = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
+            if (ba == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            FundTransferReview ftr = new FundTransferReview
+            {
+                Balance = ba.Balance,
+                FutureTransfer = "false",
+            };
+            return View(ftr);
         }
         [HttpPost]
-        public IActionResult FundTransferReview(IFormCollection formData)
+        public IActionResult FundTransferReview(FundTransferReview ftr)
         {
             
-            return View();
+            return View(ftr);
         }
         public IActionResult Confirmation()
         {

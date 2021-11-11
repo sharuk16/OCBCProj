@@ -2,7 +2,7 @@
     *Main page for transfer
     Remember to declare model used
 *@
-
+@model PFD_Challenge_1.Models.FundTransferReview
 @section css{
     @*Add specific css script here*@
     <link rel="stylesheet" href="~/css/futuretransfer.css" />
@@ -22,38 +22,61 @@
 <div class="container">
     <div class="row">
         <div class="col text-center">
-            <div class="container">
-                <form style="text-align: left">
+            <form asp-action="FundTransferReview" style="text-align: left">
+                <div class="container">
+
                     <div class="form-group" style="color: white">
                         <label for="to">To</label>
-                        <input type="text" class="form-control" id="to">
-                    </div>
-                    <div class="form-group" style="color: white">
-                        <label for="from">From</label>
-                        <input type="text" class="form-control" id="from">
+                        <input asp-for="Recipient" type="text" class="form-control" id="to">
                     </div>
                     <div class="form-group" style="color: white">
                         <label for="accountbalance">Account Balance</label>
-                        <input type="text" class="form-control" id="accontbalance">
+                        <input readonly asp-for="Balance" class="form-control" />
                     </div>
                     <div class="form-group" style="color: white">
                         <label for="transfer">Transfer</label>
-                        <input type="text" class="form-control" id="transfer">
+                        <input asp-for="TransferAmount" type="text" class="form-control" id="transfer">
                     </div>
-                    <div class="form-group" style="color: white; text-align: center">
-                        <label for="transferdate">Date</label>
-                        <input type="date" id="transferdate" name="transferdate">
+                    <div class="form-group form-check-inline" style="margin-top:15px">
+                        <label class="col-form-label">
+                            @if (Model.FutureTransfer == "false")
+                            {
+                                <input name="futureTransfer" type="radio" value="immediate" class="form-check-input" id="immediateRadio" checked="checked" />
+                            }
+                            else
+                            {
+                                <input name="futureTransfer" type="radio" value="immediate" class="form-check-input" id="immediateRadio" />
+                            }
+                            <span style="font-weight:normal; padding-right:20px">Immediate</span>
+                        </label>
+                        <label class="col-form-label">
+                            @if (Model.FutureTransfer == "false")
+                            {
+                                <input name="futureTransfer" type="radio" value="future" class="form-check-input" id="futureRadio" />
+                            }
+                            else
+                            {
+                                <input name="futureTransfer" type="radio" value="future" class="form-check-input" id="futureRadio" checked="checked" />
+                            }
+                            <span style="font-weight:normal; padding-right:20px">Schedule</span>
+                        </label>
+                        <input asp-for="FutureTransfer" hidden readonly />
                     </div>
-                </form>
-            </div>
-            <!-- Login Button -->
-            <div class="every" style="padding-right:110px;padding-left:20px; display: inline-block;">
-                <div class="form-group row">
-                    <div class="col-sm-9 offset-sm-3">
-                        <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn third">Confirm</button>
+                    <div id="futureTime">
+                        <label asp-for="TimeTransfer" class="form-label"></label>
+                        <input asp-for="TimeTransfer" /><br />
+                        <span asp-validation-for="TimeTransfer" class="text-danger small"></span>
                     </div>
+                    <div class="every" style="padding-right:110px;padding-left:20px; display: inline-block;">
+                        <div class="form-group row">
+                            <div class="col-sm-9 offset-sm-3">
+                                <button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn third">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </div>
@@ -63,4 +86,21 @@
 @section scripts{
     @*Add JavaScripts specifically for this view here*@
     <script src="~/js/futuretransfer.js"></script>
+    <script>
+        $(document).ready(function () {
+            if ($("#futureRadio").is(':checked')) {
+                $("#futureTime").show()
+            } else {
+                $("#futureTime").hide()
+            }
+        })
+        $("#futureRadio").click(function () {
+            $("#futureTime").show()
+            $("#FutureTransfer").val() = "true";
+        })
+        $("#immediateRadio").click(function () {
+            $("#futureTime").hide()
+            $("#FutureTransfer").val() = "false";
+        })
+    </script>
 }
