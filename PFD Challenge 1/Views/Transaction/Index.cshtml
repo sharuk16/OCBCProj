@@ -2,26 +2,56 @@
 @{
     ViewData["Title"] = "View Transfers";
 }
+
+@section css{
+    @*Add specific css script here*@
+    <link rel="stylesheet" href="~/css/transactionhistory.css" />
+}
+
 @{
+
+    <div class="container" id="mainContainer2">
+        <div class="first-container">
+            <div style="text-align: center; margin-top:5%">
+                <img id="imgLogo" src="~/images/Transaction History.jpeg"
+                     style="width: 50%" />
+                <h1 style="margin-top:5%">Transaction History</h1>
+            </div>
+        </div>
+    </div>
+
+
     foreach (var item in Model)
     {
+
         if (item.sender)
         {
-            <div class="form-container" style="margin-bottom: 20px;" onclick="location.href = '#'">
-                <div>Receiver: @item.Name</div>
-                <div>Amount: $@string.Format("{0:0.00}", item.Amount)</div>
-
+            <div class="form-group" style="color: white">
+                <div class="form-container" style="padding-right:30px;padding-left:375px; display: inline-block;" onclick="location.href = '#'">
+                    <div class="transactionhistory">
+                        <div>Receiver: @item.Name</div>
+                        <div>Amount: $@string.Format("{0:0.00}", item.Amount)</div>
+                        <div style="color:lightseagreen">Successful</div>
+                    </div>
+                </div>
             </div>
+
         }
         else
         {
-            <div class="form-container" style="margin-bottom: 20px;" onclick="location.href = '#'">
-                <div>Sender: @item.Name</div>
-                <div>Amount: $@string.Format("{0:0.00}", item.Amount)</div>
-
+            <div class="form-group" style="color: white">
+                <div class="form-container" style="padding-right:30px;padding-left:375px; display: inline-block;" onclick="location.href = '#'">
+                    <div class="transactionhistory">
+                        <div>Sender: @item.Name</div>
+                        <div>Amount: $@string.Format("{0:0.00}", item.Amount)</div>
+                        <div style="color:lightseagreen">Successful</div>
+                    </div>
+                </div>
             </div>
-            }
-
 
         }
+
+
     }
+}
+
