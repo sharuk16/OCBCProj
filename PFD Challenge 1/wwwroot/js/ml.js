@@ -1,7 +1,9 @@
-﻿const video = document.getElementById("webcam");
-const liveView = document.getElementById("livecam");
-const enableActivateButton = document.getElementById("activateButton");
+﻿
+
 $(document).ready(function () {
+    const video = document.getElementById("webcam");
+    const liveView = document.getElementById("livecam");
+    const enableActivateButton = document.getElementById("activateButton");
     var model = undefined;
     faceLandmarksDetection
         .load(faceLandmarksDetection.SupportedPackages.mediapipeFacemesh)
