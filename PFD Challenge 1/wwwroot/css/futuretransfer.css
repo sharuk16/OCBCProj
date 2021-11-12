@@ -28,7 +28,7 @@
         outline: 0;
     }
 
-/*Button CSS*/
+/*Button 2 CSS*/
 .btn2 {
     box-sizing: border-box;
     background-color: #BA2B43;
@@ -93,3 +93,17 @@ textarea:read-write {
     border-radius: 5px;
 }
 
+
+/* Date container for input*/
+.date {
+    background-color: #AA1945;
+    color: white;
+    width: 10px;
+    height: 2px;
+    border: 5px white;
+    padding-left: 8px;
+    padding-right: 50px;
+    padding-top: 0px;
+    padding-bottom: 30px;
+    text-align:center;
+}
