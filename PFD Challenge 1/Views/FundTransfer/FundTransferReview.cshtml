@@ -37,7 +37,7 @@
                             <label for="accountbalance">Account Balance</label>
                         </div>
                         <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 60px; padding-left: 60px; display: inline-block;">
-                            <input readonly asp-for="Balance" class="form-control" id="accountbalance" style="padding-left: 125px; background-color: #E7625F" />
+                            <input disabled readonly asp-for="Balance" class="form-control" id="accountbalance" style="padding-left: 125px; background-color: #E7625F" />
                         </div>
                     </div>
                     <div class="form-group" style="color: white">
@@ -56,11 +56,11 @@
                                     <label class="col-form-label">
                                         @if (Model.FutureTransfer == "false")
                                         {
-                                            <input name="futureTransfer" type="radio" value="immediate" class="form-check-input" id="immediateRadio" checked="checked" />
+                                            <input name="futureTransfer" type="radio" value="false" class="form-check-input" id="immediateRadio" checked="checked" />
                                         }
                                         else
                                         {
-                                            <input name="futureTransfer" type="radio" value="immediate" class="form-check-input" id="immediateRadio" />
+                                            <input name="futureTransfer" type="radio" value="false" class="form-check-input" id="immediateRadio" />
                                         }
                                     </label>
                                     <span style="font-weight:normal; padding-right:20px">Immediate</span>
@@ -69,18 +69,15 @@
                                     <label class="col-form-label">
                                         @if (Model.FutureTransfer == "false")
                                         {
-                                            <input name="futureTransfer" type="radio" value="future" class="form-check-input" id="futureRadio" />
+                                            <input name="futureTransfer" type="radio" value="true" class="form-check-input" id="futureRadio" />
                                         }
                                         else
                                         {
-                                            <input name="futureTransfer" type="radio" value="future" class="form-check-input" id="futureRadio" checked="checked" />
+                                            <input name="futureTransfer" type="radio" value="true" class="form-check-input" id="futureRadio" checked="checked" />
                                         }
                                         <span style="font-weight:normal; padding-right:20px">Schedule</span>
                                     </label>
                                 </div>
-                            </div>
-                            <div>
-                                <input asp-for="FutureTransfer" hidden readonly />
                             </div>
                         </div>
                     </div>
@@ -90,16 +87,14 @@
                         <span asp-validation-for="TimeTransfer" class="text-danger small"></span>
                     </div>
                 </div>
+                <div class="every" style="padding-top: 0px; padding-right:50px;padding-left:50px; display: inline-block;">
+                    <div><button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2">Confirm</button></div>
+                </div>
             </form>
-            <div class="every" style="padding-top: 0px; padding-right:50px;padding-left:50px; display: inline-block;">
-                <div><button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2">Confirm</button></div>
-            </div>
+
         </div>
     </div>
 </div>
-
-
-
 @section scripts{
     @*Add JavaScripts specifically for this view here*@
     <script src="~/js/futuretransfer.js"></script>
@@ -113,11 +108,9 @@
         })
         $("#futureRadio").click(function () {
             $("#futureTime").show()
-            $("#FutureTransfer").val() = "true";
         })
         $("#immediateRadio").click(function () {
             $("#futureTime").hide()
-            $("#FutureTransfer").val() = "false";
         })
     </script>
 }

@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace PFD_Challenge_1.Models
 {
-    public class FundTransferReview
+    public class TransferConfirmation
     {
         [Display(Name = "Recipient")]
         [Required]
         public string Recipient { get; set; }
-        [Display(Name = "Balance")]
+        [Display(Name = "Bank Account")]
         [Required]
-        public decimal Balance { get; set; }
+        public string BankAccount { get; set; }
         [Display(Name = "Transfer Amount")]
         [Required]
         public decimal TransferAmount { get; set; }
