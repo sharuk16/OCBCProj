@@ -116,6 +116,7 @@ namespace PFD_Challenge_1.Controllers
             return View(tc);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Confirmation(TransferConfirmation tc)
         {
             if (!ModelState.IsValid)
@@ -137,7 +138,7 @@ namespace PFD_Challenge_1.Controllers
             {
                 //James
             }
-            return View();
+            return View(tc);
         }
     }
 }
