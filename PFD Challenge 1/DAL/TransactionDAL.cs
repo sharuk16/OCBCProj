@@ -90,7 +90,7 @@ namespace PFD_Challenge_1.DAL
         }
        
 
-        public int AddTransactionRecord(TransferConfirmation transac)
+        public int AddTransactionRecord(Transaction transac)
         {
             SqlCommand cmd = conn.CreateCommand();
             //SQL query to create a new Transactions object in the database for records.
@@ -101,21 +101,12 @@ namespace PFD_Challenge_1.DAL
                                 VALUES(@recipient, @sender, @amount,
                                 @timetransfer, @notified, @completed, @type)";
             cmd.Parameters.AddWithValue("@recipient", transac.Recipient);
-            cmd.Parameters.AddWithValue("@sender", transac.BankAccount);
-            cmd.Parameters.AddWithValue("@amount", transac.TransferAmount);
+            cmd.Parameters.AddWithValue("@sender", transac.Sender);
+            cmd.Parameters.AddWithValue("@amount", transac.Amount);
             cmd.Parameters.AddWithValue("@timetransfer", transac.TimeTransfer);
-            cmd.Parameters.AddWithValue("@notified", "N");
-            cmd.Parameters.AddWithValue("@completed", "N");
-            string transType;
-            if (transac.FutureTransfer == "true")
-            {
-                transType = "Future";
-            }
-            else
-            {
-                transType = "Immediate";
-            }
-            cmd.Parameters.AddWithValue("@type", transType);
+            cmd.Parameters.AddWithValue("@notified", "F");
+            cmd.Parameters.AddWithValue("@completed", "F");
+            cmd.Parameters.AddWithValue("@type", transac.Type);
 
             conn.Open();
 
@@ -249,20 +240,26 @@ namespace PFD_Challenge_1.DAL
 
         public bool ValidateTransactionLimit(BankAccount bankAcc, decimal transAmt)
         {
-            bool validLimit;
+            bool validLimit  = false;
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = @"SELECT TransLimit FROM BankUser
                                 WHERE NRIC = @NRIC";
             cmd.Parameters.AddWithValue("@NRIC", bankAcc.Nric);
             conn.Open();
             SqlDataReader reader = cmd.ExecuteReader();
-            if (reader.GetDecimal(0) < transAmt)
+            if(reader.HasRows)
             {
-                validLimit = false;
-            }
-            else
-            {
-                validLimit = true;
+                while (reader.Read())
+                {
+                    if (reader.GetDecimal(0) < transAmt)
+                    {
+                        validLimit = false;
+                    }
+                    else
+                    {
+                        validLimit = true;
+                    }
+                }
             }
             reader.Close();
             conn.Close();

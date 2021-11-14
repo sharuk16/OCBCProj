@@ -140,25 +140,35 @@ namespace PFD_Challenge_1.Controllers
             }
             else
             {
-                if(transactionContext.ValidateTransactionLimit(senderAccount, tc.TransferAmount)
+                if(transactionContext.ValidateTransactionLimit(senderAccount, transferAmount)
                     ==false)
                 {
                     return RedirectToAction("Index", "Home");
                 }
-                else if(transactionContext.ValidateTransactionLimit(senderAccount, tc.TransferAmount)
+                else if(transactionContext.ValidateTransactionLimit(senderAccount, transferAmount)
                     == true)
                 {
                     if(transactionContext.CheckIncompleteExists() == false)
                     {
-                        int transacID = transactionContext.AddTransactionRecord(tc);
-                        bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, tc.TransferAmount);
+                        Transaction newTransac = new Transaction
+                        {
+                            Recipient = receiverAccount.AccNo,
+                            Sender = senderAccount.AccNo,
+                            Amount = tc.TransferAmount,
+                            TimeTransfer = DateTime.Now,
+                            Type = "Immediate"
+                        };
+                        int transacID = transactionContext.AddTransactionRecord(newTransac);
+                        bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, transferAmount);
                         if(updatedAccounts == true)
                         {
                             transactionContext.UpdateTransactionComplete(transacID);
+                            return RedirectToAction("Index", "Home");
                         }
                         else
                         {
-                            transactionContext.ReverseTransactionChanges(receiverAccount, senderAccount, tc.TransferAmount);
+                            transactionContext.ReverseTransactionChanges(receiverAccount, senderAccount, transferAmount);
+                            return RedirectToAction("Index", "Home");
                         }
                     }
                 }
