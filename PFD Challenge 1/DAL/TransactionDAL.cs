@@ -90,7 +90,7 @@ namespace PFD_Challenge_1.DAL
         }
        
 
-        public int AddTransactionRecord(Transaction transac)
+        public int AddTransactionRecord(TransferConfirmation transac)
         {
             SqlCommand cmd = conn.CreateCommand();
             //SQL query to create a new Transactions object in the database for records.
@@ -98,30 +98,39 @@ namespace PFD_Challenge_1.DAL
                                 (Recipient, Sender, Amount, 
                                 TimeTransfer, Notified, Completed, Type)
                                 OUTPUT INSERTED.TransacID
-                                VALUES(@transacID, @recipient, @sender, @amount,
+                                VALUES(@recipient, @sender, @amount,
                                 @timetransfer, @notified, @completed, @type)";
             cmd.Parameters.AddWithValue("@recipient", transac.Recipient);
-            cmd.Parameters.AddWithValue("@sender", transac.Sender);
-            cmd.Parameters.AddWithValue("@amount", transac.Amount);
+            cmd.Parameters.AddWithValue("@sender", transac.BankAccount);
+            cmd.Parameters.AddWithValue("@amount", transac.TransferAmount);
             cmd.Parameters.AddWithValue("@timetransfer", transac.TimeTransfer);
             cmd.Parameters.AddWithValue("@notified", "N");
             cmd.Parameters.AddWithValue("@completed", "N");
-            cmd.Parameters.AddWithValue("@type", transac.Type);
+            string transType;
+            if (transac.FutureTransfer == "true")
+            {
+                transType = "Future";
+            }
+            else
+            {
+                transType = "Immediate";
+            }
+            cmd.Parameters.AddWithValue("@type", transType);
 
             conn.Open();
 
-            transac.TransacID = (int)cmd.ExecuteScalar();
+            int transacID = (int)cmd.ExecuteScalar();
 
             conn.Close();
 
-            return transac.TransacID;
+            return transacID;
         }
-        public bool UpdateTransactionComplete(Transaction transac)
+        public bool UpdateTransactionComplete(int transacID)
         {
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = @"UPDATE Transactions SET Completed = 'T'
                                 WHERE TransacID = @TransacID"; //Updates the Transactions's Completed Status
-            cmd.Parameters.AddWithValue("@TransacID", transac.TransacID);
+            cmd.Parameters.AddWithValue("@TransacID", transacID);
             conn.Open();
             int count = cmd.ExecuteNonQuery();
             conn.Close();
@@ -219,7 +228,7 @@ namespace PFD_Challenge_1.DAL
 
         public bool CheckIncompleteExists() //Checks for Immediate Transactions that are still incomplete
         {
-            bool incompleteExists = false;
+            bool incompleteExists;
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = @"SELECT Completed FROM Transactions
                                 WHERE Completed = 'F' AND Type <> 'Future'";
@@ -236,6 +245,28 @@ namespace PFD_Challenge_1.DAL
             reader.Close();
             conn.Close();
             return incompleteExists;
+        }
+
+        public bool ValidateTransactionLimit(BankAccount bankAcc, decimal transAmt)
+        {
+            bool validLimit;
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT TransLimit FROM BankUser
+                                WHERE NRIC = @NRIC";
+            cmd.Parameters.AddWithValue("@NRIC", bankAcc.Nric);
+            conn.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.GetDecimal(0) < transAmt)
+            {
+                validLimit = false;
+            }
+            else
+            {
+                validLimit = true;
+            }
+            reader.Close();
+            conn.Close();
+            return validLimit;
         }
     }
 }
