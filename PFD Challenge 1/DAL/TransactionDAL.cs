@@ -216,5 +216,26 @@ namespace PFD_Challenge_1.DAL
                 return false;
             }
         }
+
+        public bool CheckIncompleteExists() //Checks for Immediate Transactions that are still incomplete
+        {
+            bool incompleteExists = false;
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT Completed FROM Transactions
+                                WHERE Completed = 'F' AND Type <> 'Future'";
+            conn.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                incompleteExists = true;
+            }
+            else
+            {
+                incompleteExists = false;
+            }
+            reader.Close();
+            conn.Close();
+            return incompleteExists;
+        }
     }
 }
