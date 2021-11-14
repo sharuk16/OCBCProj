@@ -95,6 +95,7 @@ namespace PFD_Challenge_1.Controllers
             };
             return RedirectToAction("Confirmation", "FundTransfer", tc);
         }
+
         public IActionResult Confirmation(string? recipient, string? bankAccount, decimal? transferAmount, string? futureTransfer, DateTime? timeTransfer)
         {
             if (recipient == null || recipient == "" || bankAccount == null || bankAccount == "" || transferAmount == null || futureTransfer == null || futureTransfer == "")
@@ -131,11 +132,35 @@ namespace PFD_Challenge_1.Controllers
             decimal transferAmount = tc.TransferAmount;
             if(tc.FutureTransfer == "true")
             {
-                // To be added
+                if(tc.TimeTransfer == DateTime.Now)
+                {
+                    //I think this requires Quartz?
+                }
             }
             else
             {
-                //James
+                if(transactionContext.ValidateTransactionLimit(senderAccount, tc.TransferAmount)
+                    ==false)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                else if(transactionContext.ValidateTransactionLimit(senderAccount, tc.TransferAmount)
+                    == true)
+                {
+                    if(transactionContext.CheckIncompleteExists() == false)
+                    {
+                        int transacID = transactionContext.AddTransactionRecord(tc);
+                        bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, tc.TransferAmount);
+                        if(updatedAccounts == true)
+                        {
+                            transactionContext.UpdateTransactionComplete(transacID);
+                        }
+                        else
+                        {
+                            transactionContext.ReverseTransactionChanges(receiverAccount, senderAccount, tc.TransferAmount);
+                        }
+                    }
+                }
             }
             return View();
         }
