@@ -10,24 +10,23 @@
 <div class="container" id="mainContainer2">
     <div class="first-container">
         <div style="text-align: center; margin-top:5%">
-            <img id="imgLogo" src="~/images/Transaction History.jpeg"
+            <img id="imgLogo" src="~/images/Transaction History(1).jpg"
                  style="width: 50%" />
             <h1 style="margin-top:5%">Transaction History</h1>
         </div>
     </div>
 </div>
-<div><button id="received">Funds received</button>  <button id="sent">Funds sent</button></div>
 @{ foreach (var item in Model)
     {
         if (item.sender)
         {
             <div class="form-group send" style="color: white">
-                <div class="form-container" style="padding-right:30px;padding-left:375px; display: inline-block;" onclick="location.href = '#'">
+                <div class="form-container" style="padding-right:200px;padding-left:350px; display: inline-block;" onclick="location.href = '#'">
                     <div class="transactionhistory">
-                        <div>Receiver: @item.Name</div>
-                        <div>Amount: -$@string.Format("{0:0.00}", item.Amount)</div>
-                        <div>Date of transfer: @item.TimeTransfer.ToString("MMMM dd")</div>
-                        <div style="color:lightseagreen">Successful</div>
+                        <div style="padding-bottom:10px">Receiver: @item.Name</div>
+                        <div style="padding-bottom:10px">Amount: -$@string.Format("{0:0.00}", item.Amount)</div>
+                        <div style="padding-bottom:10px">Date of transfer: @item.TimeTransfer.ToString("MMMM dd")</div>
+                        <div style="color:lightseagreen;">Successful</div>
                     </div>
                 </div>
             </div>
@@ -36,11 +35,11 @@
         else
         {
             <div class="form-group receive" style="color: white">
-                <div class="form-container" style="padding-right:30px;padding-left:375px; display: inline-block;" onclick="location.href = '#'">
+                <div class="form-container" style="padding-right:200px;padding-left:350px; display: inline-block;" onclick="location.href = '#'">
                     <div class="transactionhistory">
-                        <div>Sender: @item.Name</div>
-                        <div>Amount: +$@string.Format("{0:0.00}", item.Amount)</div>
-                        <div>Date of transfer: @item.TimeTransfer.ToString("MMMM dd")</div>
+                        <div style="padding-bottom:10px">Sender: @item.Name</div>
+                        <div style="padding-bottom:10px">Amount: +$@string.Format("{0:0.00}", item.Amount)</div>
+                        <div style="padding-bottom:10px">Date of transfer: @item.TimeTransfer.ToString("MMMM dd")</div>
                         <div style="color:lightseagreen">Successful</div>
                     </div>
                 </div>
@@ -48,19 +47,25 @@
         }
     }
 }
-@section Scripts{ 
-<script>
-    $(document).ready(function () {
-        $(".send").hide();
-    })
-    $("#received").click(function () {
-        $(".receive").show();
-        $(".send").hide();
-    })
-    $("#sent").click(function () {
-        $(".send").show();
-        $(".receive").hide();
-    })
-</script>
+
+<div class="center">
+    <button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" id="received">Funds received</button>
+    <button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" id="sent">Funds sent</button>
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $(".send").hide();
+        })
+        $("#received").click(function () {
+            $(".receive").show();
+            $(".send").hide();
+        })
+        $("#sent").click(function () {
+            $(".send").show();
+            $(".receive").hide();
+        })
+    </script>
 }
 
