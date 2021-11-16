@@ -128,3 +128,13 @@ textarea:read-write {
     margin: 0;
     background-color: #E7625F;
     white-space: nowrap;
+}
+
+/* 'Planned time of transfer' container for input*/
+.plannedtimeoftransfer {
+    width: 200px;
+    padding: 10px;
+    margin: 0;
+    background-color: #E7625F;
+    white-space: nowrap;
+}

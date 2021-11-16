@@ -90,9 +90,17 @@
                         </div>
                     </div>
                     <div id="futureTime">
-                        <label asp-for="TimeTransfer" class="form-label"></label>
-                        <input asp-for="TimeTransfer" /><br />
-                        <span asp-validation-for="TimeTransfer" class="text-danger small"></span>
+                        <div class="form-group form-check-inline" style="padding-top: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
+                            <div class="form-group" style="color: white">
+                                <div class="plannedtimeoftransfer" style="padding-top: 2px;">
+                                    <div class="plannedtimeoftransfer" style="background-color: #AA1945">Planned time of transfer</div>
+                                </div>
+                                <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 140px; padding-left: 140px; display: inline-block;">
+                                    <input asp-for="TimeTransfer" /><br />
+                                    <span asp-validation-for="TimeTransfer" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="every" style="padding-top: 0px; padding-right:50px;padding-left:50px; display: inline-block;">
