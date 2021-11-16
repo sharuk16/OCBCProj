@@ -94,16 +94,37 @@ textarea:read-write {
 }
 
 
-/* Date container for input*/
+/* 'Date' container for input*/
 .date {
-    background-color: #AA1945;
-    color: white;
-    width: 10px;
-    height: 2px;
-    border: 5px white;
-    padding-left: 8px;
-    padding-right: 50px;
-    padding-top: 0px;
-    padding-bottom: 30px;
-    text-align:center;
+    width: 150px;
+    padding: 10px;
+    margin: 0;
+    background-color: #E7625F;
+    white-space: nowrap;
 }
+
+/* 'Transfer Amount' container for input*/
+.transferamount {
+    width: 150px;
+    padding: 10px;
+    margin: 0;
+    background-color: #E7625F;
+    white-space: nowrap;
+}
+
+/* 'Account Balance' container for input*/
+.accountbalance {
+    width: 150px;
+    padding: 10px;
+    margin: 0;
+    background-color: #E7625F;
+    white-space: nowrap;
+}
+
+/* 'To' container for input*/
+.to {
+    width: 150px;
+    padding: 10px;
+    margin: 0;
+    background-color: #E7625F;
+    white-space: nowrap;
