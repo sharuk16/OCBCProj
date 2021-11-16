@@ -1,45 +1,103 @@
 ﻿@*
     View for Transaction Confirmation
 *@
-@model PFD_Challenge_1.Models.TransferConfirmation
-<form asp-action="Confirmation" style="text-align: center">
-    <div class="container">
-        <div class="form-group" style="color: white">
-            <div class="to" style="padding-top:2px">
-                <label for="to">To</label>
-            </div>
-            <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
-                <input asp-for="Recipient" type="text" readonly class="form-control" id="to" style="background-color: #E7625F; border: transparent; color: white; text-align: center;">
-            </div>
-        </div>
-        <div class="form-group" style="color: white">
-            <div class="transfer" style="padding-top:2px">
-                <label for="transfer">Transfer Amount</label>
-            </div>
-            <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
-                <input asp-for="TransferAmount" type="text"readonly class="form-control" id="transfer" style="background-color: #E7625F; border: transparent; color: white; text-align: center;">
-            </div>
-        </div>
-        <div>
-    <input hidden readonly asp-for="BankAccount" />
-    <input hidden readonly asp-for="FutureTransfer" />
-        </div>
-        @if (Model.FutureTransfer == "false")
-        {
-            <div id="futureTime">
-                <label asp-for="TimeTransfer" class="form-label"></label>
-                <div>Immediate</div>
-            </div>
-        }
-        else
-        {
-            <div id="futureTime">
-                <label asp-for="TimeTransfer" class="form-label"></label>
-                <input asp-for="TimeTransfer" readonly/>
-            </div>
-        }
 
-        
+@section css{
+    @*Add specific css script here*@
+    <link rel="stylesheet" href="~/css/confirmation.css" />
+}
+
+@model PFD_Challenge_1.Models.TransferConfirmation
+
+<div class="container" id="mainContainer2">
+    <div class="first-container">
+        <div style="text-align: center; margin-top:2%">
+            <img id="imgLogo" src="~/images/FutureTransferReview(4).jpg"
+                 style="width: 33%" />
+            <h1 style="margin-top:2%">Review Transfer</h1>
+        </div>
     </div>
-    <div><button action ="submit">Confirm Transfer</button></div>
-</form>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <form asp-action="Confirmation" style="text-align: center">
+                <div class="container">
+                    <div class="form-group form-check-inline" style="padding-top: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
+                        <div class="form-group" style="color: white">
+                            <div class="to" style="padding-top: 2px;">
+                                <div class="to" style="background-color: #AA1945">To</div>
+                            </div>
+                            <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
+                                <input asp-for="Recipient" type="text" readonly class="form-control" id="to" style="background-color: #E7625F; border: transparent; color: white; text-align: center;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group form-check-inline" style="padding-top: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
+                        <div class="form-group" style="color: white">
+                            <div class="transferamount" style="padding-top: 2px;">
+                                <div class="transferamount" style="background-color: #AA1945">Transfer Amount</div>
+                            </div>
+                            <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
+                                <input asp-for="TransferAmount" type="text" readonly class="form-control" id="transfer" style="background-color: #E7625F; border: transparent; color: white; text-align: center;">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <input hidden readonly asp-for="BankAccount" />
+                        <input hidden readonly asp-for="FutureTransfer" />
+                    </div>
+                    @if (Model.FutureTransfer == "false")
+                    {
+                        <div id="futureTime">
+                            <div class="form-group form-check-inline" style="padding-top: 0px; padding-right: 180px; padding-left: 180px; display: inline-block;">
+                                <div class="form-group" style="color: white">
+                                    <div class="plannedtimeoftransfer" style="padding-top: 2px;">
+                                        <div class="plannedtimeoftransfer" style="background-color: #AA1945">Planned time of transfer</div>
+                                    </div>
+                                    <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 180px; padding-left: 180px; display: inline-block;">
+                                        <div>Immediate</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="futureTime">
+                            <div class="form-group form-check-inline" style="padding-top: 0px; padding-right: 170px; padding-left: 170px; display: inline-block;">
+                                <div class="form-group" style="color: white">
+                                    <div class="plannedtimeoftransfer" style="padding-top: 2px;">
+                                        <div class="plannedtimeoftransfer" style="background-color: #AA1945">Planned time of transfer</div>
+                                    </div>
+                                    <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 170px; padding-left: 170px; display: inline-block;">
+                                        <input asp-for="TimeTransfer" readonly />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="every" style="padding-top: 0px; padding-right:50px;padding-left:50px; display: inline-block;">
+                    <div><button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2">Confirm Transfer</button></div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="alert" style="text-align:center">
+    <div>digibank Alert</div>
+    <br /><strong>Insufficient balance in your account.</strong>
+    <strong>Please enter a lower amount and try again.</strong>
+    <br /><div class="closebtn" style="width:auto;display: inline-block;">OK</div>
+</div>
+
+
+@section scripts{
+    @*Add JavaScripts specifically for this view here*@
+    <script src="~/js/confirmation.js"></script>
+}
