@@ -101,5 +101,37 @@ namespace PFD_Challenge_1.DAL
             conn.Close();
             return bankUserList;
         }
+        public int? GetUserChatID(string nric)
+        {
+            int? chatID = null;
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT * FROM BankUser Where NRIC = @select";
+            cmd.Parameters.AddWithValue("@select", nric);
+            conn.Open();
+            //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    chatID = !reader.IsDBNull(6) ? reader.GetInt32(6) : (int?)null;
+                }
+            }
+            //Close DataReader
+            reader.Close();
+            //Close the database connection
+            conn.Close();
+            return chatID;
+        }
+        public bool UpdateUserChatID(int chatID,string nric)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE BankUser SET ChatID=@chatid WHERE NRIC = @nric";
+            cmd.Parameters.AddWithValue("@chatid", chatID);
+            cmd.Parameters.AddWithValue("@nric", nric);
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            return true;
+        }
     }
 }

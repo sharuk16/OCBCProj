@@ -15,16 +15,26 @@
         <!-- Links that are aligned to the left, mr-auto: right margin auto-adjusted -->
         @if (Context.Session.GetString("NRIC") != null)
         {
-            <ul class="navbar-nav mr-auto">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <!--Orginal version-->
+                <a class="nav-link" href="~/FundTransfer/FundTransfer">Transfer</a>
+            </li>
+            <li class="nav-item">
+                <!--Orginal version-->
+                <a class="nav-link" href="~/Transaction/index">History</a>
+            </li>
+            @if (Context.Session.GetString("TelegramChatID") == "false")
+            {
                 <li class="nav-item">
-                    <!--Orginal version-->
-                    <a class="nav-link" href="~/FundTransfer/FundTransfer">Transfer</a>
+                    <a class="nav-link" href="~/Telegram/index">Telegram</a>
                 </li>
-                <li class="nav-item">
-                    <!--Orginal version-->
-                    <a class="nav-link" href="~/Transaction/index">History</a>
-                </li>
-            </ul>
+            }
+            <li class="nav-item" style="margin-left:25px !important">
+                <!-- A link for logging out user -->
+                <a class="nav-link boxBtn" href="~/Home/LogOut">Log Out</a>
+            </li>
+        </ul>
         }
         </ul>
         </ul>
