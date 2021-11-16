@@ -24,7 +24,7 @@
                 <div class="form-container" style="padding-right:200px;padding-left:350px; display: inline-block;" onclick="location.href = '#'">
                     <div class="transactionhistory">
                         <div style="padding-bottom:10px">Receiver: @item.Name</div>
-                        <div style="padding-bottom:10px">Amount: -$@string.Format("{0:0.00}", item.Amount)</div>
+                        <div style="padding-bottom:10px">Amount: <span style=" color:red;">- $@string.Format("{0:0.00}", item.Amount)</span></div>
                         <div style="padding-bottom:10px">Date of transfer: @item.TimeTransfer.ToString("MMMM dd")</div>
                         <div style="color:lightseagreen;">Successful</div>
                     </div>
@@ -38,7 +38,7 @@
                 <div class="form-container" style="padding-right:200px;padding-left:350px; display: inline-block;" onclick="location.href = '#'">
                     <div class="transactionhistory">
                         <div style="padding-bottom:10px">Sender: @item.Name</div>
-                        <div style="padding-bottom:10px">Amount: +$@string.Format("{0:0.00}", item.Amount)</div>
+                        <div style="padding-bottom:10px">Amount: <span style=" color:green;">+ $@string.Format("{0:0.00}", item.Amount)</span></div>
                         <div style="padding-bottom:10px">Date of transfer: @item.TimeTransfer.ToString("MMMM dd")</div>
                         <div style="color:lightseagreen">Successful</div>
                     </div>
