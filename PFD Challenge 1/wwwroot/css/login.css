@@ -45,6 +45,7 @@ h2{
 .input ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: white;
     opacity: 1; /* Firefox */
+    font-size:20px;
 }
 
 /*Input CSS*/
