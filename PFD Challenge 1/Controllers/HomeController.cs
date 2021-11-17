@@ -33,6 +33,7 @@ namespace PFD_Challenge_1.Controllers
         public IActionResult Index()
         {
             JobScheduler.Start();
+            JobScheduler.FutureScanJob();
             return View();
         }
         public IActionResult faceLogin(int id)

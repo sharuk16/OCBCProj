@@ -10,7 +10,7 @@ using PFD_Challenge_1.Models;
 
 namespace PFD_Challenge_1
 {
-    public class Futurejob : IJob
+    public class Incompletescanjob : IJob
     {
         TransactionDAL transactionContext = new TransactionDAL();
         public Task Execute(IJobExecutionContext context)
