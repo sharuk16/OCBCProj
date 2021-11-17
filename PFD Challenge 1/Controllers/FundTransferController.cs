@@ -150,10 +150,7 @@ namespace PFD_Challenge_1.Controllers
             {
                 if (tc.FutureTransfer == "true")
                 {
-                    if (tc.TimeTransfer == DateTime.Now)
-                    {
-                        //I think this requires Quartz?
-                    }
+                    
                 }
                 else
                 {

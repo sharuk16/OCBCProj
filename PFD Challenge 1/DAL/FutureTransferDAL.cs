@@ -97,9 +97,9 @@ namespace PFD_Challenge_1.DAL
             return futureTransferList;
         }
 
-        public FutureTransfer ScanFutureTransfer()
+        public List<FutureTransfer> ScanFutureTransfer()
         {
-            FutureTransfer futureTrans = new FutureTransfer();
+            List<FutureTransfer> futureTransList = new List<FutureTransfer>();
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = @"SELECT * FROM Transactions
                                 WHERE Type = 'Future' and TimeTransfer > GETDATE()";
@@ -109,18 +109,22 @@ namespace PFD_Challenge_1.DAL
             {
                 while (reader.Read())
                 {
-                    futureTrans.FutureId = reader.GetInt32(0);
-                    futureTrans.Recipient = reader.GetString(1);
-                    futureTrans.Sender = reader.GetString(2);
-                    futureTrans.Amount = reader.GetDecimal(3);
-                    futureTrans.PlanTime = reader.GetDateTime(4);
-                    futureTrans.Notified = reader.GetString(5);
-                    futureTrans.Completed = reader.GetString(6);
+                    futureTransList.Add(
+                        new FutureTransfer
+                        {
+                            FutureId = reader.GetInt32(0),
+                            Recipient = reader.GetString(1),
+                            Sender = reader.GetString(2),
+                            Amount = reader.GetDecimal(3),
+                            PlanTime = reader.GetDateTime(4),
+                            Notified = reader.GetString(5),
+                            Completed = reader.GetString(6)
+                        });
                 }
             }
             reader.Close();
             conn.Close();
-            return futureTrans;
+            return futureTransList;
         }
         public bool UpdateFutureBalance(FutureTransfer futureTrans)
         {
