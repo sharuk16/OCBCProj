@@ -33,13 +33,13 @@ namespace PFD_Challenge_1.Listeners
             IScheduler scheduler = schedulerjob.Result;
             scheduler.Start();
 
-            IJobDetail job = JobBuilder.Create<Incompletescanjob>().Build();
+            IJobDetail job = JobBuilder.Create<Futurescanjob>().Build();
             //trigger the job
             ITrigger trigger = TriggerBuilder.Create()
                 .WithDailyTimeIntervalSchedule
                   (s =>
                     s.OnEveryDay()
-                    .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(17, 40)) //will run at 5 40 PM
+                    .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(17, 48)) //will run at 5 40 PM
                   )
                 .Build();
 

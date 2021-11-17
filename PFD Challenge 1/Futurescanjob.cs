@@ -10,16 +10,16 @@ using PFD_Challenge_1.Models;
 
 namespace PFD_Challenge_1
 {
-    public class Futurescanjob
+    public class Futurescanjob : IJob
     {
         TransactionDAL transactionContext = new TransactionDAL();
         public Task Execute(IJobExecutionContext context)
         {
 
-            Console.WriteLine("--> Database check completed");
             // transactionContext.CheckIncompleteExists();
             if (transactionContext.CheckIncompleteExists() != null)
             {
+                Console.WriteLine("future scan works");
                 //Console.WriteLine(transactionContext.CheckIncompleteExists().TransacID);
                 return Task.FromResult<Transaction>(transactionContext.CheckIncompleteExists());
 
