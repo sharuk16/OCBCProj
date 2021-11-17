@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace PFD_Challenge_1
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
+            
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

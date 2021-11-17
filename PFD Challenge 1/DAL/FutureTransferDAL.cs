@@ -97,5 +97,30 @@ namespace PFD_Challenge_1.DAL
             return futureTransferList;
         }
 
+        public bool UpdateFutureTransfer(Transaction transac)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            //SQL query to update both Balances from Recipient and Sender (Future Transfer)
+            cmd.CommandText = @"UPDATE BankAccount SET Balance = CASE AccNo
+                                    WHEN @senderID THEN Balance - @moneySent
+                                    WHEN @recipientID THEN Balance + @moneySent
+                                    ELSE Balance
+                                    END
+                                WHERE AccNo IN(@senderID, @recipientID)";
+            cmd.Parameters.AddWithValue("@senderID", transac.Sender);
+            cmd.Parameters.AddWithValue("@recipientID", transac.Recipient);
+            cmd.Parameters.AddWithValue("@moneySent", transac.Amount);
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

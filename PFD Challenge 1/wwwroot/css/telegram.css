@@ -2,12 +2,30 @@
 @import url("https://fonts.googleapis.com/css2?family=Mukta:wght@300&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500&display=swap");
 
-/*Button CSS*/
-.transactionhistory {
+
+/* Create two equal columns that floats next to each other */
+.column {
+    float: left;
+    width: 50%;
+    padding: 10px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
+/*'Confirm' Button CSS*/
+#confirm {
+    display: inline-block;
     box-sizing: border-box;
-    background-color: white;
-    border-radius: 1em;
-    color: black;
+    background-color: #DDBE93;
+    border-radius: 0.6em;
+    color: white;
+    cursor: pointer;
     /*display: flex;*/
     align-self: center;
     font-size: 1rem;
@@ -20,15 +38,11 @@
     text-transform: uppercase;
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
+    border-color: #DDBE93;
 }
 
-h1, h6{
-    color:white;
-}
-
-/*'Funds received' and 'Funds sent' Button CSS*/
-#received, #sent {
-    display: inline-block;
+/*Button 2 CSS*/
+.btn2 {
     box-sizing: border-box;
     background-color: #BA2B43;
     border-radius: 0.6em;
@@ -46,12 +60,13 @@ h1, h6{
     text-transform: uppercase;
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
-    border-color: #BA2B43;
 }
 
-.center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 200px;
+.btn a:hover, .btn a:focus {
+    color: #000;
+    outline: 0;
+}
+
+table{
+    width:78%;
 }

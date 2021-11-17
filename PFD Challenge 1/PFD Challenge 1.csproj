@@ -8,12 +8,16 @@
   <ItemGroup>
     <Compile Remove="Views\FundTransferMain\**" />
     <Compile Remove="Views\FundTransferReview\**" />
+    <Compile Remove="wwwroot\Q_logs\**" />
     <Content Remove="Views\FundTransferMain\**" />
     <Content Remove="Views\FundTransferReview\**" />
+    <Content Remove="wwwroot\Q_logs\**" />
     <EmbeddedResource Remove="Views\FundTransferMain\**" />
     <EmbeddedResource Remove="Views\FundTransferReview\**" />
+    <EmbeddedResource Remove="wwwroot\Q_logs\**" />
     <None Remove="Views\FundTransferMain\**" />
     <None Remove="Views\FundTransferReview\**" />
+    <None Remove="wwwroot\Q_logs\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,7 +25,13 @@
     <PackageReference Include="Quartz" Version="3.3.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.21" />
+    <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.3.3" />
+    <PackageReference Include="Quartz.Extensions.Hosting" Version="3.3.3" />
+    <PackageReference Include="Quartz.Jobs" Version="3.3.3" />
+    <PackageReference Include="System.Composition.TypedParts" Version="6.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+	 <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+	  
   </ItemGroup>
 
 </Project>

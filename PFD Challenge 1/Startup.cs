@@ -8,9 +8,15 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using Quartz;
+using Quartz.Spi;
+using Quartz.Impl;
+using PFD_Challenge_1.Listeners;
 
 namespace PFD_Challenge_1
 {
@@ -19,6 +25,7 @@ namespace PFD_Challenge_1
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+           
         }
 
         public IConfiguration Configuration { get; }
@@ -37,11 +44,12 @@ namespace PFD_Challenge_1
 
             services.AddControllersWithViews();
             services.AddAuthentication(configureOptions: options =>
-            { 
-                    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            })
+            {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+   
+                })
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, configureOptions: options =>
                 {
@@ -53,7 +61,7 @@ namespace PFD_Challenge_1
                     options.Scope.Add(item: "email");
                     options.ResponseType = "code";
                     //options.Scope.Add(item: "")
-                    options.SaveTokens = true;
+                    options.SaveTokens = true;        
 
                     options.TokenValidationParameters = new TokenValidationParameters()
                     {
@@ -115,3 +123,4 @@ namespace PFD_Challenge_1
         }
     }
 }
+
