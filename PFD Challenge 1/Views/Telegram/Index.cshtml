@@ -2,12 +2,43 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @using Microsoft.AspNetCore.Http;
-<div class="container">
-    <h3>Add notifications for Telegram</h3>
-    <div><img src="~/images/TelegramBot.png" /></div>
-    <div>Instructions</div>
-    <div>1) Scan the QR code above</div>
-    <div>2) Key in your NRIC</div>
-    <div>3) Click confirm when you are done</div>
-    <button action="RegisterUser">Confirm</button>
+
+@section css{
+    @*Add specific css script here*@
+    <link rel="stylesheet" href="~/css/telegram.css" />
+}
+
+<div class="container" id="mainContainer2">
+    <div class="first-container">
+        <div style="text-align: center; margin-top:2%">
+            <img id="imgLogo" src="~/images/Telegram.jpeg"
+                 style="width: 45%" />
+            <h1 style="margin-top:2%;margin-bottom:50px;color:white;">Add Notifications for Telegram</h1>
+        </div>
+    </div>
 </div>
+
+<table>
+    <tr>
+        <th style="text-align:right;">
+            <img src="~/images/TelegramBot.png" style="width: 50%;" />
+        </th>
+        <th>
+            <div style="background-color: white; padding-top: 42px; padding-left: 40px; padding-right: 40px; padding-bottom: 42px; border-radius: 25px; margin-left: 0px;">
+                <h1 style="font-size:30px;">Instructions:</h1>
+                <h5 style="padding-top:20px;">1. Scan the QR code above</h5>
+                <h5>2. Key in your NRIC</h5>
+                <h5>3. Click confirm when you are done</h5>
+            </div>
+        </th>
+    </tr>
+</table>
+
+<div class="every" style="padding-top: 50px; padding-right:50px;padding-left:450px; display: inline-block;">
+    <div><button action="RegisterUser" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2">Confirm</button></div>
+</div>
+
+@section scripts{
+    @*Add JavaScripts specifically for this view here*@
+    <script src="~/js/futuretransfer.js"></script>
+}

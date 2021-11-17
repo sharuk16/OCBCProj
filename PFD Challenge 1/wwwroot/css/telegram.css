@@ -1,0 +1,72 @@
+﻿@import url("https://fonts.googleapis.com/css2?family=Fira+Sans:wght@500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Mukta:wght@300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500&display=swap");
+
+
+/* Create two equal columns that floats next to each other */
+.column {
+    float: left;
+    width: 50%;
+    padding: 10px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
+/*'Confirm' Button CSS*/
+#confirm {
+    display: inline-block;
+    box-sizing: border-box;
+    background-color: #DDBE93;
+    border-radius: 0.6em;
+    color: white;
+    cursor: pointer;
+    /*display: flex;*/
+    align-self: center;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1;
+    margin: 20px;
+    padding: 1.2em 2.8em;
+    text-decoration: none;
+    text-align: center;
+    text-transform: uppercase;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    border-color: #DDBE93;
+}
+
+/*Button 2 CSS*/
+.btn2 {
+    box-sizing: border-box;
+    background-color: #BA2B43;
+    border-radius: 0.6em;
+    color: white;
+    cursor: pointer;
+    /*display: flex;*/
+    align-self: center;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1;
+    margin: 20px;
+    padding: 1.2em 2.8em;
+    text-decoration: none;
+    text-align: center;
+    text-transform: uppercase;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+.btn a:hover, .btn a:focus {
+    color: #000;
+    outline: 0;
+}
+
+table{
+    width:78%;
+}
