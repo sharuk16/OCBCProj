@@ -30,7 +30,7 @@
                                 <div class="to" style="background-color: #AA1945">To</div>
                             </div>
                             <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
-                                <input asp-for="Recipient" type="text" class="form-control" id="to" style="background-color: #E7625F; border: transparent; color: white; text-align: center;">
+                                <input asp-for="Recipient" type="text" class="form-control" id="to" style="background-color: #E7625F; border: transparent; color: white; text-align: center; font-size:30px;">
                             </div>
                         </div>
                     </div>
@@ -40,7 +40,7 @@
                                 <div class="accountbalance" style="background-color: #AA1945">Account Balance</div>
                             </div>
                             <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 60px; padding-left: 60px; display: inline-block;">
-                                <input readonly asp-for="Balance" class="form-control" id="accountbalance" style="padding-left: 125px; background-color: #E7625F" />
+                                <input readonly asp-for="Balance" class="form-control" id="accountbalance" style="padding-left: 80px; padding-right: 70px; background-color: #E7625F; font-size: 30px; text-align:center;" />
                             </div>
                         </div>
                     </div>
@@ -50,7 +50,7 @@
                                 <div class="transferamount" style="background-color: #AA1945">Transfer Amount</div>
                             </div>
                             <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
-                                <input asp-for="TransferAmount" type="text" class="form-control" id="transfer" style="background-color: #E7625F; border: transparent; color: white; text-align: center;">
+                                <input asp-for="TransferAmount" type="text" class="form-control" id="transfer" style="background-color: #E7625F; border: transparent; color: white; text-align: center; font-size: 30px;">
                             </div>
                         </div>
                     </div>
@@ -60,7 +60,7 @@
                                 <div class="date" style="background-color: #AA1945">Date</div>
                             </div>
                             <div tyle="padding-top: 20px;">
-                                <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 35px; padding-left: 35px; display: inline-block;">
+                                <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 70px; padding-left: 70px; display: inline-block;">
                                     <label class="col-form-label">
                                         @if (Model.FutureTransfer == "false")
                                         {
@@ -73,7 +73,7 @@
                                     </label>
                                     <span style="font-weight:normal; padding-right:20px">Immediate</span>
                                 </div>
-                                <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 35px; padding-left: 35px; display: inline-block;">
+                                <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 70px; padding-left: 70px; display: inline-block;">
                                     <label class="col-form-label">
                                         @if (Model.FutureTransfer == "false")
                                         {
