@@ -12,34 +12,17 @@
     </button>
     <!-- Links in the navbar, displayed as drop-down list when collapsed -->
     <div class="collapse navbar-collapse" id="homeNavbar">
-        @if (Context.Session.GetString("NRIC") == null)
-        {
-            <!-- Links that are aligned to the left, mr-auto: right margin auto-adjusted -->
+        @if (User.Identity.IsAuthenticated == false)
+         {
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <!--Orginal version-->
-                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="FundTransfer">Login</a>
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="LogIn">Login</a>
                 </li>
             </ul>
-            @if (User.Identity.IsAuthenticated)
-            {
-                <li class="nav-item">
-                    <!--Orginal version-->
-                    <a class="nav-link"><b>@User.Identity.Name</b></a>
-                </li>
-            }
-        }
-    </div>
-    <!-- Toggle/collapsible Button, also known as hamburger button -->
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#staffNavbar">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <!-- Links in the navbar, displayed as drop-down list when collapsed -->
-    <div class="collapse navbar-collapse" id="staffNavbar">
-        <!-- Links that are aligned to the left, mr-auto: right margin auto-adjusted -->
-        @if (Context.Session.GetString("NRIC") != null)
-        {
-        <ul class="navbar-nav mr-auto">
+         }
+        @if (User.Identity.IsAuthenticated)
+         {
+            <ul class="navbar-nav mr-auto">
             <li class="nav-item">
                 <!--Orginal version-->
                 <a class="nav-link" href="~/FundTransfer/FundTransfer">Transfer</a>
@@ -49,19 +32,15 @@
                 <a class="nav-link" href="~/Transaction/index">History</a>
             </li>
             @if (Context.Session.GetString("TelegramChatID") == "false")
-            {
+             {
                 <li class="nav-item">
-                    <a class="nav-link" href="~/Telegram/index">Telegram</a>
+                   <a class="nav-link" href="~/Telegram/index">Telegram</a>
                 </li>
-            }
-            <li class="nav-item" style="margin-left:25px !important">
-                <!-- A link for logging out user -->
-                <a class="nav-link boxBtn" href="~/Home/LogOut">Log Out</a>
+             }
+            <li class="nav-item">
+                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="LogOut">LogOut</a>
             </li>
-        </ul>
-        }
-        </ul>
-        </ul>
-        </ul>
-    </div>
+            </ul>
+         }
+        </div>
 </nav>

@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using PFD_Challenge_1.DAL;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication;
 
 namespace PFD_Challenge_1.Controllers
 {
@@ -46,16 +49,16 @@ namespace PFD_Challenge_1.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
-        public ActionResult LogOut()
+
+        public async Task LogOut()
         {
-            // Clear all key-values pairs stored in session state
             HttpContext.Session.Clear();
-            // Call the Index action of Home controller
-            return RedirectToAction("Index");
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
         }
 
         [Authorize]
-        public IActionResult FundTransfer()
+        public IActionResult LogIn()
         {
             HttpContext.Session.SetString("NRIC", "T11223344A");
             return RedirectToAction("FundTransfer", "FundTransfer");
