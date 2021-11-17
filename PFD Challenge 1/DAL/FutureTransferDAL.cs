@@ -101,8 +101,8 @@ namespace PFD_Challenge_1.DAL
         {
             List<FutureTransfer> futureTransList = new List<FutureTransfer>();
             SqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = @"SELECT * FROM Transactions
-                                WHERE Type = 'Future' and TimeTransfer > GETDATE()";
+            cmd.CommandText = @"SELECT * FROM FutureTransfer
+                                WHERE Completed = 'F' AND TimeTransfer <= GETDATE()";
             conn.Open();
             SqlDataReader reader = cmd.ExecuteReader();
             if (reader.HasRows)
