@@ -8,3 +8,6 @@ window.onclick = function (event) {
         }
 
 }
+
+    
+})

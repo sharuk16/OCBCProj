@@ -67,6 +67,7 @@ namespace PFD_Challenge_1.Controllers
             Regex bankacc = new Regex(@"[0-9]{3}-[0-9]{6}-[0-9]{3}");
             BankUser bu;
             BankAccount ba;
+            BankAccount senderAccount = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
             if (bankacc.IsMatch(ftr.Recipient))
             {
                 ba = bankAccountContext.GetBankAccount(ftr.Recipient);
@@ -77,14 +78,53 @@ namespace PFD_Challenge_1.Controllers
                 bu = bankUserContext.GetBankUser(ftr.Recipient);
                 ba = bankAccountContext.GetBankAccount(bu.Nric);
             }
+            //Validation
+            //Check if recipient exists
             if(bu == null || ba == null)
             {
+                if(bu == null)
+                {
+                    ViewData["Message"] = "Bank user does not exists!";
+                }
+                else
+                {
+                    ViewData["Message"] = "Bank account does not exists!";
+                }
                 return View(ftr);
             }
-            if(ftr.TimeTransfer < DateTime.Now)
+            //Check if transfer limit has reached for the day
+            if (transactionContext.ValidateTransactionLimit(ba, ftr.TransferAmount) == false)
             {
+                ViewData["Message"] = "Daily transfer limit reached!";
                 return View(ftr);
             }
+            // Check if Time of Transfer is not the day before
+            if (ftr.TimeTransfer <= DateTime.Now)
+            {
+                ViewData["Message"] = "Future Transfer accepts date from tomorrow onwards!";
+                return View(ftr);
+            }
+            // Check if recipient is sender
+            if(bu.Nric == HttpContext.Session.GetString("NRIC"))
+            {
+                ViewData["Message"] = "You are not allowed to transfer to yourself";
+                return View(ftr);
+            }
+            // Check if fundtransfer can be sent
+            if(ftr.TransferAmount <=0 || ftr.TransferAmount > senderAccount.Balance)
+            {
+                if (ftr.TransferAmount <= 0)
+                {
+                    ViewData["Message"] = "Unable to transfer 0 dollars or less than 0 dollars!";
+                }
+                else
+                {
+                    ViewData["Message"] = "Unable to transfer more than balance in account!";
+                }
+                
+                return View(ftr);
+            }
+            //Check if FutureTransfer value is true and if time of transfer is empty.
             if(ftr.FutureTransfer == "true" && ftr.TimeTransfer == null)
             {
                 ftr.FutureTransfer = "false";
@@ -100,7 +140,7 @@ namespace PFD_Challenge_1.Controllers
             return RedirectToAction("Confirmation", "FundTransfer", tc);
         }
 
-        public IActionResult Confirmation(string? recipient, string? bankAccount, decimal? transferAmount, string? futureTransfer, DateTime? timeTransfer)
+        public IActionResult Confirmation(string recipient, string bankAccount, decimal? transferAmount, string futureTransfer, DateTime? timeTransfer)
         {
             if (recipient == null || recipient == "" || bankAccount == null || bankAccount == "" || transferAmount == null || futureTransfer == null || futureTransfer == "")
             {
@@ -185,10 +225,13 @@ namespace PFD_Challenge_1.Controllers
                 HttpClient client = new HttpClient();
                 client.BaseAddress = new Uri("https://api.telegram.org");
                 int chatID = bankUserContext.GetUserChatID(HttpContext.Session.GetString("NRIC")).Value;
+                BankUser bu = bankUserContext.GetBankUser(HttpContext.Session.GetString("NRIC"));
+                BankUser su = bankUserContext.GetBankUser(receiverAccount.Nric);
+                string data = "Dear " + bu.Name + "! Your funds transfer of $" + transferAmount.ToString() + " to " + su.Name + " is successful! Date: " + DateTime.Now;
                 Notification newNotification = new Notification
                 {
                     chat_id = chatID,
-                    text = "Hi Success transaction.",
+                    text = data,
                 };
                 string json = JsonConvert.SerializeObject(newNotification);
                 StringContent notificationContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
@@ -198,7 +241,7 @@ namespace PFD_Challenge_1.Controllers
                     transactionContext.UpdateTransactionNotified(transacID);
                 }
             }
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Transaction");
         }
     }
 }

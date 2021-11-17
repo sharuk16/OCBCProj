@@ -20,6 +20,7 @@
 </div>
 
 <div class="container">
+    <div style="color:white">Notice: @ViewData["Message"]</div>
     <div class="row">
         <div class="col text-center">
             <form asp-action="FundTransferReview" style="text-align: center">
@@ -50,7 +51,7 @@
                                 <div class="transferamount" style="background-color: #AA1945">Transfer Amount</div>
                             </div>
                             <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
-                                <input asp-for="TransferAmount" type="text" class="form-control" id="transfer" style="background-color: #E7625F; border: transparent; color: white; text-align: center;">
+                                <input asp-for="TransferAmount" min="1" type="text" class="form-control" id="transfer" style="background-color: #E7625F; border: transparent; color: white; text-align: center;">
                             </div>
                         </div>
                     </div>
@@ -111,11 +112,18 @@
         </div>
     </div>
 </div>
+<div class="alert" style="text-align:center">
+    <div>digibank Alert</div>
+    <br /><strong>Insufficient balance in your account.</strong>
+    <strong>Please enter a lower amount and try again.</strong>
+    <br /><div class="closebtn" style="width:auto;display: inline-block;">OK</div>
+</div>
 @section scripts{
     @*Add JavaScripts specifically for this view here*@
     <script src="~/js/futuretransfer.js"></script>
     <script>
         $(document).ready(function () {
+            $(".alert").hide();
             if ($("#futureRadio").is(':checked')) {
                 $("#futureTime").show()
             } else {
@@ -127,6 +135,20 @@
         })
         $("#immediateRadio").click(function () {
             $("#futureTime").hide()
+        })
+        var value = @Model.Balance;
+        $("#transfer").keyup(function () {
+            console.log();
+            if ($("#transfer").val() > value) {
+                $(".alert").show();
+                $(".btn2").hide();
+            } else {
+                $(".btn2").show();
+                $(".alert").hide();
+            }
+        })
+        $(".closebtn").click(function () {
+            $(".alert").hide();
         })
     </script>
 }
