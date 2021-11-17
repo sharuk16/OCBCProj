@@ -140,17 +140,17 @@ namespace PFD_Challenge_1.Controllers
             }
             else
             {
-                if(transactionContext.ValidateTransactionLimit(senderAccount, transferAmount)
+                if(transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount exceeds transaction limit
                     ==false)
                 {
                     return RedirectToAction("Index", "Home");
                 }
-                else if(transactionContext.ValidateTransactionLimit(senderAccount, transferAmount)
+                else if(transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount does not exceed the transaction limit
                     == true)
                 {
-                    if(transactionContext.CheckIncompleteExists() == false)
+                    if(transactionContext.CheckIncompleteExists() == false) //If there are no incomplete transactions
                     {
-                        Transaction newTransac = new Transaction
+                        Transaction newTransac = new Transaction //Create new transaction object
                         {
                             Recipient = receiverAccount.AccNo,
                             Sender = senderAccount.AccNo,
@@ -158,16 +158,18 @@ namespace PFD_Challenge_1.Controllers
                             TimeTransfer = DateTime.Now,
                             Type = "Immediate"
                         };
-                        int transacID = transactionContext.AddTransactionRecord(newTransac);
-                        bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, transferAmount);
-                        if(updatedAccounts == true)
+                        int transacID = transactionContext.AddTransactionRecord(newTransac); //Add transaction object to database
+                        bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, transferAmount); //Updates bank account balance records
+                        if(updatedAccounts == true) //If balance updates successfully
                         {
-                            transactionContext.UpdateTransactionComplete(transacID);
+                            transactionContext.UpdateTransactionComplete(transacID); //Updates transaction "Completed" status
+                            string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
                             return RedirectToAction("Index", "Home");
                         }
                         else
                         {
-                            transactionContext.ReverseTransactionChanges(receiverAccount, senderAccount, transferAmount);
+                            transactionContext.ReverseTransactionChanges(receiverAccount, senderAccount, transferAmount); //Reverses update of bank account balance records
+                            string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
                             return RedirectToAction("Index", "Home");
                         }
                     }

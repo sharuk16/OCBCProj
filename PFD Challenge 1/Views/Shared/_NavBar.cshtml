@@ -7,6 +7,30 @@
         OCBC
     </a>
     <!-- Toggle/collapsible Button, also known as hamburger button -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#homeNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <!-- Links in the navbar, displayed as drop-down list when collapsed -->
+    <div class="collapse navbar-collapse" id="homeNavbar">
+        @if (Context.Session.GetString("NRIC") == null)
+        {
+            <!-- Links that are aligned to the left, mr-auto: right margin auto-adjusted -->
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <!--Orginal version-->
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="FundTransfer">Login</a>
+                </li>
+            </ul>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <li class="nav-item">
+                    <!--Orginal version-->
+                    <a class="nav-link"><b>@User.Identity.Name</b></a>
+                </li>
+            }
+        }
+    </div>
+    <!-- Toggle/collapsible Button, also known as hamburger button -->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#staffNavbar">
         <span class="navbar-toggler-icon"></span>
     </button>
