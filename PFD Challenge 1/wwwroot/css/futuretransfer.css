@@ -116,7 +116,7 @@ textarea:read-write {
 
 /* 'Transfer Amount' container for input*/
 .transferamount {
-    width: 150px;
+    width: 250px;
     padding: 10px;
     margin: 0;
     background-color: #E7625F;
@@ -125,7 +125,7 @@ textarea:read-write {
 
 /* 'Account Balance' container for input*/
 .accountbalance {
-    width: 150px;
+    width: 250px;
     padding: 10px;
     margin: 0;
     background-color: #E7625F;
@@ -143,7 +143,7 @@ textarea:read-write {
 
 /* 'Planned time of transfer' container for input*/
 .plannedtimeoftransfer {
-    width: 200px;
+    width: 300px;
     padding: 10px;
     margin: 0;
     background-color: #E7625F;
