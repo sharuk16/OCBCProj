@@ -220,8 +220,8 @@ namespace PFD_Challenge_1.DAL
         {
             Transaction transac = new Transaction();
             SqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = @"SELECT Completed FROM Transactions
-                                WHERE Completed = 'F' AND Type <> 'Future'";
+            cmd.CommandText = @"SELECT * FROM Transactions
+                                WHERE Completed = 'F' AND Type = 'Immediate'";
             conn.Open();
             SqlDataReader reader = cmd.ExecuteReader();
             if (reader.HasRows)

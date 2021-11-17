@@ -9,9 +9,11 @@ using System.Threading.Tasks;
 using PFD_Challenge_1.DAL;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
+using PFD_Challenge_1.Listeners;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
+
 
 namespace PFD_Challenge_1.Controllers
 {
@@ -30,6 +32,7 @@ namespace PFD_Challenge_1.Controllers
 
         public IActionResult Index()
         {
+            JobScheduler.Start();
             return View();
         }
         public IActionResult faceLogin(int id)
