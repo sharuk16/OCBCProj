@@ -21,6 +21,7 @@
     text-transform: uppercase;
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
+    width: 350px;
 }
 
     .btn a:hover, .btn a:focus {
@@ -29,8 +30,22 @@
     }
 
 
-h1, h3, h6{
+h1, h2, h3, h4, h5, h6{
     color:white;
+}
+
+h1{
+    font-size:55px;
+}
+
+h2{
+    font-size:30px;
+}
+
+.input ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: white;
+    opacity: 1; /* Firefox */
+    font-size:20px;
 }
 
 /*Input CSS*/

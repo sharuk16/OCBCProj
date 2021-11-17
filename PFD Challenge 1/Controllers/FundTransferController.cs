@@ -60,7 +60,7 @@ namespace PFD_Challenge_1.Controllers
             {
                 return View(ftr);
             }
-            if(HttpContext.Session.GetString("NRIC")== null)
+            if (HttpContext.Session.GetString("NRIC") == null)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -92,8 +92,7 @@ namespace PFD_Challenge_1.Controllers
                 }
                 return View(ftr);
             }
-            //Check if transfer limit has reached for the day
-            if (transactionContext.ValidateTransactionLimit(ba, ftr.TransferAmount) == false)
+            if(ftr.TimeTransfer < DateTime.Now)
             {
                 ViewData["Message"] = "Daily transfer limit reached!";
                 return View(ftr);
@@ -146,7 +145,7 @@ namespace PFD_Challenge_1.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            if(futureTransfer == "true" && timeTransfer == null)
+            if (futureTransfer == "true" && timeTransfer == null)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -177,71 +176,58 @@ namespace PFD_Challenge_1.Controllers
             BankAccount senderAccount = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
             BankAccount receiverAccount = bankAccountContext.GetBankAccount(tc.BankAccount);
             decimal transferAmount = tc.TransferAmount;
-            if(tc.FutureTransfer == "true")
+            try
             {
-                if(tc.TimeTransfer == DateTime.Now)
+                if (tc.FutureTransfer == "true")
                 {
-                    //I think this requires Quartz?
-                }
-            }
-            else
-            {
-                if(transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount exceeds transaction limit
-                    ==false)
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-                else if(transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount does not exceed the transaction limit
-                    == true)
-                {
-                    if(transactionContext.CheckIncompleteExists() == false) //If there are no incomplete transactions
+                    if (tc.TimeTransfer == DateTime.Now)
                     {
-                        Transaction newTransac = new Transaction //Create new transaction object
-                        {
-                            Recipient = receiverAccount.AccNo,
-                            Sender = senderAccount.AccNo,
-                            Amount = tc.TransferAmount,
-                            TimeTransfer = DateTime.Now,
-                            Type = "Immediate"
-                        };
-                        transacID = transactionContext.AddTransactionRecord(newTransac);
-                        bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, transferAmount);
-                        if(updatedAccounts == true)
-                        {
-                            transactionContext.UpdateTransactionComplete(transacID);
-                            message = transactionContext.TransactionStatusMsg(updatedAccounts);
-                            
-                        }
-                        else
-                        {
-                            transactionContext.ReverseTransactionChanges(receiverAccount, senderAccount, transferAmount);
-                            message = transactionContext.TransactionStatusMsg(updatedAccounts);
-                        }
+                        //I think this requires Quartz?
                     }
                 }
+                else
+                {
+                    if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount exceeds transaction limit
+                        == false)
+                    {
+                        TempData["LimitExceed"] = "The transaction you are trying to make exceeds your daily limit." +
+                            "Change your daily transaction limit or make a smaller transaction.";
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount does not exceed the transaction limit
+                        == true)
+                    {
+                            Transaction newTransac = new Transaction //Create new transaction object
+                            {
+                                Recipient = receiverAccount.AccNo,
+                                Sender = senderAccount.AccNo,
+                                Amount = tc.TransferAmount,
+                                TimeTransfer = DateTime.Now,
+                                Type = "Immediate"
+                            };
+                            int transacID = transactionContext.AddTransactionRecord(newTransac); //Add transaction object to database
+                            bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, transferAmount); //Updates bank account balance records
+                            if (updatedAccounts == true) //If balance updates successfully
+                            {
+                                transactionContext.UpdateTransactionComplete(transacID); //Updates transaction "Completed" status
+                                string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
+                                return RedirectToAction("Index", "Home");
+                            }
+                            else
+                            {
+                                transactionContext.ReverseTransactionChanges(receiverAccount, senderAccount, transferAmount); //Reverses update of bank account balance records
+                                string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
+                                return RedirectToAction("Index", "Home");
+                            }
+                        }
+                    }
+                return View(tc);
             }
-            if (bankUserContext.GetUserChatID(HttpContext.Session.GetString("NRIC")) != null)
+            catch (TimeoutException)
             {
-                HttpClient client = new HttpClient();
-                client.BaseAddress = new Uri("https://api.telegram.org");
-                int chatID = bankUserContext.GetUserChatID(HttpContext.Session.GetString("NRIC")).Value;
-                BankUser bu = bankUserContext.GetBankUser(HttpContext.Session.GetString("NRIC"));
-                BankUser su = bankUserContext.GetBankUser(receiverAccount.Nric);
-                string data = "Dear " + bu.Name + "! Your funds transfer of $" + transferAmount.ToString() + " to " + su.Name + " is successful! Date: " + DateTime.Now;
-                Notification newNotification = new Notification
-                {
-                    chat_id = chatID,
-                    text = data,
-                };
-                string json = JsonConvert.SerializeObject(newNotification);
-                StringContent notificationContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
-                HttpResponseMessage response = await client.PostAsync("/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws/sendMessage", notificationContent);
-                if (response.IsSuccessStatusCode)
-                {
-                    transactionContext.UpdateTransactionNotified(transacID);
-                }
+                ViewData["TimeoutMessage"] = "The website has taken too long to process your request and has timed out. Your transaction has not gone through.";
+                return View();
             }
-            return RedirectToAction("Index", "Transaction");
         }
     }
 }

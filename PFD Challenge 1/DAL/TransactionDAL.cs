@@ -89,7 +89,6 @@ namespace PFD_Challenge_1.DAL
             }
         }
        
-
         public int AddTransactionRecord(Transaction transac)
         {
             SqlCommand cmd = conn.CreateCommand();
@@ -217,9 +216,9 @@ namespace PFD_Challenge_1.DAL
             }
         }
 
-        public bool CheckIncompleteExists() //Checks for Immediate Transactions that are still incomplete
+        public Transaction CheckIncompleteExists() //Checks for Immediate Transactions that are still incomplete
         {
-            bool incompleteExists;
+            Transaction transac = new Transaction();
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = @"SELECT Completed FROM Transactions
                                 WHERE Completed = 'F' AND Type <> 'Future'";
@@ -227,15 +226,21 @@ namespace PFD_Challenge_1.DAL
             SqlDataReader reader = cmd.ExecuteReader();
             if (reader.HasRows)
             {
-                incompleteExists = true;
-            }
-            else
-            {
-                incompleteExists = false;
+                while(reader.Read())
+                {
+                    transac.TransacID = reader.GetInt32(0);
+                    transac.Recipient = reader.GetString(1);
+                    transac.Sender = reader.GetString(2);
+                    transac.Amount = reader.GetDecimal(3);
+                    transac.TimeTransfer = reader.GetDateTime(4);
+                    transac.Notified = reader.GetString(5);
+                    transac.Completed = reader.GetString(6);
+                    transac.Type = reader.GetString(7);
+                }
             }
             reader.Close();
             conn.Close();
-            return incompleteExists;
+            return transac;
         }
 
         public bool ValidateTransactionLimit(BankAccount bankAcc, decimal transAmt) //Checks if transfer amount exceeds transfer limit

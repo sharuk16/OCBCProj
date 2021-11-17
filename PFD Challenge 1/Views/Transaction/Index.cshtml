@@ -12,10 +12,16 @@
         <div style="text-align: center; margin-top:5%">
             <img id="imgLogo" src="~/images/Transaction History(1).jpg"
                  style="width: 50%" />
-            <h1 style="margin-top:5%">Transaction History</h1>
+            <h1 style="margin-top:5%;margin-bottom:5px;">Transaction History</h1>
         </div>
     </div>
 </div>
+
+<div class="center">
+    <button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" id="received">Funds received</button>
+    <button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" id="sent">Funds sent</button>
+</div>
+
 @{ foreach (var item in Model)
     {
         if (item.sender)
@@ -47,11 +53,6 @@
         }
     }
 }
-
-<div class="center">
-    <button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" id="received">Funds received</button>
-    <button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" id="sent">Funds sent</button>
-</div>
 
 @section Scripts{
     <script>
