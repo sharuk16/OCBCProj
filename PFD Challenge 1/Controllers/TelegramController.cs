@@ -35,7 +35,7 @@ namespace PFD_Challenge_1.Controllers
                 return RedirectToAction("Index", "Home");
             }
             DateTime started =Convert.ToDateTime(HttpContext.Session.GetString("Time"));
-            DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Local);
+            DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             TimeSpan dtNow = started.Subtract(dt);
             int seconds = Convert.ToInt32(dtNow.TotalSeconds);
             HttpClient client = new HttpClient();
@@ -51,9 +51,11 @@ namespace PFD_Challenge_1.Controllers
                 {
                     if (r.message.text == HttpContext.Session.GetString("NRIC")) 
                     {
-                        long messageCapture = r.message.date;
-                        long endtime = messageCapture - seconds;
-                        if (endtime >= 0 || endtime <= 60)
+                        long messageCapture = r.message.date + 8*60*60;
+                        long endtime = messageCapture-seconds;
+                        //messageCapture should be later than time accessed to the page
+                        //endtime should be within duration
+                        if (endtime >= 0 && endtime <= 60)
                         { 
                             chatID = r.message.chat.id;
                         }

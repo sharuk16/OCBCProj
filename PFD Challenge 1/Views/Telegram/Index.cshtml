@@ -35,7 +35,8 @@
 </table>
 
 <div class="every" style="padding-top: 50px; padding-right:50px;padding-left:450px; display: inline-block;">
-    <div><button action="RegisterUser" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2">Confirm</button></div>
+    @Html.ActionLink("Confirm","RegisterUser")
+    <div><button asp-action="RegisterUser" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2">Confirm</button></div>
 </div>
 
 @section scripts{
