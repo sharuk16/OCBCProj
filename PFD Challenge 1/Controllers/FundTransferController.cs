@@ -56,7 +56,7 @@ namespace PFD_Challenge_1.Controllers
             {
                 return View(ftr);
             }
-            if(HttpContext.Session.GetString("NRIC")== null)
+            if (HttpContext.Session.GetString("NRIC") == null)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -73,15 +73,15 @@ namespace PFD_Challenge_1.Controllers
                 bu = bankUserContext.GetBankUser(ftr.Recipient);
                 ba = bankAccountContext.GetBankAccount(bu.Nric);
             }
-            if(bu == null || ba == null)
+            if (bu == null || ba == null)
             {
                 return View(ftr);
             }
-            if(ftr.TimeTransfer < DateTime.Now)
+            if (ftr.TimeTransfer < DateTime.Now)
             {
                 return View(ftr);
             }
-            if(ftr.FutureTransfer == "true" && ftr.TimeTransfer == null)
+            if (ftr.FutureTransfer == "true" && ftr.TimeTransfer == null)
             {
                 ftr.FutureTransfer = "false";
             }
@@ -102,7 +102,7 @@ namespace PFD_Challenge_1.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            if(futureTransfer == "true" && timeTransfer == null)
+            if (futureTransfer == "true" && timeTransfer == null)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -120,6 +120,7 @@ namespace PFD_Challenge_1.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Confirmation(TransferConfirmation tc)
         {
+
             if (!ModelState.IsValid)
             {
                 return View(tc);
@@ -131,51 +132,59 @@ namespace PFD_Challenge_1.Controllers
             BankAccount senderAccount = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
             BankAccount receiverAccount = bankAccountContext.GetBankAccount(tc.BankAccount);
             decimal transferAmount = tc.TransferAmount;
-            if(tc.FutureTransfer == "true")
+            try
             {
-                if(tc.TimeTransfer == DateTime.Now)
+                if (tc.FutureTransfer == "true")
                 {
-                    //I think this requires Quartz?
-                }
-            }
-            else
-            {
-                if(transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount exceeds transaction limit
-                    ==false)
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-                else if(transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount does not exceed the transaction limit
-                    == true)
-                {
-                    if(transactionContext.CheckIncompleteExists() == false) //If there are no incomplete transactions
+                    if (tc.TimeTransfer == DateTime.Now)
                     {
-                        Transaction newTransac = new Transaction //Create new transaction object
+                        //I think this requires Quartz?
+                    }
+                }
+                else
+                {
+                    if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount exceeds transaction limit
+                        == false)
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount does not exceed the transaction limit
+                        == true)
+                    {
+                        if (transactionContext.CheckIncompleteExists() == false) //If there are no incomplete transactions
                         {
-                            Recipient = receiverAccount.AccNo,
-                            Sender = senderAccount.AccNo,
-                            Amount = tc.TransferAmount,
-                            TimeTransfer = DateTime.Now,
-                            Type = "Immediate"
-                        };
-                        int transacID = transactionContext.AddTransactionRecord(newTransac); //Add transaction object to database
-                        bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, transferAmount); //Updates bank account balance records
-                        if(updatedAccounts == true) //If balance updates successfully
-                        {
-                            transactionContext.UpdateTransactionComplete(transacID); //Updates transaction "Completed" status
-                            string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
-                            return RedirectToAction("Index", "Home");
-                        }
-                        else
-                        {
-                            transactionContext.ReverseTransactionChanges(receiverAccount, senderAccount, transferAmount); //Reverses update of bank account balance records
-                            string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
-                            return RedirectToAction("Index", "Home");
+                            Transaction newTransac = new Transaction //Create new transaction object
+                            {
+                                Recipient = receiverAccount.AccNo,
+                                Sender = senderAccount.AccNo,
+                                Amount = tc.TransferAmount,
+                                TimeTransfer = DateTime.Now,
+                                Type = "Immediate"
+                            };
+                            int transacID = transactionContext.AddTransactionRecord(newTransac); //Add transaction object to database
+                            bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, transferAmount); //Updates bank account balance records
+                            if (updatedAccounts == true) //If balance updates successfully
+                            {
+                                transactionContext.UpdateTransactionComplete(transacID); //Updates transaction "Completed" status
+                                string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
+                                return RedirectToAction("Index", "Home");
+                            }
+                            else
+                            {
+                                transactionContext.ReverseTransactionChanges(receiverAccount, senderAccount, transferAmount); //Reverses update of bank account balance records
+                                string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
+                                return RedirectToAction("Index", "Home");
+                            }
                         }
                     }
                 }
+                return View(tc);
             }
-            return View(tc);
+            catch (TimeoutException)
+            {
+                string timeoutMsg = "The website has taken too long to process your request and has timed out. Your transaction has not gone through.";
+                return View(timeoutMsg);
+            }
         }
     }
 }

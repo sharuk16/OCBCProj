@@ -89,7 +89,6 @@ namespace PFD_Challenge_1.DAL
             }
         }
        
-
         public int AddTransactionRecord(Transaction transac)
         {
             SqlCommand cmd = conn.CreateCommand();
