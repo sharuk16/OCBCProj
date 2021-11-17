@@ -242,7 +242,7 @@ namespace PFD_Challenge_1.DAL
         {
             bool validLimit  = false;
             SqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = @"SELECT TransLimit FROM BankUser
+            cmd.CommandText = @"SELECT TransLimit, DailySpend FROM BankUser
                                 WHERE NRIC = @NRIC";
             cmd.Parameters.AddWithValue("@NRIC", bankAcc.Nric);
             conn.Open();
@@ -257,7 +257,14 @@ namespace PFD_Challenge_1.DAL
                     }
                     else
                     {
-                        validLimit = true;
+                        if(reader.GetDecimal(0) < reader.GetDecimal(1)+transAmt)
+                        {
+                            validLimit = false;
+                        }
+                        else
+                        {
+                            validLimit = true;
+                        }
                     }
                 }
             }
