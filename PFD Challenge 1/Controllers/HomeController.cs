@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PFD_Challenge_1.DAL;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PFD_Challenge_1.Controllers
 {
@@ -33,6 +34,14 @@ namespace PFD_Challenge_1.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
+
+        [Authorize]
+        public IActionResult FundTransfer()
+        {
+            HttpContext.Session.SetString("NRIC", "T11223344A");
+            return RedirectToAction("FundTransfer", "FundTransfer");
+        }
+
 
         public IActionResult Privacy()
         {
