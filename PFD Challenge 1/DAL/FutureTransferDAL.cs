@@ -84,8 +84,8 @@ namespace PFD_Challenge_1.DAL
                                     reader.GetString(2) : null,
                         Amount = reader.GetInt32(3),
                         PlanTime = reader.GetDateTime(4),
-                        Notified = !reader.IsDBNull(5),
-                        Completed = !reader.IsDBNull(6),
+                        Notified = reader.GetString(5),
+                        Completed = reader.GetString(6),
                     }
                 );
             }
@@ -97,7 +97,32 @@ namespace PFD_Challenge_1.DAL
             return futureTransferList;
         }
 
-        public bool UpdateFutureTransfer(Transaction transac)
+        public FutureTransfer ScanFutureTransfer()
+        {
+            FutureTransfer futureTrans = new FutureTransfer();
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT * FROM Transactions
+                                WHERE Type = 'Future' and TimeTransfer > GETDATE()";
+            conn.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    futureTrans.FutureId = reader.GetInt32(0);
+                    futureTrans.Recipient = reader.GetString(1);
+                    futureTrans.Sender = reader.GetString(2);
+                    futureTrans.Amount = reader.GetDecimal(3);
+                    futureTrans.PlanTime = reader.GetDateTime(4);
+                    futureTrans.Notified = reader.GetString(5);
+                    futureTrans.Completed = reader.GetString(6);
+                }
+            }
+            reader.Close();
+            conn.Close();
+            return futureTrans;
+        }
+        public bool UpdateFutureBalance(FutureTransfer futureTrans)
         {
             SqlCommand cmd = conn.CreateCommand();
             //SQL query to update both Balances from Recipient and Sender (Future Transfer)
@@ -107,13 +132,32 @@ namespace PFD_Challenge_1.DAL
                                     ELSE Balance
                                     END
                                 WHERE AccNo IN(@senderID, @recipientID)";
-            cmd.Parameters.AddWithValue("@senderID", transac.Sender);
-            cmd.Parameters.AddWithValue("@recipientID", transac.Recipient);
-            cmd.Parameters.AddWithValue("@moneySent", transac.Amount);
+            cmd.Parameters.AddWithValue("@senderID", futureTrans.Sender);
+            cmd.Parameters.AddWithValue("@recipientID", futureTrans.Recipient);
+            cmd.Parameters.AddWithValue("@moneySent", futureTrans.Amount);
             conn.Open();
             int count = cmd.ExecuteNonQuery();
             conn.Close();
             if (count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateFutureComplete(FutureTransfer futureTrans)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE FutureTransfer SET Notified = 'T'
+                                WHERE FutureTransfer = @FutureID"; //Updates the Transactions's Notified Status
+            cmd.Parameters.AddWithValue("@FutureID", futureTrans.FutureId);
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (count > 0)  //Returns true/false based on whether update is successful
             {
                 return true;
             }

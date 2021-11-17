@@ -27,9 +27,9 @@ namespace PFD_Challenge_1.Models
         public DateTime PlanTime { get; set; }
 
         [Display(Name = "Notified")]
-        public bool Notified { get; set; }
+        public string Notified { get; set; }
 
         [Display(Name = "Completed")]
-        public bool Completed { get; set; }
+        public string Completed { get; set; }
     }
 }
