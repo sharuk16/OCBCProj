@@ -33,14 +33,13 @@ namespace PFD_Challenge_1.Controllers
                 return RedirectToAction("Index", "Home");
             }
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri("https://api.telegram.org/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws/getUpdates");
-            HttpResponseMessage response = await client.GetAsync("/api/books");
+            client.BaseAddress = new Uri("https://api.telegram.org");
+            HttpResponseMessage response = await client.GetAsync("/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws/getUpdates");
             if (response.IsSuccessStatusCode)
             {
                 int? chatID=null;
                 string data = await response.Content.ReadAsStringAsync();
                 Root result = JsonConvert.DeserializeObject<Root>(data);
-                List<Message> messageList =new List<Message>();
                 foreach(Result r in result.result)
                 {
                     if(r.message.text == HttpContext.Session.GetString("NRIC")){
@@ -53,20 +52,25 @@ namespace PFD_Challenge_1.Controllers
                     bool updateResult = bankUserContext.UpdateUserChatID(chatID.Value, HttpContext.Session.GetString("NRIC"));
                     if (updateResult)
                     {
-                        HttpContext.Session.SetString("TelegramChatID", "false");
+                        HttpContext.Session.SetString("TelegramChatID", "true");
                         Notification newNotification = new Notification
                         {
-                            Chat_id = chatID.Value,
-                            Text = "Notifications of your transaction will be sent to you.",
+                            chat_id = chatID.Value,
+                            text = "Notifications of your transaction will be sent to you.",
                         };
-                        HttpClient client2 = new HttpClient();
-                        client2.BaseAddress = new Uri("https://api.telegram.org/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws");
                         string json = JsonConvert.SerializeObject(newNotification);
                         StringContent notificationContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
-                        HttpResponseMessage response2 = await client.PostAsync("/sendMessage", notificationContent);
-                        //need handle response?
-                        ViewData["Message"] = "Success";
-                        return View();
+                        response = await client.PostAsync("/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws/sendMessage", notificationContent);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            ViewData["Message"] = "Successfully added telegram notification.";
+                            return View();
+                        }
+                        else
+                        {
+                            ViewData["Message"] = "Sucessfully added telegram notification. Failed to send message.";
+                            return View();
+                        }
                     }
                 }
                 ViewData["Message"] = "Unable to retrieve chat_ID";

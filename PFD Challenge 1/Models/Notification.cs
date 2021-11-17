@@ -7,7 +7,7 @@ namespace PFD_Challenge_1.TelegramModel
 {
     public class Notification
     {
-        public int Chat_id { get; set; }
-        public string Text { get; set; }
+        public int chat_id { get; set; }
+        public string text { get; set; }
     }
 }

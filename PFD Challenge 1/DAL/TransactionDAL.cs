@@ -198,12 +198,12 @@ namespace PFD_Challenge_1.DAL
             }
         }
 
-        public bool UpdateTransactionNotified(Transaction transac) //Insert transaction object
+        public bool UpdateTransactionNotified(int transacID) //Insert transaction object
         {
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = @"UPDATE Transactions SET Notified = 'T'
                                 WHERE TransacID = @TransacID"; //Updates the Transactions's Notified Status
-            cmd.Parameters.AddWithValue("@TransacID", transac.TransacID);
+            cmd.Parameters.AddWithValue("@TransacID", transacID);
             conn.Open();
             int count = cmd.ExecuteNonQuery();
             conn.Close();

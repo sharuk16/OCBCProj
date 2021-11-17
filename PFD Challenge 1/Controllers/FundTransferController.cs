@@ -8,6 +8,10 @@ using PFD_Challenge_1.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Http;
 using System.Text.RegularExpressions;
+using PFD_Challenge_1.TelegramModel;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Text;
 
 namespace PFD_Challenge_1.Controllers
 {
@@ -120,6 +124,8 @@ namespace PFD_Challenge_1.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Confirmation(TransferConfirmation tc)
         {
+            string message="";
+            int transacID = -1;
             if (!ModelState.IsValid)
             {
                 return View(tc);
@@ -158,7 +164,7 @@ namespace PFD_Challenge_1.Controllers
                             TimeTransfer = DateTime.Now,
                             Type = "Immediate"
                         };
-                        int transacID = transactionContext.AddTransactionRecord(newTransac);
+                        transacID = transactionContext.AddTransactionRecord(newTransac);
                         bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, transferAmount);
                         if(updatedAccounts == true)
                         {
@@ -173,7 +179,32 @@ namespace PFD_Challenge_1.Controllers
                     }
                 }
             }
+            if (bankUserContext.GetUserChatID(HttpContext.Session.GetString("NRIC")) != null)
+            {
+                if (transacID != -1)
+                {
+                    SendNotification(message, transacID);
+                }                
+            }
             return View(tc);
+        }
+        public async void SendNotification(string message, int transactID)
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("https://api.telegram.org");
+            int chatID = bankUserContext.GetUserChatID(HttpContext.Session.GetString("NRIC")).Value;
+            Notification newNotification = new Notification
+            {
+                chat_id = chatID,
+                text = "Hi Success transaction.",
+            };
+            string json = JsonConvert.SerializeObject(newNotification);
+            StringContent notificationContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+            HttpResponseMessage response = await client.PostAsync("/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws/sendMessage", notificationContent);
+            if (response.IsSuccessStatusCode)
+            {
+                transactionContext.UpdateTransactionNotified(transactID);
+            }
         }
     }
 }
