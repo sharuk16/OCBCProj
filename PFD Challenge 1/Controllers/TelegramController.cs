@@ -24,6 +24,8 @@ namespace PFD_Challenge_1.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            DateTime now = DateTime.Now;
+            HttpContext.Session.SetString("Time", now.ToString());
             return View();
         }
         public async Task<ActionResult> RegisterUser()
@@ -32,18 +34,33 @@ namespace PFD_Challenge_1.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            DateTime started =Convert.ToDateTime(HttpContext.Session.GetString("Time"));
+            DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Local);
+            TimeSpan dtNow = started.Subtract(dt);
+            int seconds = Convert.ToInt32(dtNow.TotalSeconds);
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri("https://api.telegram.org");
             HttpResponseMessage response = await client.GetAsync("/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws/getUpdates");
             if (response.IsSuccessStatusCode)
             {
-                int? chatID=null;
+                int? chatID = null;
                 string data = await response.Content.ReadAsStringAsync();
                 Root result = JsonConvert.DeserializeObject<Root>(data);
+                result.result.Reverse();
                 foreach(Result r in result.result)
                 {
-                    if(r.message.text == HttpContext.Session.GetString("NRIC")){
-                        chatID= r.message.chat.id;
+                    if (r.message.text == HttpContext.Session.GetString("NRIC")) 
+                    {
+                        long messageCapture = r.message.date;
+                        long endtime = messageCapture - seconds;
+                        if (endtime >= 0 || endtime <= 60)
+                        { 
+                            chatID = r.message.chat.id;
+                        }
+                        else
+                        {
+                            chatID = null;
+                        }
                         break;
                     }
                 }

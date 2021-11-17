@@ -24,6 +24,14 @@ namespace PFD_Challenge_1.Controllers
         public IActionResult FundTransfer()
         {
             HttpContext.Session.SetString("NRIC", "T1234567A");
+            if (bankUserContext.GetUserChatID(HttpContext.Session.GetString("NRIC")) != null)
+            {
+                HttpContext.Session.SetString("TelegramChatID", "true");
+            }
+            else
+            {
+                HttpContext.Session.SetString("TelegramChatID", "false");
+            }
             BankAccount ba = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
             if (ba == null)
             {

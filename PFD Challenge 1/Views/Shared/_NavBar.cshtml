@@ -20,7 +20,7 @@
                 </li>
             </ul>
          }
-        @if (User.Identity.IsAuthenticated)
+        @if (User.Identity.IsAuthenticated || Context.Session.GetString("NRIC") != null)
          {
             <ul class="navbar-nav mr-auto">
             <li class="nav-item">
