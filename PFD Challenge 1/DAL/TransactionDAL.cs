@@ -238,7 +238,7 @@ namespace PFD_Challenge_1.DAL
             return incompleteExists;
         }
 
-        public bool ValidateTransactionLimit(BankAccount bankAcc, decimal transAmt)
+        public bool ValidateTransactionLimit(BankAccount bankAcc, decimal transAmt) //Checks if transfer amount exceeds transfer limit
         {
             bool validLimit  = false;
             SqlCommand cmd = conn.CreateCommand();
