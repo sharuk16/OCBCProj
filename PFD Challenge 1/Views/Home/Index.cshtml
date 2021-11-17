@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="~/css/login.css" />
 }
 
-<div class="container" id="mainContainer2">
+<div class="container form" id="mainContainer2">
     <div class="first-container">
         <div style="text-align: center; margin-top:2%">
             <img id="imgLogo" src="~/images/Login.jpeg"
@@ -16,7 +16,7 @@
         </div>
     </div>
 </div>
-<div class="container">
+<div class="container form">
     <div class="row">
         <div class="col text-center">
             <div class="container">
@@ -55,7 +55,7 @@
 
 <div id="add-update-msg" style="text-align:center;">
     <div>
-        <lottie-player src="https://assets1.lottiefiles.com/packages/lf20_sawdagxh.json" background="transparent" speed="1" style="text-align:center; width: 300px; height: 300px;" loop autoplay></lottie-player>
+        <lottie-player src="https://assets1.lottiefiles.com/packages/lf20_sawdagxh.json" background="transparent" speed="1" style="text-align:center; width: 600px; height: 600px;margin: auto;" loop autoplay></lottie-player>
     </div>
 </div>
 
@@ -88,8 +88,18 @@
     <script src="https://unpkg.com/@@tensorflow-models/face-landmarks-detection@0.0.1/dist/face-landmarks-detection.js"></script>
     <script src="~/js/ml.js"></script>
     <script>
+        $(document).ready(function () {
+            $("#add-update-msg").hide();
+        })
     function redirecting(totalsum) {
     var url = '@Url.Action("faceLogin", "home", new { id = "__id__" })';
     window.location.href = url.replace('__id__', totalsum);
-    }</script>
+        } $("#login a").click(function (e) {
+            $(".form").hide();
+            $("#add-update-msg").show();
+            setTimeout(function () {
+                location.reload();
+            }, 2000);
+        })
+    </script>
 }

@@ -36,14 +36,14 @@ namespace PFD_Challenge_1
             });
 
             services.AddControllersWithViews();
-            services.AddAuthentication(configureOptions:options =>
-               {
-                   options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                   options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                   options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-               })
+            services.AddAuthentication(configureOptions: options =>
+            { 
+                    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, configureOptions:options =>
+                .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, configureOptions: options =>
                 {
                     options.ClientId = "7fmcr9u16mjtpbt17gam0f6sm";
                     options.ClientSecret = "12dt1cg3l8hco6jmd699c03u0a22jdqp41s31d6ptetinrnskcoq";
@@ -58,6 +58,31 @@ namespace PFD_Challenge_1
                     options.TokenValidationParameters = new TokenValidationParameters()
                     {
                         NameClaimType = "cognito:user"
+                    };
+
+                    options.Events = new OpenIdConnectEvents()
+                    {
+                        OnRedirectToIdentityProviderForSignOut = context =>
+                        {
+                            var logoutUri = $"https://pfdapp.auth.ap-southeast-1.amazoncognito.com/logout?client_id=7fmcr9u16mjtpbt17gam0f6sm";
+                            logoutUri += $"&logout_uri={context.Request.Scheme}://{context.Request.Host}/";
+
+                            var postLogoutUri = context.Properties.RedirectUri;
+                            if (!string.IsNullOrEmpty(postLogoutUri))
+                            {
+                                if(postLogoutUri.StartsWith("/"))
+                                {
+                                    var request = context.Request;
+                                    postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase + postLogoutUri;
+                                }
+                                logoutUri += $"&returnTo={ Uri.EscapeDataString(postLogoutUri)}";
+                            }
+
+                            context.Response.Redirect(logoutUri);
+                            context.HandleResponse();
+
+                            return Task.CompletedTask;
+                        }
                     };
                 });
         }

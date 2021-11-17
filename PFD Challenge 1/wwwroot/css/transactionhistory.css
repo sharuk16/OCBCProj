@@ -30,7 +30,7 @@ h1, h6{
 #received, #sent {
     display: inline-block;
     box-sizing: border-box;
-    background-color: #DDBE93;
+    background-color: #BA2B43;
     border-radius: 0.6em;
     color: white;
     cursor: pointer;
@@ -46,7 +46,7 @@ h1, h6{
     text-transform: uppercase;
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
-    border-color: #DDBE93;
+    border-color: #BA2B43;
 }
 
 .center {

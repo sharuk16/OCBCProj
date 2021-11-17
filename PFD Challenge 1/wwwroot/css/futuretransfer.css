@@ -150,4 +150,39 @@ textarea:read-write {
     white-space: nowrap;
 }
 
+/*Alert styling for front end validation*/
+.alert {
+    box-sizing: border-box;
+    padding: 10px;
+    background-color: #650100;
+    color: white;
+    opacity: 1;
+    transition: opacity 0.6s;
+    margin-bottom: 15px;
+    font-size: 1.6rem;
+}
+/*Close button CSS*/
+.closebtn {
+    box-sizing: border-box;
+    background-color: #BA2B43;
+    border-radius: 0.6em;
+    color: white;
+    cursor: pointer;
+    /*display: flex;*/
+    align-self: center;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1;
+    margin: 20px;
+    padding: 1.2em 2.8em;
+    text-decoration: none;
+    text-align: center;
+    text-transform: uppercase;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
 
+    .closebtn a:hover, .btn a:focus {
+        color: #000;
+        outline: 0;
+    }

@@ -29,7 +29,7 @@ namespace PFD_Challenge_1.Controllers
                 {
                     thList.Add(new TransactionHistory
                     {
-                        Name = bankUserContext.GetBankUser(bankAccountContext.GetBankAccount(t.Recipient).Nric).Name,
+                        Name = bankUserContext.GetBankUser(bankAccountContext.GetBankAccount(t.Sender).Nric).Name,
                         Amount = t.Amount,
                         TimeTransfer = t.TimeTransfer,
                         sender = true,
@@ -39,7 +39,7 @@ namespace PFD_Challenge_1.Controllers
                 {
                     thList.Add(new TransactionHistory
                     {
-                        Name = bankUserContext.GetBankUser(bankAccountContext.GetBankAccount(t.Sender).Nric).Name,
+                        Name = bankUserContext.GetBankUser(bankAccountContext.GetBankAccount(t.Recipient).Nric).Name,
                         Amount = t.Amount,
                         TimeTransfer = t.TimeTransfer,
                         sender = false,

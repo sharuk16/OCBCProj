@@ -27,7 +27,7 @@
         if (item.sender)
         {
             <div class="form-group send" style="color: white">
-                <div class="form-container" style="padding-right:200px;padding-left:350px; display: inline-block;" onclick="location.href = '#'">
+                <div class="form-container" style="padding-right:220px;padding-left:350px; display: inline-block;" onclick="location.href = '#'">
                     <div class="transactionhistory">
                         <div style="padding-bottom:10px">Receiver: @item.Name</div>
                         <div style="padding-bottom:10px">Amount: <span style=" color:red;">- $@string.Format("{0:0.00}", item.Amount)</span></div>
@@ -41,7 +41,7 @@
         else
         {
             <div class="form-group receive" style="color: white">
-                <div class="form-container" style="padding-right:200px;padding-left:350px; display: inline-block;" onclick="location.href = '#'">
+                <div class="form-container" style="padding-right:220px;padding-left:350px; display: inline-block;" onclick="location.href = '#'">
                     <div class="transactionhistory">
                         <div style="padding-bottom:10px">Sender: @item.Name</div>
                         <div style="padding-bottom:10px">Amount: <span style=" color:green;">+ $@string.Format("{0:0.00}", item.Amount)</span></div>
