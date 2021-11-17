@@ -205,23 +205,43 @@ namespace PFD_Challenge_1.Controllers
                                 TimeTransfer = DateTime.Now,
                                 Type = "Immediate"
                             };
-                            int transacID = transactionContext.AddTransactionRecord(newTransac); //Add transaction object to database
+                            transacID = transactionContext.AddTransactionRecord(newTransac); //Add transaction object to database
                             bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, transferAmount); //Updates bank account balance records
                             if (updatedAccounts == true) //If balance updates successfully
                             {
                                 transactionContext.UpdateTransactionComplete(transacID); //Updates transaction "Completed" status
-                                string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
-                                return RedirectToAction("Index", "Home");
+                                message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
                             }
                             else
                             {
                                 transactionContext.ReverseTransactionChanges(receiverAccount, senderAccount, transferAmount); //Reverses update of bank account balance records
-                                string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
-                                return RedirectToAction("Index", "Home");
+                                message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
                             }
                         }
                     }
-                return View(tc);
+                if (bankUserContext.GetUserChatID(HttpContext.Session.GetString("NRIC")) != null)
+                {
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("https://api.telegram.org");
+                    int chatID = bankUserContext.GetUserChatID(HttpContext.Session.GetString("NRIC")).Value;
+                    BankUser bu = bankUserContext.GetBankUser(HttpContext.Session.GetString("NRIC"));
+                    BankUser su = bankUserContext.GetBankUser(receiverAccount.Nric);
+                    string data = "Dear " + bu.Name + "! Your funds transfer of $" + transferAmount.ToString() + " to " + su.Name + " is successful! Date: " + DateTime.Now;
+                    Notification newNotification = new Notification
+                    {
+                        chat_id = chatID,
+                        text = data,
+                    };
+                    string json = JsonConvert.SerializeObject(newNotification);
+                    StringContent notificationContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync("/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws/sendMessage", notificationContent);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        transactionContext.UpdateTransactionNotified(transacID);
+                    }
+                }
+                ViewData["Message"] = message;
+                return RedirectToAction("Index", "Transaction");
             }
             catch (TimeoutException)
             {
