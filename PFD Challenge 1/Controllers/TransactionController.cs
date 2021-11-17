@@ -32,7 +32,7 @@ namespace PFD_Challenge_1.Controllers
                         Name = bankUserContext.GetBankUser(bankAccountContext.GetBankAccount(t.Sender).Nric).Name,
                         Amount = t.Amount,
                         TimeTransfer = t.TimeTransfer,
-                        sender = true,
+                        sender = false,
                     });
                 }
                 else
@@ -42,7 +42,7 @@ namespace PFD_Challenge_1.Controllers
                         Name = bankUserContext.GetBankUser(bankAccountContext.GetBankAccount(t.Recipient).Nric).Name,
                         Amount = t.Amount,
                         TimeTransfer = t.TimeTransfer,
-                        sender = false,
+                        sender = true,
                     });
                 }
             }
