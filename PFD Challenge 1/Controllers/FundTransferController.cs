@@ -163,11 +163,13 @@ namespace PFD_Challenge_1.Controllers
                         if(updatedAccounts == true)
                         {
                             transactionContext.UpdateTransactionComplete(transacID);
+                            string message = transactionContext.TransactionStatusMsg(updatedAccounts);
                             return RedirectToAction("Index", "Home");
                         }
                         else
                         {
                             transactionContext.ReverseTransactionChanges(receiverAccount, senderAccount, transferAmount);
+                            string message = transactionContext.TransactionStatusMsg(updatedAccounts);
                             return RedirectToAction("Index", "Home");
                         }
                     }

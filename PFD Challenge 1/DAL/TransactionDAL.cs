@@ -265,5 +265,19 @@ namespace PFD_Challenge_1.DAL
             conn.Close();
             return validLimit;
         }
+
+        public string TransactionStatusMsg(bool status)
+        {
+            string message;
+            if (status==true)
+            {
+                message = "Transaction Successful.";
+            }
+            else
+            {
+                message = "Transaction Unsuccessful. Redirecting to Home Page.";
+            }
+            return message;
+        }
     }
 }
