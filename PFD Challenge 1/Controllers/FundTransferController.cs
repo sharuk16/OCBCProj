@@ -146,13 +146,13 @@ namespace PFD_Challenge_1.Controllers
                     if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount exceeds transaction limit
                         == false)
                     {
+                        TempData["LimitExceed"] = "The transaction you are trying to make exceeds your daily limit." +
+                            "Change your daily transaction limit or make a smaller transaction.";
                         return RedirectToAction("Index", "Home");
                     }
                     else if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount does not exceed the transaction limit
                         == true)
                     {
-                        if (transactionContext.CheckIncompleteExists() == false) //If there are no incomplete transactions
-                        {
                             Transaction newTransac = new Transaction //Create new transaction object
                             {
                                 Recipient = receiverAccount.AccNo,
@@ -177,13 +177,12 @@ namespace PFD_Challenge_1.Controllers
                             }
                         }
                     }
-                }
                 return View(tc);
             }
             catch (TimeoutException)
             {
-                string timeoutMsg = "The website has taken too long to process your request and has timed out. Your transaction has not gone through.";
-                return View(timeoutMsg);
+                ViewData["TimeoutMessage"] = "The website has taken too long to process your request and has timed out. Your transaction has not gone through.";
+                return View();
             }
         }
     }
