@@ -68,6 +68,7 @@ namespace PFD_Challenge_1.Controllers
             BankUser bu;
             BankAccount ba;
             BankAccount senderAccount = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
+            BankUser sender = bankUserContext.GetBankUser(HttpContext.Session.GetString("NRIC"));
             if (bankacc.IsMatch(ftr.Recipient))
             {
                 ba = bankAccountContext.GetBankAccount(ftr.Recipient);
@@ -92,7 +93,7 @@ namespace PFD_Challenge_1.Controllers
                 }
                 return View(ftr);
             }
-            if(ftr.TimeTransfer < DateTime.Now)
+            if(transactionContext.ValidateTransactionLimit(senderAccount, ftr.TransferAmount) == false)
             {
                 ViewData["Message"] = "Daily transfer limit reached!";
                 return View(ftr);
