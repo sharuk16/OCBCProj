@@ -122,7 +122,7 @@ namespace PFD_Challenge_1.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Confirmation(TransferConfirmation tc)
+        public async Task<IActionResult> ConfirmationAsync(TransferConfirmation tc)
         {
             string message="";
             int transacID = -1;
@@ -169,44 +169,36 @@ namespace PFD_Challenge_1.Controllers
                         if(updatedAccounts == true)
                         {
                             transactionContext.UpdateTransactionComplete(transacID);
-                            string message = transactionContext.TransactionStatusMsg(updatedAccounts);
-                            return RedirectToAction("Index", "Home");
+                            message = transactionContext.TransactionStatusMsg(updatedAccounts);
+                            
                         }
                         else
                         {
                             transactionContext.ReverseTransactionChanges(receiverAccount, senderAccount, transferAmount);
-                            string message = transactionContext.TransactionStatusMsg(updatedAccounts);
-                            return RedirectToAction("Index", "Home");
+                            message = transactionContext.TransactionStatusMsg(updatedAccounts);
                         }
                     }
                 }
             }
             if (bankUserContext.GetUserChatID(HttpContext.Session.GetString("NRIC")) != null)
             {
-                if (transacID != -1)
+                HttpClient client = new HttpClient();
+                client.BaseAddress = new Uri("https://api.telegram.org");
+                int chatID = bankUserContext.GetUserChatID(HttpContext.Session.GetString("NRIC")).Value;
+                Notification newNotification = new Notification
                 {
-                    SendNotification(message, transacID);
-                }                
+                    chat_id = chatID,
+                    text = "Hi Success transaction.",
+                };
+                string json = JsonConvert.SerializeObject(newNotification);
+                StringContent notificationContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync("/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws/sendMessage", notificationContent);
+                if (response.IsSuccessStatusCode)
+                {
+                    transactionContext.UpdateTransactionNotified(transacID);
+                }
             }
-            return View(tc);
-        }
-        public async void SendNotification(string message, int transactID)
-        {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri("https://api.telegram.org");
-            int chatID = bankUserContext.GetUserChatID(HttpContext.Session.GetString("NRIC")).Value;
-            Notification newNotification = new Notification
-            {
-                chat_id = chatID,
-                text = "Hi Success transaction.",
-            };
-            string json = JsonConvert.SerializeObject(newNotification);
-            StringContent notificationContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.PostAsync("/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws/sendMessage", notificationContent);
-            if (response.IsSuccessStatusCode)
-            {
-                transactionContext.UpdateTransactionNotified(transactID);
-            }
+            return RedirectToAction("Index", "Home");
         }
     }
 }
