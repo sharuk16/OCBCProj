@@ -15,6 +15,10 @@ namespace PFD_Challenge_1.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        BankAccountDAL bankAccountContext = new BankAccountDAL();
+        BankUserDAL bankUserContext = new BankUserDAL();
+        FutureTransferDAL futureTransferContext = new FutureTransferDAL();
+        TransactionDAL transactionContext = new TransactionDAL();
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -30,9 +34,24 @@ namespace PFD_Challenge_1.Controllers
             if (id > 28000 && id < 32000)
             {
                 HttpContext.Session.SetString("NRIC", "T1234567A");
+                if (bankUserContext.GetUserChatID(HttpContext.Session.GetString("NRIC")) != null)
+                {
+                    HttpContext.Session.SetString("TelegramChatID", "true");
+                }
+                else
+                {
+                    HttpContext.Session.SetString("TelegramChatID", "false");
+                }
                 return RedirectToAction("FundTransfer", "FundTransfer");
             }
             return RedirectToAction("Index", "Home");
+        }
+        public ActionResult LogOut()
+        {
+            // Clear all key-values pairs stored in session state
+            HttpContext.Session.Clear();
+            // Call the Index action of Home controller
+            return RedirectToAction("Index");
         }
 
         [Authorize]
