@@ -20,7 +20,13 @@
 </div>
 
 <div class="container">
-    <div style="color:white">Notice: @ViewData["Message"]</div>
+    @{      if (ViewData["Message"] != null)
+            {
+        <div style="color:white;font-size: 20px">Notice: @ViewData["Message"]</div>
+            }
+
+        }
+
     <div class="row">
         <div class="col text-center">
             <form asp-action="FundTransferReview" style="text-align: center">
@@ -28,37 +34,37 @@
                     <div class="form-group form-check-inline" style="padding-top: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
                         <div class="form-group" style="color: white">
                             <div class="to" style="padding-top: 2px;">
-                                <div class="to" style="background-color: #AA1945;font-size:25px;">To</div>
+                                <div class="to" style="background-color: #AA1945;font-size:20px;">To</div>
                             </div>
                             <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
-                                <input asp-for="Recipient" type="text" class="form-control" id="to" style="background-color: #E7625F; border: transparent; color: white; text-align: center; font-size:30px;">
+                                <input asp-for="Recipient" type="text" class="form-control" id="to" style="background-color: #E7625F; border: transparent; color: white; text-align: center; font-size:25px;">
                             </div>
                         </div>
                     </div>
                     <div class="form-group form-check-inline" style="padding-top: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
                         <div class="form-group" style="color: white">
                             <div class="accountbalance" style="padding-top: 2px;">
-                                <div class="accountbalance" style="background-color: #AA1945; font-size: 25px;">Account Balance</div>
+                                <div class="accountbalance" style="background-color: #AA1945; font-size: 20px;">Account Balance</div>
                             </div>
                             <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 60px; padding-left: 60px; display: inline-block;">
-                                <input readonly asp-for="Balance" class="form-control" id="accountbalance" style="padding-left: 80px; padding-right: 70px; background-color: #E7625F; font-size: 30px; text-align:center;" />
+                                <input readonly asp-for="Balance" class="form-control" id="accountbalance" style="padding-left: 80px; padding-right: 70px; background-color: #E7625F; font-size: 25px; text-align:center;" />
                             </div>
                         </div>
                     </div>
                     <div class="form-group form-check-inline" style="padding-top: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
                         <div class="form-group" style="color: white">
                             <div class="transferamount" style="padding-top: 2px;">
-                                <div class="transferamount" style="background-color: #AA1945; font-size: 25px;">Transfer Amount</div>
+                                <div class="transferamount" style="background-color: #AA1945; font-size: 20px;">Transfer Amount</div>
                             </div>
                             <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
-                                <input asp-for="TransferAmount" type="text" class="form-control" id="transfer" style="background-color: #E7625F; border: transparent; color: white; text-align: center; font-size: 30px;">
+                                <input asp-for="TransferAmount" type="text" class="form-control" id="transfer" style="background-color: #E7625F; border: transparent; color: white; text-align: center; font-size: 25px;">
                             </div>
                         </div>
                     </div>
                     <div class="form-group form-check-inline" style="padding-top: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
                         <div class="form-group" style="color: white">
                             <div class="date" style="padding-top: 2px; padding-left:10px">
-                                <div class="date" style="background-color: #AA1945; font-size: 25px;">Date</div>
+                                <div class="date" style="background-color: #AA1945; font-size: 20px;">Date</div>
                             </div>
                             <div tyle="padding-top: 20px;">
                                 <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 70px; padding-left: 70px; display: inline-block;">
@@ -94,7 +100,7 @@
                         <div class="form-group form-check-inline" style="padding-top: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
                             <div class="form-group" style="color: white">
                                 <div class="plannedtimeoftransfer" style="padding-top: 2px;">
-                                    <div class="plannedtimeoftransfer" style="background-color: #AA1945; font-size: 25px;">Planned time of transfer</div>
+                                    <div class="plannedtimeoftransfer" style="background-color: #AA1945; font-size: 20px;">Planned time of transfer</div>
                                 </div>
                                 <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 220px; padding-left: 220px; display: inline-block;">
                                     <div style="padding-top: 10px; padding-bottom: 10px;">
@@ -110,7 +116,6 @@
                     <div><button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2">Confirm</button></div>
                 </div>
             </form>
-
         </div>
     </div>
 </div>
