@@ -19,7 +19,6 @@ namespace PFD_Challenge_1.Controllers
         TransactionDAL transactionContext = new TransactionDAL();
         public IActionResult Index()
         {
-            HttpContext.Session.SetString("NRIC", "T2345678B");
             BankAccount ba = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
             List<Transaction> tList = transactionContext.GetAllTransaction(ba.AccNo);
             List<TransactionHistory> thList = new List<TransactionHistory>();
