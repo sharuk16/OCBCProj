@@ -16,7 +16,6 @@ namespace PFD_Challenge_1
         BankAccountDAL bankAccContext = new BankAccountDAL();
         public Task Execute(IJobExecutionContext context)
         {
-            // transactionContext.CheckIncompleteExists();
             if (transactionContext.CheckIncompleteExists() == null)
             {
                 return Task.FromResult<Transaction>(null);
