@@ -27,7 +27,7 @@
             <div style="background-color: white; padding-top: 42px; padding-left: 40px; padding-right: 40px; padding-bottom: 42px; border-radius: 25px; margin-left: 0px;">
                 <h1 style="font-size:30px;">Instructions:</h1>
                 <h5 style="padding-top:20px;">1. Scan the QR code above</h5>
-                <h5>2. Key in your NRIC</h5>
+                <h5>2. Enter this code: @ViewData["Code"] within 1 minute</h5>
                 <h5>3. Click confirm when you are done</h5>
             </div>
         </th>
@@ -36,7 +36,7 @@
 
 <div class="every" style="padding-top: 50px; padding-right:50px;padding-left:450px; display: inline-block;">
     
-    <div><button asp-action="RegisterUser" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2">@Html.ActionLink("Confirm", "RegisterUser")</button></div>
+    <div><button onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2">@Html.ActionLink("Confirm", "RegisterUser")</button></div>
 </div>
 
 @section scripts{

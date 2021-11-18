@@ -12,15 +12,15 @@
     </button>
     <!-- Links in the navbar, displayed as drop-down list when collapsed -->
     <div class="collapse navbar-collapse" id="homeNavbar">
-        @if (User.Identity.IsAuthenticated == false)
+        @*@if (User.Identity.IsAuthenticated == false)
          {
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
                     <a class="nav-link" asp-area="" asp-controller="Home" asp-action="LogIn">Login</a>
                 </li>
             </ul>
-         }
-        @if (User.Identity.IsAuthenticated || Context.Session.GetString("NRIC") != null)
+         }*@
+        @if (@*User.Identity.IsAuthenticated ||*@ Context.Session.GetString("NRIC") != null)
          {
             <ul class="navbar-nav mr-auto">
             <li class="nav-item">
