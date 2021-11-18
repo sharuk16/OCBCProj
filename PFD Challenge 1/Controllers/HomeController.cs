@@ -118,6 +118,7 @@ namespace PFD_Challenge_1.Controllers
             {
                 if (code == formData["Code"])
                 {
+                    HttpContext.Session.SetString("Login", "true");
                     return RedirectToAction("FundTransfer", "FundTransfer");
                 }
                 else

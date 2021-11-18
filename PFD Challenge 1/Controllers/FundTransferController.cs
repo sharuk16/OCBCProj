@@ -24,7 +24,7 @@ namespace PFD_Challenge_1.Controllers
         TransactionDAL transactionContext = new TransactionDAL();
         public IActionResult FundTransfer()
         {
-            if (HttpContext.Session.GetString("NRIC") == null)
+            if (HttpContext.Session.GetString("NRIC") == null || HttpContext.Session.GetString("Login")!= "true")
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -73,30 +73,42 @@ namespace PFD_Challenge_1.Controllers
             BankAccount ba;
             BankAccount senderAccount = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
             BankUser sender = bankUserContext.GetBankUser(HttpContext.Session.GetString("NRIC"));
+            //Validation
+            //Check if recipient exists
             if (bankacc.IsMatch(ftr.Recipient))
             {
                 ba = bankAccountContext.GetBankAccount(ftr.Recipient);
+                if (ba== null)
+                {
+                    ViewData["Message"] = "Bank account does not exists!";
+                    return View(ftr);
+                }
                 bu = bankUserContext.GetBankUser(ba.Nric);
+                if(bu == null)
+                {
+                    ViewData["Message"] = "Bank user does not exists!";
+                }
             }
             else
             {
                 bu = bankUserContext.GetBankUser(ftr.Recipient);
-                ba = bankAccountContext.GetBankAccount(bu.Nric);
-            }
-            //Validation
-            //Check if recipient exists
-            if (bu == null || ba == null)
-            {
-                if (bu == null)
+                if (bu != null)
                 {
-                    ViewData["Message"] = "Bank user does not exists!";
+                    ba = bankAccountContext.GetBankAccount(bu.Nric);
+                    if(ba == null)
+                    {
+                        ViewData["Message"] = "Bank account does not exists!";
+                        return View(ftr);
+                    }
                 }
                 else
                 {
-                    ViewData["Message"] = "Bank account does not exists!";
+                    ViewData["Message"] = "Bank user does not exists!";
+                    return View(ftr);
                 }
-                return View(ftr);
+                
             }
+            
             if (transactionContext.ValidateTransactionLimit(senderAccount, ftr.TransferAmount) == false)
             {
                 ViewData["Message"] = "Daily transfer limit reached!";
@@ -133,26 +145,40 @@ namespace PFD_Challenge_1.Controllers
             {
                 ftr.FutureTransfer = "false";
             }
-            TransferConfirmation tc = new TransferConfirmation
+            TransferConfirmation tc;
+            if (ftr.FutureTransfer == "true")
             {
-                Recipient = bu.Name,
-                BankAccount = ba.AccNo,
-                TransferAmount = ftr.TransferAmount,
-                FutureTransfer = ftr.FutureTransfer,
-                TimeTransfer = ftr.TimeTransfer,
-            };
-            HttpContext.Session.SetString("TimeOfTransfer", ftr.TimeTransfer.ToString());
+                tc = new TransferConfirmation
+                {
+                    Recipient = bu.Name,
+                    BankAccount = ba.AccNo,
+                    TransferAmount = ftr.TransferAmount,
+                    FutureTransfer = ftr.FutureTransfer,
+                    TimeTransfer = ftr.TimeTransfer.Value.ToString(),
+                };
+            }
+            else
+            {
+                tc = new TransferConfirmation
+                {
+                    Recipient = bu.Name,
+                    BankAccount = ba.AccNo,
+                    TransferAmount = ftr.TransferAmount,
+                    FutureTransfer = ftr.FutureTransfer,
+                    TimeTransfer = "",
+                };
+            }
             return RedirectToAction("Confirmation", "FundTransfer", tc);
         }
 
-        public IActionResult Confirmation(string recipient, string bankAccount, decimal? transferAmount, string futureTransfer, DateTime? timeTransfer)
+        public IActionResult Confirmation(string recipient, string bankAccount, decimal? transferAmount, string futureTransfer, string timeTransfer)
         {
-            if (recipient == null || recipient == "" || bankAccount == null || bankAccount == "" || transferAmount == null || futureTransfer == null || futureTransfer == "")
+            if (recipient == null || recipient == "" || bankAccount == null || bankAccount == "" || transferAmount == null || futureTransfer == null || futureTransfer == ""|| timeTransfer == null || timeTransfer == "")
             {
                 return RedirectToAction("Index", "Home");
             }
             
-            if (futureTransfer == "true" && Convert.ToDateTime(HttpContext.Session.GetString("TimeOfTransfer")) == null)
+            if (futureTransfer == "true"&& timeTransfer == "")
             {
                 ViewData["Message"] = "For future transfer please state time.";
                 return RedirectToAction("FundTransferReview");
@@ -176,12 +202,8 @@ namespace PFD_Challenge_1.Controllers
             if (!ModelState.IsValid)
             {
                 return View(tc);
-            }
-            if (HttpContext.Session.GetString("TimeOfTransfer") != "" || HttpContext.Session.GetString("TimeOfTransfer") == null)
-            {
-                tc.TimeTransfer = Convert.ToDateTime(HttpContext.Session.GetString("TimeOfTransfer"));
-            }            
-            if (tc.TimeTransfer == null && tc.FutureTransfer == "true")
+            }     
+            if (tc.TimeTransfer == "" && tc.FutureTransfer == "true")
             {
                 ViewData["Message"] = "For future transfer please state time.";
                 return RedirectToAction("FundTransferReview");
@@ -200,32 +222,22 @@ namespace PFD_Challenge_1.Controllers
             {
                 if (tc.FutureTransfer == "true")
                 {
-                    if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount exceeds transaction limit
-                        == false)
+                    FutureTransfer newFutureTrans = new FutureTransfer
                     {
-                        TempData["LimitExceed"] = "The transaction you are trying to make exceeds your daily limit." +
-                            "Change your daily transaction limit or make a smaller transaction.";
-                        return RedirectToAction("Index", "Home");
-                    }
-                    else if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount does not exceed the transaction limit
-                        == true)
-                    {
-                        FutureTransfer newFutureTrans = new FutureTransfer
-                        {
-                            Recipient = receiverAccount.AccNo,
-                            Sender = senderAccount.AccNo,
-                            Amount = tc.TransferAmount,
-                            PlanTime = (DateTime)tc.TimeTransfer,
-                        };
-                        futureTransferContext.AddFutureRecord(newFutureTrans);
-                    }
+                        Recipient = receiverAccount.AccNo,
+                        Sender = senderAccount.AccNo,
+                        Amount = tc.TransferAmount,
+                        PlanTime =Convert.ToDateTime(tc.TimeTransfer),
+                    };
+                    transacID = futureTransferContext.AddFutureRecord(newFutureTrans);
+                    data = "Dear " + bu.Name + "! You have saved future funds transfer of $" + transferAmount.ToString() + " to " + su.Name + " is successful!";
                 }
                 else
                 {
                     if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount exceeds transaction limit
                         == false)
                     {
-                        data = "Dear " + bu.Name + "! Your funds transfer of $" + transferAmount.ToString() + " to " + su.Name + " is Unsuccessful! Date of transfer: " + DateTime.Now+
+                        data = "Dear " + bu.Name + "! Your funds transfer of $" + transferAmount.ToString() + " to " + su.Name + " is Unsuccessful! Date of transfer: " + DateTime.Now +
                             " Reason for failed transaction: The transaction you are trying to make exceeds your daily limit. Change your daily transaction limit or make a smaller transaction.";
                     }
                     else if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount does not exceed the transaction limit
@@ -239,7 +251,7 @@ namespace PFD_Challenge_1.Controllers
                             TimeTransfer = DateTime.Now,
                             Type = "Immediate"
                         };
-                        if(newTransac.Amount <= senderAccount.Balance)
+                        if (newTransac.Amount <= senderAccount.Balance)
                         {
                             transacID = transactionContext.AddTransactionRecord(newTransac); //Add transaction object to database
                             bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, transferAmount); //Updates bank account balance records
@@ -248,17 +260,17 @@ namespace PFD_Challenge_1.Controllers
                                 transactionContext.UpdateDailySpend(senderAccount.Nric, transferAmount);
                                 transactionContext.UpdateTransactionComplete(transacID); //Updates transaction "Completed" status
                                 message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
+                                data = "Dear " + bu.Name + "! You have successfully transfered $" + transferAmount.ToString() + " to " + su.Name + "! Date and Time of Transfer"+DateTime.Now.ToString();
                             }
                             else
                             {
                                 message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
+                                data = "Dear " + bu.Name + "! You are unsuccessful in transfering $" + transferAmount.ToString() + " to " + su.Name + "! Date and Time of attempted Transfer" + DateTime.Now.ToString();
                             }
                         }
                         else
                         {
-                            TempData["BalanceExceed"] = "You do not have enough balance left in your account to complete this transaction." +
-                            "Please make a smaller transaction.";
-                            return RedirectToAction("Index", "Home");
+                            data = "Dear " + bu.Name + "! You do not have enough balance left in your account to complete this transaction. Please make a smaller transaction.";
                         }
                     }
                 }
@@ -311,6 +323,10 @@ namespace PFD_Challenge_1.Controllers
                 }
                 return RedirectToAction("Index", "Transaction");
             }
+        }
+        public IActionResult NotificationPage()
+        {
+            return View();
         }
 
     }
