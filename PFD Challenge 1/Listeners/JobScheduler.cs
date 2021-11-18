@@ -55,8 +55,8 @@ namespace PFD_Challenge_1.Listeners
                ITrigger trigger = TriggerBuilder.Create()
                .WithDailyTimeIntervalSchedule
                  (s =>
-                   s.OnEveryDay()
-                   .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(0, 0)) //will run at 12 AM every day
+                   s.OnEveryDay().WithIntervalInHours(24)
+                   .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(1, 0)) //will run at 12 AM every day
                    )
                  .Build();
 
