@@ -225,16 +225,20 @@ namespace PFD_Challenge_1.DAL
             SqlDataReader reader = cmd.ExecuteReader();
             if (reader.HasRows)
             {
-                while(reader.Read())
+                while (reader.Read())
                 {
-                    transac.TransacID = reader.GetInt32(0);
-                    transac.Recipient = reader.GetString(1);
-                    transac.Sender = reader.GetString(2);
-                    transac.Amount = reader.GetDecimal(3);
-                    transac.TimeTransfer = reader.GetDateTime(4);
-                    transac.Notified = reader.GetString(5);
-                    transac.Completed = reader.GetString(6);
-                    transac.Type = reader.GetString(7);
+                    transac = new Transaction()
+                    {
+                        TransacID = reader.GetInt32(0),
+                        Recipient = reader.GetString(1),
+                        Sender = reader.GetString(2),
+                        Amount = reader.GetDecimal(3),
+                        TimeTransfer = reader.GetDateTime(4),
+                        Notified = reader.GetString(5),
+                        Completed = reader.GetString(6),
+                        Type = reader.GetString(7),
+                    };
+                    
                 }
             }
             reader.Close();
