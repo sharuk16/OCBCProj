@@ -2,8 +2,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Mukta:wght@300&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500&display=swap");
 
-/*Button CSS*/
-.btn a {
+/*Button 2 CSS*/
+.btn2 {
     box-sizing: border-box;
     background-color: #BA2B43;
     border-radius: 0.6em;
@@ -21,13 +21,12 @@
     text-transform: uppercase;
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
-    width: 350px;
 }
 
-    .btn a:hover, .btn a:focus {
-        color: #000;
-        outline: 0;
-    }
+.btn a:hover, .btn a:focus {
+    color: #000;
+    outline: 0;
+}
 
 
 h1, h2, h3, h4, h5, h6{
