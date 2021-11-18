@@ -2,45 +2,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Mukta:wght@300&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500&display=swap");
 
-
-/* Create two equal columns that floats next to each other */
-.column {
-    float: left;
-    width: 50%;
-    padding: 10px;
-}
-
-/* Clear floats after the columns */
-.row:after {
-    content: "";
-    display: table;
-    clear: both;
-}
-
-
-/*'Confirm' Button CSS*/
-#confirm {
-    display: inline-block;
-    box-sizing: border-box;
-    background-color: #DDBE93;
-    border-radius: 0.6em;
-    color: white;
-    cursor: pointer;
-    /*display: flex;*/
-    align-self: center;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1;
-    margin: 20px;
-    padding: 1.2em 2.8em;
-    text-decoration: none;
-    text-align: center;
-    text-transform: uppercase;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    border-color: #DDBE93;
-}
-
 /*Button CSS*/
 .btn a {
     box-sizing: border-box;
@@ -88,9 +49,13 @@
     font-weight: 700;
 }
 
-.btn a:hover, .btn a:focus {
-    color: #000;
-    outline: 0;
+    .btn a:hover, .btn a:focus {
+        color: #000;
+        outline: 0;
+    }
+
+h1, h6{
+    color:white;
 }
 
 /*Input CSS*/
@@ -113,8 +78,6 @@
     text-transform: uppercase;
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
-    color: white;
-    font-size: 20px;
 }
 
 
@@ -122,6 +85,7 @@ input:read-only, textarea:read-only {
     border: 0;
     box-shadow: none;
     color: white;
+
 }
 
 textarea:read-write {
@@ -129,6 +93,50 @@ textarea:read-write {
     border-radius: 5px;
 }
 
-table{
-    width:78%;
+
+/* 'Date' container for input*/
+.date {
+    width: 150px;
+    padding: 10px;
+    margin: 0;
+    background-color: #E7625F;
+    white-space: nowrap;
 }
+
+/* 'Transfer Amount' container for input*/
+.transferamount {
+    width: 250px;
+    padding: 10px;
+    margin: 0;
+    background-color: #E7625F;
+    white-space: nowrap;
+}
+
+/* 'Account Balance' container for input*/
+.accountbalance {
+    width: 250px;
+    padding: 10px;
+    margin: 0;
+    background-color: #E7625F;
+    white-space: nowrap;
+}
+
+/* 'To' container for input*/
+.to {
+    width: 150px;
+    padding: 10px;
+    margin: 0;
+    background-color: #E7625F;
+    white-space: nowrap;
+}
+
+/* 'Planned time of transfer' container for input*/
+.plannedtimeoftransfer {
+    width: 300px;
+    padding: 10px;
+    margin: 0;
+    background-color: #E7625F;
+    white-space: nowrap;
+}
+
+

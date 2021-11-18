@@ -24,7 +24,7 @@
             <img src="~/images/TelegramBot.png" style="width: 50%;" />
         </th>
         <th>
-            <div style="background-color: white; padding-top: 42px; padding-left: 40px; padding-right: 40px; padding-bottom: 42px; border-radius: 25px; margin-left: 0px;">
+            <div style="background-color: white; padding-top: 33px; padding-left: 42px; padding-right: 42px; padding-bottom: 33px; border-radius: 25px; margin-left: 0px;">
                 <h1 style="font-size:30px;">Instructions:</h1>
                 <h5 style="padding-top:20px;">1. Scan the QR code above</h5>
                 <h5>2. Enter this code: @ViewData["Code"] within 1 minute</h5>
@@ -34,9 +34,15 @@
     </tr>
 </table>
 
-<div class="every" style="padding-top: 50px; padding-right:50px;padding-left:450px; display: inline-block;">
-    
-    <div><button onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2">@Html.ActionLink("Confirm", "RegisterUser")</button></div>
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <!-- Login Button -->
+            <div class="every" style="padding-top:40px;padding-right:50px;padding-left:50px; display: inline-block;">
+                <div class="btn">@Html.ActionLink("Confirm", "RegisterUser")</div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section scripts{
