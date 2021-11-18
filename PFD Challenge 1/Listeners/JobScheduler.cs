@@ -61,8 +61,6 @@ namespace PFD_Challenge_1.Listeners
                  .Build();
 
             scheduler.ScheduleJob(job, trigger);
-
-            scheduler.ScheduleJob(job, trigger);
         }
     }
 }
