@@ -31,7 +31,7 @@
                 <!--Orginal version-->
                 <a class="nav-link" href="~/Transaction/index">History</a>
             </li>
-            @if (Context.Session.GetString("TelegramChatID") == "false")
+            @if (Context.Session.GetString("TelegramSetUp") == "true")
              {
                 <li class="nav-item">
                    <a class="nav-link" href="~/Telegram/index">Telegram</a>

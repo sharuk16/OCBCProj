@@ -170,5 +170,30 @@ namespace PFD_Challenge_1.DAL
                 return false;
             }
         }
+        public int AddFutureTransfer(FutureTransfer transac)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            //SQL query to create a new Transactions object in the database for records.
+            cmd.CommandText = @"INSERT INTO FutureTransfer
+                                (Recipient, Sender, Amount, 
+                                PlanTime, Notified, Completed)
+                                OUTPUT INSERTED.FutureID
+                                VALUES(@recipient, @sender, @amount,
+                                @timetransfer, @notified, @completed)";
+            cmd.Parameters.AddWithValue("@recipient", transac.Recipient);
+            cmd.Parameters.AddWithValue("@sender", transac.Sender);
+            cmd.Parameters.AddWithValue("@amount", transac.Amount);
+            cmd.Parameters.AddWithValue("@timetransfer", transac.PlanTime);
+            cmd.Parameters.AddWithValue("@notified", "F");
+            cmd.Parameters.AddWithValue("@completed", "F");
+
+            conn.Open();
+
+            int transacID = (int)cmd.ExecuteScalar();
+
+            conn.Close();
+
+            return transacID;
+        }
     }
 }

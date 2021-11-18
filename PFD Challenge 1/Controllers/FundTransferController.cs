@@ -24,14 +24,9 @@ namespace PFD_Challenge_1.Controllers
         TransactionDAL transactionContext = new TransactionDAL();
         public IActionResult FundTransfer()
         {
-            HttpContext.Session.SetString("NRIC", "T1234567A");
-            if (bankUserContext.GetUserChatID(HttpContext.Session.GetString("NRIC")) != null)
+            if (HttpContext.Session.GetString("NRIC") == null)
             {
-                HttpContext.Session.SetString("TelegramChatID", "true");
-            }
-            else
-            {
-                HttpContext.Session.SetString("TelegramChatID", "false");
+                return RedirectToAction("Index", "Home");
             }
             BankAccount ba = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
             if (ba == null)
@@ -146,6 +141,7 @@ namespace PFD_Challenge_1.Controllers
                 FutureTransfer = ftr.FutureTransfer,
                 TimeTransfer = ftr.TimeTransfer,
             };
+            HttpContext.Session.SetString("TimeOfTransfer", ftr.TimeTransfer.ToString());
             return RedirectToAction("Confirmation", "FundTransfer", tc);
         }
 
@@ -155,9 +151,11 @@ namespace PFD_Challenge_1.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            if(futureTransfer == "true" && timeTransfer == null)
+            
+            if (futureTransfer == "true" && Convert.ToDateTime(HttpContext.Session.GetString("TimeOfTransfer")) == null)
             {
-                return RedirectToAction("Index", "Home");
+                ViewData["Message"] = "For future transfer please state time.";
+                return RedirectToAction("FundTransferReview");
             }
             TransferConfirmation tc = new TransferConfirmation
             {
@@ -179,6 +177,15 @@ namespace PFD_Challenge_1.Controllers
             {
                 return View(tc);
             }
+            if (HttpContext.Session.GetString("TimeOfTransfer") != "" || HttpContext.Session.GetString("TimeOfTransfer") == null)
+            {
+                tc.TimeTransfer = Convert.ToDateTime(HttpContext.Session.GetString("TimeOfTransfer"));
+            }            
+            if (tc.TimeTransfer == null && tc.FutureTransfer == "true")
+            {
+                ViewData["Message"] = "For future transfer please state time.";
+                return RedirectToAction("FundTransferReview");
+            }
             if (HttpContext.Session.GetString("NRIC") == null)
             {
                 return RedirectToAction("Index", "Home");
@@ -189,20 +196,25 @@ namespace PFD_Challenge_1.Controllers
             decimal transferAmount = tc.TransferAmount;
             BankUser su = bankUserContext.GetBankUser(receiverAccount.Nric);
             string data="";
-            
             try
             {
                 if (tc.FutureTransfer == "true")
                 {
-                    
+                    FutureTransfer ft = new FutureTransfer
+                    {
+                        Recipient = receiverAccount.AccNo,
+                        Sender = senderAccount.AccNo,
+                        Amount = transferAmount,
+                        PlanTime = tc.TimeTransfer.Value,
+                    };
+                    transacID = futureTransferContext.AddFutureTransfer(ft);
+                    data = "Dear " + bu.Name + "! You saved a future funds transfer of $" + transferAmount.ToString() + " to " + su.Name + " is successful!";
                 }
                 else
                 {
                     if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount exceeds transaction limit
                         == false)
                     {
-                        TempData["LimitExceed"] = "The transaction you are trying to make exceeds your daily limit." +
-                            "Change your daily transaction limit or make a smaller transaction.";
                         data = "Dear " + bu.Name + "! Your funds transfer of $" + transferAmount.ToString() + " to " + su.Name + " is Unsuccessful! Date of transfer: " + DateTime.Now+
                             " Reason for failed transaction: The transaction you are trying to make exceeds your daily limit. Change your daily transaction limit or make a smaller transaction.";
                     }
@@ -278,9 +290,9 @@ namespace PFD_Challenge_1.Controllers
                     }
                 }catch(Exception e)
                 {
-                    return View();
+                    return RedirectToAction("Index", "Transaction");
                 }
-                return View();
+                return RedirectToAction("Index", "Transaction");
             }
         }
 

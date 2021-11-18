@@ -21,7 +21,7 @@ namespace PFD_Challenge_1.Models
         [Required]
         public string FutureTransfer { get; set; }
         [Display(Name = "Planned time of transfer")]
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MMM-dd}")]
         public DateTime? TimeTransfer { get; set; }
     }

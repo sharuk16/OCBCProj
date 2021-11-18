@@ -133,5 +133,56 @@ namespace PFD_Challenge_1.DAL
             int count = cmd.ExecuteNonQuery();
             return true;
         }
+        public bool AuthenticateUser(string pattern,string pass)
+        {
+            string password = "";
+            SqlCommand cmd = conn.CreateCommand();
+            string text = "SELECT * FROM BankUser Where NRIC = @select";
+            Regex email = new Regex(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}");
+            Regex ph = new Regex(@"[0-9]{8}");
+            if (email.IsMatch(pattern))
+            {
+                text = "SELECT * FROM BankUser Where Email = @select";
+            }
+            else if (ph.IsMatch(pattern))
+            {
+                text = "SELECT * FROM BankUser Where Phone = @select";
+            }
+            cmd.CommandText = @"" + text;
+            cmd.Parameters.AddWithValue("@select", pattern);
+            conn.Open();
+            //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    password = reader.GetString(5);
+                }
+                if(password != pass)
+                {
+                    //Close DataReader
+                    reader.Close();
+                    //Close the database connection
+                    conn.Close();
+                    return false;
+                }
+                else
+                {
+                    //Close DataReader
+                    reader.Close();
+                    //Close the database connection
+                    conn.Close();
+                    return true;
+                }
+            }else
+            {
+                //Close DataReader
+                reader.Close();
+                //Close the database connection
+                conn.Close();
+                return false;
+            }
+        }
     }
 }

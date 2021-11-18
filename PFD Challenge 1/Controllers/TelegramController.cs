@@ -20,7 +20,7 @@ namespace PFD_Challenge_1.Controllers
         TransactionDAL transactionContext = new TransactionDAL();
         public IActionResult Index()
         {
-            if (HttpContext.Session.GetString("NRIC") == null|| HttpContext.Session.GetString("TelegramChatID")=="true")
+            if (HttpContext.Session.GetString("NRIC") == null|| HttpContext.Session.GetString("TelegramSetUp") =="false"|| HttpContext.Session.GetString("Code")!="")
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -34,11 +34,12 @@ namespace PFD_Challenge_1.Controllers
         }
         public async Task<ActionResult> RegisterUser()
         {
-            if (HttpContext.Session.GetString("NRIC") == null || HttpContext.Session.GetString("TelegramChatID") == "true")
+            if (HttpContext.Session.GetString("NRIC") == null || HttpContext.Session.GetString("TelegramSetUp") == "false")
             {
                 return RedirectToAction("Index", "Home");
             }
             string code = HttpContext.Session.GetString("Code");
+            HttpContext.Session.SetString("Code", "");
             DateTime started =Convert.ToDateTime(HttpContext.Session.GetString("Time"));
             DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             TimeSpan dtNow = started.Subtract(dt);

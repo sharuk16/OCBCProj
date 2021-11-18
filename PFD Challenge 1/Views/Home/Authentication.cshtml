@@ -1,0 +1,19 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<form asp-action="Authentication">
+    <div class="container">
+        <div>
+            <h2><label for="balance">Please enter your 7 digits:</label></h2>
+        </div>
+        <div class="input" style="padding-top: 1px; padding-bottom: 0px; padding-right: 80px; padding-left: 80px; display: inline-block;">
+            <input name="code" type="text" placeholder="Enter Code" class="form-control" id="to" style="background-color: #E7625F; border: transparent; color: white; text-align: center;" required>
+        </div>
+    </div>
+    <!-- Login Button -->
+    <div class="every" style="padding-top:20px;padding-right:250px;padding-left:250px; padding-bottom:0px; display: inline-block;">
+        <div class="btn" id="login"><button action="submit">Log In</button></div>
+    </div>
+</form>
