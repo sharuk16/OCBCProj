@@ -42,7 +42,7 @@ namespace PFD_Challenge_1
                             string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
                             Console.WriteLine("Database check completed");
                             return Task.FromResult<Transaction>(incompleteTrans);
-
+                            
                         }
                         else
                         {

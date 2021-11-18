@@ -30,6 +30,15 @@ namespace PFD_Challenge_1
                         {
                             if(futureTransContext.UpdateFutureBalance(f) == true)
                             {
+                                Transaction newTransac = new Transaction //Create new transaction object
+                                {
+                                    Recipient = bankAccContext.GetBankAccount(f.Recipient).AccNo,
+                                    Sender = bankAccContext.GetBankAccount(f.Sender).AccNo,
+                                    Amount = f.Amount,
+                                    TimeTransfer = f.PlanTime,
+                                    Type = "Future"
+                                };
+                                transactionContext.AddTransactionRecord(newTransac);
                                 transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(f.Sender).Nric, f.Amount);
                                 futureTransContext.UpdateFutureComplete(f);
                                 Console.WriteLine("Initaitng Future Transfer scan") ;
