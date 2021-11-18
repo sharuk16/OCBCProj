@@ -72,7 +72,6 @@ namespace PFD_Challenge_1.Controllers
             BankUser bu;
             BankAccount ba;
             BankAccount senderAccount = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
-            BankUser sender = bankUserContext.GetBankUser(HttpContext.Session.GetString("NRIC"));
             //Validation
             //Check if recipient exists
             if (bankacc.IsMatch(ftr.Recipient))
@@ -168,12 +167,12 @@ namespace PFD_Challenge_1.Controllers
                     TimeTransfer = "",
                 };
             }
-            return RedirectToAction("Confirmation", "FundTransfer", tc);
+            return RedirectToAction("Confirmation", tc);
         }
 
         public IActionResult Confirmation(string recipient, string bankAccount, decimal? transferAmount, string futureTransfer, string timeTransfer)
         {
-            if (recipient == null || recipient == "" || bankAccount == null || bankAccount == "" || transferAmount == null || futureTransfer == null || futureTransfer == ""|| timeTransfer == null || timeTransfer == "")
+            if (recipient == null || recipient == "" || bankAccount == null || bankAccount == "" || transferAmount == null || futureTransfer == null || futureTransfer == "")
             {
                 return RedirectToAction("Index", "Home");
             }
