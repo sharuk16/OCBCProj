@@ -61,7 +61,6 @@ namespace PFD_Challenge_1.DAL
             conn.Close();
             return t;
         }
-
         public bool UpdateTransactionChanges //Updates recipient and sender BankAccount
             (BankAccount recipientAcc, BankAccount senderAcc, decimal moneySent)
         {
@@ -278,6 +277,43 @@ namespace PFD_Challenge_1.DAL
             return validLimit;
         }
 
+        public bool UpdateDailySpend(string nric, decimal amount)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE BankUser SET DailySpend = DailySpend + @amount
+                                WHERE NRIC = @nric";
+            cmd.Parameters.AddWithValue("@amount", amount);
+            cmd.Parameters.AddWithValue("@nric", nric);
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (count > 0)  //Returns true/false based on whether update is successful
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool ResetDailySpend()
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE BankUser SET DailySpend = 0 ";
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (count > 0)  //Returns true/false based on whether update is successful
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public string TransactionStatusMsg(bool status)
         {
             string message;
@@ -290,6 +326,25 @@ namespace PFD_Challenge_1.DAL
                 message = "Transaction Unsuccessful. Redirecting to Home Page.";
             }
             return message;
+        }
+
+        public bool DeleteTransactionRecord(int transacID)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"DELETE * FROM Transactions
+                                WHERE TransacID = @TransacID";
+            cmd.Parameters.AddWithValue("@TransacID", transacID);
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (count > 0)  //Returns true/false based on whether update is successful
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

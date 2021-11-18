@@ -13,6 +13,7 @@ namespace PFD_Challenge_1
     public class Incompletescanjob : IJob
     {
         TransactionDAL transactionContext = new TransactionDAL();
+        BankAccountDAL bankAccContext = new BankAccountDAL();
         public Task Execute(IJobExecutionContext context)
         {
 
@@ -20,15 +21,39 @@ namespace PFD_Challenge_1
             // transactionContext.CheckIncompleteExists();
             if (transactionContext.CheckIncompleteExists() != null)
             {
-                //Console.WriteLine(transactionContext.CheckIncompleteExists().TransacID);
-                return Task.FromResult<Transaction>(transactionContext.CheckIncompleteExists());
-                
+                Transaction incompleteTrans =  transactionContext.CheckIncompleteExists();
+                if (transactionContext.ValidateTransactionLimit(bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount) //If the amount exceeds transaction limit
+                        == false)
+                {
+                    return Task.FromResult<Transaction>(null);
+                }
+                else if (transactionContext.ValidateTransactionLimit(bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount) //If the amount does not exceed the transaction limit
+                    == true)
+                {
+                    if (incompleteTrans.Amount <= bankAccContext.GetBankAccount(incompleteTrans.Sender).Balance)
+                    {
+                        bool updatedAccounts = transactionContext.UpdateTransactionChanges(bankAccContext.GetBankAccount(incompleteTrans.Recipient),
+                        bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount); //Updates bank account balance records
+                        if (updatedAccounts == true) //If balance updates successfully
+                        {
+                            transactionContext.UpdateTransactionComplete(incompleteTrans.TransacID); //Updates transaction "Completed" status
+                            transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(incompleteTrans.Sender).Nric, incompleteTrans.Amount);
+                            string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
+                            return Task.FromResult<Transaction>(incompleteTrans);
+                        }
+                        else
+                        {
+                            string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
+                            return Task.FromResult<Transaction>(incompleteTrans);
+                        }
+                    }
+                    else
+                    {
+                        transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
+                    }
+                }
             }
-            //var task_r = Task.FromResult<int>(transactionContext.CheckIncompleteExists().TransacID);
-            
-
             return Task.FromResult<Transaction>(null);
-
         }
 
 

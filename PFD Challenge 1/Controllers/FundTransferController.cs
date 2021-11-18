@@ -150,7 +150,25 @@ namespace PFD_Challenge_1.Controllers
             {
                 if (tc.FutureTransfer == "true")
                 {
-                    
+                    if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount exceeds transaction limit
+                        == false)
+                    {
+                        TempData["LimitExceed"] = "The transaction you are trying to make exceeds your daily limit." +
+                            "Change your daily transaction limit or make a smaller transaction.";
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount does not exceed the transaction limit
+                        == true)
+                    {
+                        FutureTransfer newFutureTrans = new FutureTransfer
+                        {
+                            Recipient = receiverAccount.AccNo,
+                            Sender = senderAccount.AccNo,
+                            Amount = tc.TransferAmount,
+                            PlanTime = (DateTime)tc.TimeTransfer,
+                        };
+                        futureTransferContext.AddFutureRecord(newFutureTrans);
+                    }
                 }
                 else
                 {
@@ -172,17 +190,26 @@ namespace PFD_Challenge_1.Controllers
                             TimeTransfer = DateTime.Now,
                             Type = "Immediate"
                         };
-                        transacID = transactionContext.AddTransactionRecord(newTransac); //Add transaction object to database
-                        bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, transferAmount); //Updates bank account balance records
-                        if (updatedAccounts == true) //If balance updates successfully
+                        if(newTransac.Amount <= senderAccount.Balance)
                         {
-                            transactionContext.UpdateTransactionComplete(transacID); //Updates transaction "Completed" status
-                            message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
+                            transacID = transactionContext.AddTransactionRecord(newTransac); //Add transaction object to database
+                            bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, transferAmount); //Updates bank account balance records
+                            if (updatedAccounts == true) //If balance updates successfully
+                            {
+                                transactionContext.UpdateDailySpend(senderAccount.Nric, transferAmount);
+                                transactionContext.UpdateTransactionComplete(transacID); //Updates transaction "Completed" status
+                                message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
+                            }
+                            else
+                            {
+                                message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
+                            }
                         }
                         else
                         {
-                            transactionContext.ReverseTransactionChanges(receiverAccount, senderAccount, transferAmount); //Reverses update of bank account balance records
-                            message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
+                            TempData["BalanceExceed"] = "You do not have enough balance left in your account to complete this transaction." +
+                            "Please make a smaller transaction.";
+                            return RedirectToAction("Index", "Home");
                         }
                     }
                 }
