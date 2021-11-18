@@ -19,7 +19,6 @@ namespace PFD_Challenge_1.Controllers
         TransactionDAL transactionContext = new TransactionDAL();
         public IActionResult Index()
         {
-            HttpContext.Session.SetString("NRIC", "T2345678B");
             BankAccount ba = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
             List<Transaction> tList = transactionContext.GetAllTransaction(ba.AccNo);
             List<TransactionHistory> thList = new List<TransactionHistory>();
@@ -29,20 +28,20 @@ namespace PFD_Challenge_1.Controllers
                 {
                     thList.Add(new TransactionHistory
                     {
-                        Name = bankUserContext.GetBankUser(bankAccountContext.GetBankAccount(t.Sender).Nric).Name,
+                        Name = bankUserContext.GetBankUser(bankAccountContext.GetBankAccount(t.Recipient).Nric).Name,
                         Amount = t.Amount,
                         TimeTransfer = t.TimeTransfer,
-                        sender = false,
+                        sender = true,
                     });
                 }
                 else
                 {
                     thList.Add(new TransactionHistory
                     {
-                        Name = bankUserContext.GetBankUser(bankAccountContext.GetBankAccount(t.Recipient).Nric).Name,
+                        Name = bankUserContext.GetBankUser(bankAccountContext.GetBankAccount(t.Sender).Nric).Name,
                         Amount = t.Amount,
                         TimeTransfer = t.TimeTransfer,
-                        sender = true,
+                        sender = false,
                     });
                 }
             }
