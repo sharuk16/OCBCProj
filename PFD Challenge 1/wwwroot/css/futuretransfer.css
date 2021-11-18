@@ -150,6 +150,24 @@ textarea:read-write {
     white-space: nowrap;
 }
 
+/* 'What you have' container for input*/
+.whatyouhave {
+    width: 300px;
+    padding: 10px;
+    margin: 0;
+    background-color: #E7625F;
+    white-space: nowrap;
+}
+
+/* 'You activity' container for input*/
+.activity {
+    width: 300px;
+    padding: 10px;
+    margin: 0;
+    background-color: #E7625F;
+    white-space: nowrap;
+}
+
 /*Alert styling for front end validation*/
 .alert {
     box-sizing: border-box;
