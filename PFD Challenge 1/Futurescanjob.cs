@@ -13,25 +13,49 @@ namespace PFD_Challenge_1
     public class Futurescanjob : IJob
     {
         TransactionDAL transactionContext = new TransactionDAL();
+        FutureTransferDAL futureTransContext = new FutureTransferDAL();
+        BankAccountDAL bankAccContext = new BankAccountDAL();
+
         public Task Execute(IJobExecutionContext context)
         {
 
             // transactionContext.CheckIncompleteExists();
-            if (transactionContext.CheckIncompleteExists() != null)
+            if (futureTransContext.ScanFutureTransfer()!=null)
             {
-                Console.WriteLine("future scan works");
-                //Console.WriteLine(transactionContext.CheckIncompleteExists().TransacID);
-                return Task.FromResult<Transaction>(transactionContext.CheckIncompleteExists());
-
+                List<FutureTransfer> incompleteTransList = futureTransContext.ScanFutureTransfer();
+                foreach(FutureTransfer f in incompleteTransList)
+                {
+                    if (f.Amount <= bankAccContext.GetBankAccount(f.Sender).Balance)
+                    {
+                        if(transactionContext.ValidateTransactionLimit(bankAccContext.GetBankAccount(f.Sender), f.Amount)==true)
+                        {
+                            if(futureTransContext.UpdateFutureBalance(f) == true)
+                            {
+                                transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(f.Sender).Nric, f.Amount);
+                                futureTransContext.UpdateFutureComplete(f);
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
             }
-            //var task_r = Task.FromResult<int>(transactionContext.CheckIncompleteExists().TransacID);
+            else
+            {
+                return Task.FromResult<List<FutureTransfer>>(null);
+            }
 
-
-            return Task.FromResult<Transaction>(null);
-
+            return Task.FromResult<List<FutureTransfer>>(null);
         }
-
-
-
     }
 }

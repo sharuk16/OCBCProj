@@ -39,7 +39,7 @@ namespace PFD_Challenge_1.Listeners
                 .WithDailyTimeIntervalSchedule
                   (s =>
                     s.OnEveryDay()
-                    .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(17, 48)) //will run at 5 40 PM
+                    .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(10, 40)) //will run at 5 40 PM
                   )
                 .Build();
 

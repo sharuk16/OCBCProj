@@ -126,6 +126,33 @@ namespace PFD_Challenge_1.DAL
             conn.Close();
             return futureTransList;
         }
+
+        public int AddFutureRecord(FutureTransfer futureTrans)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            //SQL query to create a new FutureTransfer object in the database for records.
+            cmd.CommandText = @"INSERT INTO FutureTransfer
+                                (Recipient, Sender, Amount, 
+                                PlanTime, Notified, Completed)
+                                OUTPUT INSERTED.FutureID
+                                VALUES(@recipient, @sender, @amount,
+                                @plantime, @notified, @completed)";
+            cmd.Parameters.AddWithValue("@recipient", futureTrans.Recipient);
+            cmd.Parameters.AddWithValue("@sender", futureTrans.Sender);
+            cmd.Parameters.AddWithValue("@amount", futureTrans.Amount);
+            cmd.Parameters.AddWithValue("@timetransfer", futureTrans.PlanTime);
+            cmd.Parameters.AddWithValue("@notified", "F");
+            cmd.Parameters.AddWithValue("@completed", "F");
+
+            conn.Open();
+
+            int futureID = (int)cmd.ExecuteScalar();
+
+            conn.Close();
+
+            return futureID;
+        }
+
         public bool UpdateFutureBalance(FutureTransfer futureTrans)
         {
             SqlCommand cmd = conn.CreateCommand();
