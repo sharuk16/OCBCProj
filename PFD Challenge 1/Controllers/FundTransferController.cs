@@ -310,7 +310,7 @@ namespace PFD_Challenge_1.Controllers
         {
             return View();
         }
-        public async Task SendTelegramAsync(string s, bool status, int?transacID)
+        public async Task SendTelegramAsync(string s, bool status, int? transacID)
         {
             if (bankUserContext.GetUserChatID(HttpContext.Session.GetString("NRIC")) != null)
             {
@@ -331,7 +331,7 @@ namespace PFD_Challenge_1.Controllers
                     {
                         transactionContext.UpdateTransactionNotified(transacID.Value);
                     }
-                    
+
                 }
             }
         }
