@@ -20,7 +20,7 @@ namespace PFD_Challenge_1
         {
 
             // transactionContext.CheckIncompleteExists();
-            if (futureTransContext.ScanFutureTransfer()!=null)
+            if (futureTransContext.ScanFutureTransfer().Count() != 0)
             {
                 List<FutureTransfer> incompleteTransList = futureTransContext.ScanFutureTransfer();
                 foreach(FutureTransfer f in incompleteTransList)

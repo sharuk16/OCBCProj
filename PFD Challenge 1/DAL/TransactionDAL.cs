@@ -217,7 +217,7 @@ namespace PFD_Challenge_1.DAL
 
         public Transaction CheckIncompleteExists() //Checks for Immediate Transactions that are still incomplete
         {
-            Transaction transac = new Transaction();
+            Transaction transac = null;
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = @"SELECT * FROM Transactions
                                 WHERE Completed = 'F' AND Type = 'Immediate'";
@@ -239,6 +239,10 @@ namespace PFD_Challenge_1.DAL
             }
             reader.Close();
             conn.Close();
+            if (transac == null)
+            {
+                return null;
+            }
             return transac;
         }
 
