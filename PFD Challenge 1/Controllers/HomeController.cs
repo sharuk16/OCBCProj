@@ -35,8 +35,9 @@ namespace PFD_Challenge_1.Controllers
 
         public IActionResult Index()
         {
-            //JobScheduler.Start();
-            //JobScheduler.FutureScanJob();
+            JobScheduler.Start();
+            JobScheduler.FutureScanJob();
+            JobScheduler.ResetDailySpentJob();
             return View();
         }
         public IActionResult Login(IFormCollection formData)

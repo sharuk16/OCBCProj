@@ -41,7 +41,7 @@ namespace PFD_Challenge_1
                             transactionContext.UpdateTransactionComplete(incompleteTrans.TransacID); //Updates transaction "Completed" status
                             transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(incompleteTrans.Sender).Nric, incompleteTrans.Amount);
                             string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
-                            Console.WriteLine("--> Database check completed");
+                            Console.WriteLine("Database check completed");
                             return Task.FromResult<Transaction>(incompleteTrans);
 
                         }

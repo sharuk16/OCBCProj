@@ -18,8 +18,7 @@ namespace PFD_Challenge_1
 
         public Task Execute(IJobExecutionContext context)
         {
-
-            // transactionContext.CheckIncompleteExists();
+ 
             if (futureTransContext.ScanFutureTransfer().Count() != 0)
             {
                 List<FutureTransfer> incompleteTransList = futureTransContext.ScanFutureTransfer();
@@ -33,6 +32,7 @@ namespace PFD_Challenge_1
                             {
                                 transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(f.Sender).Nric, f.Amount);
                                 futureTransContext.UpdateFutureComplete(f);
+                                Console.WriteLine("Initaitng Future Transfer scan") ;
                             }
                             else
                             {

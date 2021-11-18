@@ -19,7 +19,7 @@ namespace PFD_Challenge_1
         public Task Execute(IJobExecutionContext context)
         {
             transactionContext.ResetDailySpend();
-            Console.WriteLine("resetting daily spent");
+            Console.WriteLine("Initiatting daily spent amount");
             return Task.FromResult(0);
         }
     }

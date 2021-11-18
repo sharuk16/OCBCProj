@@ -34,14 +34,13 @@ namespace PFD_Challenge_1.Listeners
             scheduler.Start();
 
             IJobDetail job = JobBuilder.Create<Futurescanjob>().Build();
-            //trigger the job
             ITrigger trigger = TriggerBuilder.Create()
-                .WithDailyTimeIntervalSchedule
-                  (s =>
-                    s.OnEveryDay()
-                    .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(11, 05)) //will run at 5 40 PM
-                  )
-                .Build();
+           .WithIdentity("trigger2", "group1")
+           .StartNow()
+           .WithSimpleSchedule(x => x
+           .WithIntervalInSeconds(10) //run the method every 10 second
+           .RepeatForever())
+           .Build();
 
             scheduler.ScheduleJob(job, trigger);
         }
@@ -53,13 +52,15 @@ namespace PFD_Challenge_1.Listeners
 
             IJobDetail job = JobBuilder.Create<ResetDailySpentJob>().Build();
             //trigger the job
-            ITrigger trigger = TriggerBuilder.Create()
-                .WithDailyTimeIntervalSchedule
-                  (s =>
-                    s.OnEveryDay()
-                    .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(0, 0)) //will run at 12 AM every day
-                  )
-                .Build();
+               ITrigger trigger = TriggerBuilder.Create()
+               .WithDailyTimeIntervalSchedule
+                 (s =>
+                   s.OnEveryDay()
+                   .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(0, 0)) //will run at 12 AM every day
+                   )
+                 .Build();
+
+            scheduler.ScheduleJob(job, trigger);
 
             scheduler.ScheduleJob(job, trigger);
         }

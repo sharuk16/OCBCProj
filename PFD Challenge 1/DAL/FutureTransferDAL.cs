@@ -102,7 +102,7 @@ namespace PFD_Challenge_1.DAL
             List<FutureTransfer> futureTransList = new List<FutureTransfer>();
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = @"SELECT * FROM FutureTransfer
-                                WHERE Completed = 'F' AND TimeTransfer <= GETDATE()";
+                                WHERE Completed = 'F' AND PlanTime <= GETDATE()";
             conn.Open();
             SqlDataReader reader = cmd.ExecuteReader();
             if (reader.HasRows)
@@ -182,8 +182,8 @@ namespace PFD_Challenge_1.DAL
         public bool UpdateFutureComplete(FutureTransfer futureTrans)
         {
             SqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = @"UPDATE FutureTransfer SET Notified = 'T'
-                                WHERE FutureTransfer = @FutureID"; //Updates the Transactions's Notified Status
+            cmd.CommandText = @"UPDATE FutureTransfer SET Completed = 'T'
+                                WHERE FutureID = @FutureID"; //Updates the Transactions's Notified Status
             cmd.Parameters.AddWithValue("@FutureID", futureTrans.FutureId);
             conn.Open();
             int count = cmd.ExecuteNonQuery();
