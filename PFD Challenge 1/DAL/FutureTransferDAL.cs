@@ -140,7 +140,7 @@ namespace PFD_Challenge_1.DAL
             cmd.Parameters.AddWithValue("@recipient", futureTrans.Recipient);
             cmd.Parameters.AddWithValue("@sender", futureTrans.Sender);
             cmd.Parameters.AddWithValue("@amount", futureTrans.Amount);
-            cmd.Parameters.AddWithValue("@timetransfer", futureTrans.PlanTime);
+            cmd.Parameters.AddWithValue("@plantime", futureTrans.PlanTime);
             cmd.Parameters.AddWithValue("@notified", "F");
             cmd.Parameters.AddWithValue("@completed", "F");
 

@@ -16,12 +16,14 @@ namespace PFD_Challenge_1
         BankAccountDAL bankAccContext = new BankAccountDAL();
         public Task Execute(IJobExecutionContext context)
         {
-
-            Console.WriteLine("--> Database check completed");
             // transactionContext.CheckIncompleteExists();
-            if (transactionContext.CheckIncompleteExists() != null)
+            if (transactionContext.CheckIncompleteExists() == null)
             {
-                Transaction incompleteTrans =  transactionContext.CheckIncompleteExists();
+                return Task.FromResult<Transaction>(null);
+            }
+            else
+            {
+                Transaction incompleteTrans = transactionContext.CheckIncompleteExists();
                 if (transactionContext.ValidateTransactionLimit(bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount) //If the amount exceeds transaction limit
                         == false)
                 {
@@ -39,7 +41,9 @@ namespace PFD_Challenge_1
                             transactionContext.UpdateTransactionComplete(incompleteTrans.TransacID); //Updates transaction "Completed" status
                             transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(incompleteTrans.Sender).Nric, incompleteTrans.Amount);
                             string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
+                            Console.WriteLine("--> Database check completed");
                             return Task.FromResult<Transaction>(incompleteTrans);
+
                         }
                         else
                         {
@@ -52,6 +56,7 @@ namespace PFD_Challenge_1
                         transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
                     }
                 }
+
             }
             return Task.FromResult<Transaction>(null);
         }

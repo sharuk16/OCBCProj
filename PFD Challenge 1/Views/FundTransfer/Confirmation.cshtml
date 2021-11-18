@@ -73,7 +73,7 @@
                                     </div>
                                     <div style=" margin:auto;box-sizing: border-box; background-color: transparent; border: 2px solid white; border-radius: 0.6em; color: white; cursor: pointer; /*display: flex;*/ align-self: center; font-size: 1rem; font-weight: 400; line-height: 1; margin: 20px; padding: 1.2em 2.8em; text-decoration: none; text-align: center; text-transform: uppercase; font-family: 'Montserrat', sans-serif; font-weight: 700; padding-top: 2px; padding-bottom: 0px; padding-right: 130px; padding-left: 130px; display: inline-block;">
                                         <div style="padding-top: 10px; padding-bottom: 10px;">
-                                            <div style="width: 300px; font-size: 25px;">@String.Format("{0:G}", Context.Session.GetString("TimeOfTransfer"))</div>
+                                            <div style="width: 300px; font-size: 25px;"><input asp-for="TimeTransfer"/>@*@String.Format("{0:G}", Context.Session.GetString("TimeOfTransfer"))*@</div>
                                         </div>
                                     </div>
                                 </div>
