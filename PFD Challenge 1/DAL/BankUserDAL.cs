@@ -140,6 +140,7 @@ namespace PFD_Challenge_1.DAL
             string text = "SELECT * FROM BankUser Where NRIC = @select";
             Regex email = new Regex(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}");
             Regex ph = new Regex(@"[0-9]{8}");
+            string pat = pattern;
             if (email.IsMatch(pattern))
             {
                 text = "SELECT * FROM BankUser Where Email = @select";

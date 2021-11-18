@@ -49,7 +49,7 @@ namespace PFD_Challenge_1.Controllers
             bool result =bankUserContext.AuthenticateUser(userLogin, pass);
             if(!result)
             {
-                return RedirectToAction("Login");
+                return RedirectToAction("Index");
             }
             else
             {
