@@ -3,17 +3,45 @@
 *@
 @{
 }
-<form asp-action="Authentication">
-    <div class="container">
-        <div>
-            <h2><label for="balance">Please enter your 7 digits:</label></h2>
-        </div>
-        <div class="input" style="padding-top: 1px; padding-bottom: 0px; padding-right: 80px; padding-left: 80px; display: inline-block;">
-            <input name="code" type="text" placeholder="Enter Code" class="form-control" id="to" style="background-color: #E7625F; border: transparent; color: white; text-align: center;" required>
+
+@section css{
+    @*Add specific css script here*@
+    <link rel="stylesheet" href="~/css/authentication.css" />
+}
+<div class="container" id="mainContainer2">
+    <div class="first-container">
+        <div style="text-align: center; margin-top:5%">
+            <img id="imgLogo" src="~/images/Authentication.jpg"
+                 style="width: 50%" />
+            <h1 style="margin-top:5%;margin-bottom:30px;">Enter your 7 digits code</h1>
         </div>
     </div>
-    <!-- Login Button -->
-    <div class="every" style="padding-top:20px;padding-right:250px;padding-left:250px; padding-bottom:0px; display: inline-block;">
-        <div class="btn" id="login"><button action="submit">Log In</button></div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <form asp-action="Authentication" style="text-align: center">
+                <div class="container">
+                    <div class="form-group form-check-inline" style="padding-top: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
+                        <div class="form-group" style="color: white">
+                            <div class="code" style="padding-top: 2px;">
+                                <div class="to" style="background-color: #AA1945;font-size:20px;">Enter Code</div>
+                            </div>
+                            <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
+                                <input type="text" class="form-control" id="code" style="background-color: #E7625F; border: transparent; color: white; text-align: center; font-size:25px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="every" style="padding-top: 0px; padding-right:50px;padding-left:50px; display: inline-block;">
+                    <div><button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2" id="login">Login</button></div>
+                </div>
+            </form>
+        </div>
     </div>
-</form>
+</div>
+
+@section Scripts{
+    <script src="~/js/authentication.js"></script>
+}
