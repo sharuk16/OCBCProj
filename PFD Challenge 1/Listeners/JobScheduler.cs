@@ -39,7 +39,25 @@ namespace PFD_Challenge_1.Listeners
                 .WithDailyTimeIntervalSchedule
                   (s =>
                     s.OnEveryDay()
-                    .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(10, 40)) //will run at 5 40 PM
+                    .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(11, 05)) //will run at 5 40 PM
+                  )
+                .Build();
+
+            scheduler.ScheduleJob(job, trigger);
+        }
+        public static void ResetDailySpentJob()
+        {
+            Task<IScheduler> schedulerjob = StdSchedulerFactory.GetDefaultScheduler();
+            IScheduler scheduler = schedulerjob.Result;
+            scheduler.Start();
+
+            IJobDetail job = JobBuilder.Create<ResetDailySpentJob>().Build();
+            //trigger the job
+            ITrigger trigger = TriggerBuilder.Create()
+                .WithDailyTimeIntervalSchedule
+                  (s =>
+                    s.OnEveryDay()
+                    .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(0, 0)) //will run at 12 AM every day
                   )
                 .Build();
 
