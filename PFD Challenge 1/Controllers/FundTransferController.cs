@@ -24,7 +24,7 @@ namespace PFD_Challenge_1.Controllers
         TransactionDAL transactionContext = new TransactionDAL();
         public IActionResult FundTransfer()
         {
-            if (HttpContext.Session.GetString("NRIC") == null || HttpContext.Session.GetString("Login")!= "true")
+            if (HttpContext.Session.GetString("NRIC") == null)
             {
                 return RedirectToAction("Index", "Home");
             }
