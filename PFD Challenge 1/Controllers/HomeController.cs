@@ -36,29 +36,14 @@ namespace PFD_Challenge_1.Controllers
             JobScheduler.FutureScanJob();
             return View();
         }
-        public IActionResult faceLogin(int id)
-        {
-            if (id > 28000 && id < 32000)
-            {
-                HttpContext.Session.SetString("NRIC", "T1234567A");
-                if (bankUserContext.GetUserChatID(HttpContext.Session.GetString("NRIC")) != null)
-                {
-                    HttpContext.Session.SetString("TelegramChatID", "true");
-                }
-                else
-                {
-                    HttpContext.Session.SetString("TelegramChatID", "false");
-                }
-                return RedirectToAction("FundTransfer", "FundTransfer");
-            }
-            return RedirectToAction("Index", "Home");
-        }
+        
 
-        public async Task LogOut()
+        public IActionResult LogOut()
         {
             HttpContext.Session.Clear();
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
+            //await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            //await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
         }
 
         [Authorize]

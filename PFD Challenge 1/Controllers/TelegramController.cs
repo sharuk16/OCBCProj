@@ -25,6 +25,10 @@ namespace PFD_Challenge_1.Controllers
                 return RedirectToAction("Index", "Home");
             }
             DateTime now = DateTime.Now;
+            Random rand = new Random();
+            string digit_7 = rand.Next(1000000,9999999).ToString();
+            ViewData["Code"] = digit_7;
+            HttpContext.Session.SetString("Code", digit_7);
             HttpContext.Session.SetString("Time", now.ToString());
             return View();
         }
@@ -34,6 +38,7 @@ namespace PFD_Challenge_1.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            string code = HttpContext.Session.GetString("Code");
             DateTime started =Convert.ToDateTime(HttpContext.Session.GetString("Time"));
             DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             TimeSpan dtNow = started.Subtract(dt);
@@ -41,6 +46,7 @@ namespace PFD_Challenge_1.Controllers
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri("https://api.telegram.org");
             HttpResponseMessage response = await client.GetAsync("/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws/getUpdates");
+            bool toolong = false;
             if (response.IsSuccessStatusCode)
             {
                 int? chatID = null;
@@ -49,7 +55,7 @@ namespace PFD_Challenge_1.Controllers
                 result.result.Reverse();
                 foreach(Result r in result.result)
                 {
-                    if (r.message.text == HttpContext.Session.GetString("NRIC")) 
+                    if (r.message.text == code) 
                     {
                         long messageCapture = r.message.date + 8*60*60;
                         long endtime = messageCapture-seconds;
@@ -62,6 +68,7 @@ namespace PFD_Challenge_1.Controllers
                         else
                         {
                             chatID = null;
+                            toolong = true;
                         }
                         break;
                     }
@@ -91,6 +98,11 @@ namespace PFD_Challenge_1.Controllers
                             return View();
                         }
                     }
+                }
+                if (toolong)
+                {
+                    ViewData["Message"] = "Took too long to respond.";
+                    return View();
                 }
                 ViewData["Message"] = "Unable to retrieve chat_ID";
                 return View();
