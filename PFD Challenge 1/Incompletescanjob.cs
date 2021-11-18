@@ -21,13 +21,13 @@ namespace PFD_Challenge_1
             if (transactionContext.CheckIncompleteExists() != null)
             {
                 //Console.WriteLine(transactionContext.CheckIncompleteExists().TransacID);
-                return Task.FromResult<int>(transactionContext.CheckIncompleteExists().TransacID);
+                return Task.FromResult<Transaction>(transactionContext.CheckIncompleteExists());
                 
             }
             //var task_r = Task.FromResult<int>(transactionContext.CheckIncompleteExists().TransacID);
             
 
-            return Task.FromResult<int>(0);
+            return Task.FromResult<Transaction>(null);
 
         }
 
