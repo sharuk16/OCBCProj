@@ -20,7 +20,7 @@ namespace PFD_Challenge_1.Controllers
         TransactionDAL transactionContext = new TransactionDAL();
         public IActionResult Index()
         {
-            if (HttpContext.Session.GetString("NRIC") == null|| HttpContext.Session.GetString("TelegramSetUp") =="false"|| HttpContext.Session.GetString("Code")!="")
+            if (HttpContext.Session.GetString("NRIC") == null|| HttpContext.Session.GetString("TelegramSetUp") =="false")
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -76,6 +76,7 @@ namespace PFD_Challenge_1.Controllers
                 }
                 if(chatID != null)
                 {
+                    HttpContext.Session.SetString("TelegramSetUp", "false");
                     bool updateResult = bankUserContext.UpdateUserChatID(chatID.Value, HttpContext.Session.GetString("NRIC"));
                     if (updateResult)
                     {
