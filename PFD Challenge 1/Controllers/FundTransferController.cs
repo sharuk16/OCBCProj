@@ -130,7 +130,7 @@ namespace PFD_Challenge_1.Controllers
             {
                 if (ftr.TransferAmount <= 0)
                 {
-                    ViewData["Message"] = "Unable to transfer 0 dollars or less than 0 dollars!";
+                    ViewData["Message"] = "Unable to transfer zero dollars or less than zero dollars!";
                 }
                 else
                 {
