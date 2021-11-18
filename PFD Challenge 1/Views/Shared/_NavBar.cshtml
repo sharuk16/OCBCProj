@@ -13,34 +13,38 @@
     <!-- Links in the navbar, displayed as drop-down list when collapsed -->
     <div class="collapse navbar-collapse" id="homeNavbar">
         @*@if (User.Identity.IsAuthenticated == false)
-         {
-            <ul class="navbar-nav mr-auto">
+            {
+               <ul class="navbar-nav mr-auto">
+                   <li class="nav-item">
+                       <a class="nav-link" asp-area="" asp-controller="Home" asp-action="LogIn">Login</a>
+                   </li>
+               </ul>
+            }*@
+        @if (Context.Session.GetString("NRIC") != null)
+{
+
+        <ul class="navbar-nav mr-auto">
+            @if (Context.Session.GetString("TelegramSetUp") == "false")
+            {
                 <li class="nav-item">
-                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="LogIn">Login</a>
+                    <!--Orginal version-->
+                    <a class="nav-link" href="~/FundTransfer/FundTransfer">Transfer</a>
                 </li>
-            </ul>
-         }*@
-        @if (@*User.Identity.IsAuthenticated ||*@ Context.Session.GetString("NRIC") != null)
-         {
-            <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <!--Orginal version-->
-                <a class="nav-link" href="~/FundTransfer/FundTransfer">Transfer</a>
-            </li>
-            <li class="nav-item">
-                <!--Orginal version-->
-                <a class="nav-link" href="~/Transaction/index">History</a>
-            </li>
+                <li class="nav-item">
+                    <!--Orginal version-->
+                    <a class="nav-link" href="~/Transaction/index">History</a>
+                </li>
+            }
             @if (Context.Session.GetString("TelegramSetUp") == "true")
-             {
+            {
                 <li class="nav-item">
-                   <a class="nav-link" href="~/Telegram/index">Telegram</a>
+                    <a class="nav-link" href="~/Telegram/index">Telegram</a>
                 </li>
-             }
+            }
             <li class="nav-item">
-                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="LogOut">LogOut</a>
+                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="LogOut">LogOut</a>
             </li>
-            </ul>
-         }
-        </div>
+        </ul>
+}
+</div>
 </nav>
