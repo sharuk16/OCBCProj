@@ -38,10 +38,13 @@ namespace PFD_Challenge_1
                                     TimeTransfer = f.PlanTime,
                                     Type = "Future"
                                 };
-                                transactionContext.AddTransactionRecord(newTransac);
+                                if(futureTransContext.FutureTransferExists(f) == false)
+                                {
+                                    transactionContext.AddTransactionRecord(newTransac);
+                                }
                                 transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(f.Sender).Nric, f.Amount);
                                 futureTransContext.UpdateFutureComplete(f);
-                                Console.WriteLine("Initaitng Future Transfer scan") ;
+                                Console.WriteLine("Initiating Future Transfer scan") ;
                             }
                             else
                             {

@@ -222,5 +222,31 @@ namespace PFD_Challenge_1.DAL
 
             return transacID;
         }
+
+        public bool FutureTransferExists(FutureTransfer futureTrans)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT * FROM Transactions
+                                WHERE Recipient = @Recipient AND
+                                Sender = @Sender AND
+                                Amount = @Amount AND
+                                TimeTransfer = @TimeTransfer AND
+                                Type = 'Future'";
+            cmd.Parameters.AddWithValue("@Recipient", futureTrans.Recipient);
+            cmd.Parameters.AddWithValue("@Sender", futureTrans.Sender);
+            cmd.Parameters.AddWithValue("@Amount", futureTrans.Amount);
+            cmd.Parameters.AddWithValue("@TimeTransfer", futureTrans.PlanTime);
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (count > 0)  //Returns true/false based on whether update is successful
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
