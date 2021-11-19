@@ -211,6 +211,7 @@ namespace PFD_Challenge_1.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            //Get relevant information from the confirmation page
             BankAccount senderAccount = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
             BankAccount receiverAccount = bankAccountContext.GetBankAccount(tc.BankAccount);
             BankUser bu = bankUserContext.GetBankUser(HttpContext.Session.GetString("NRIC"));
@@ -219,6 +220,7 @@ namespace PFD_Challenge_1.Controllers
             string data="";
             try
             {
+                //Execute this portion if tranaction is a future transfer. This is to store the future transfer object
                 if (tc.FutureTransfer == "true")
                 {
                     FutureTransfer newFutureTrans = new FutureTransfer
@@ -229,6 +231,7 @@ namespace PFD_Challenge_1.Controllers
                         PlanTime =Convert.ToDateTime(tc.TimeTransfer),
                     };
                     transacID = futureTransferContext.AddFutureRecord(newFutureTrans);
+                    //Information to alert user
                     data = "Dear " + bu.Name + "! You have saved future funds transfer of $" + transferAmount.ToString() + " to " + su.Name + " is successful!";
                 }
                 else
@@ -236,6 +239,7 @@ namespace PFD_Challenge_1.Controllers
                     if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount exceeds transaction limit
                         == false)
                     {
+                        //Notification message for user
                         data = "Dear " + bu.Name + "! Your funds transfer of $" + transferAmount.ToString() + " to " + su.Name + " is Unsuccessful! Date of transfer: " + DateTime.Now +
                             " Reason for failed transaction: The transaction you are trying to make exceeds your daily limit. Change your daily transaction limit or make a smaller transaction.";
                     }
@@ -273,12 +277,14 @@ namespace PFD_Challenge_1.Controllers
                         }
                     }
                 }
+                //Method to send the transaction messages
                 await SendTelegramAsync(data, true, transacID);
                 ViewData["Message"] = message;
+                //Redirect to user to transaction history
                 return RedirectToAction("Index", "Transaction");
             }
             catch (TimeoutException)
-            {
+            {//Method to catch if any calls from database takes too long to execute
                 try
                 {
                     if (bankUserContext.GetUserChatID(HttpContext.Session.GetString("NRIC")) != null)

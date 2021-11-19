@@ -24,10 +24,14 @@ namespace PFD_Challenge_1.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            //Get the time now
             DateTime now = DateTime.Now;
+            //Generate 7 digit code
             Random rand = new Random();
             string digit_7 = rand.Next(1000000,9999999).ToString();
+            //Show code to user
             ViewData["Code"] = digit_7;
+            //store code and time to be used for validation
             HttpContext.Session.SetString("Code", digit_7);
             HttpContext.Session.SetString("Time", now.ToString());
             return View();
@@ -38,11 +42,14 @@ namespace PFD_Challenge_1.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            //Get code from session state
             string code = HttpContext.Session.GetString("Code");
             HttpContext.Session.SetString("Code", "");
+            //Get stored time
             DateTime started =Convert.ToDateTime(HttpContext.Session.GetString("Time"));
             DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             TimeSpan dtNow = started.Subtract(dt);
+            //Converting the time to seconds
             int seconds = Convert.ToInt32(dtNow.TotalSeconds);
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri("https://api.telegram.org");
@@ -56,6 +63,7 @@ namespace PFD_Challenge_1.Controllers
                 result.result.Reverse();
                 foreach(Result r in result.result)
                 {
+                    //Check if message is the same as code
                     if (r.message.text == code) 
                     {
                         long messageCapture = r.message.date + 8*60*60;
@@ -74,6 +82,7 @@ namespace PFD_Challenge_1.Controllers
                         break;
                     }
                 }
+                //Send a notification to user if they succeeded in registering their telegram
                 if(chatID != null)
                 {
                     HttpContext.Session.SetString("TelegramSetUp", "false");
@@ -81,6 +90,7 @@ namespace PFD_Challenge_1.Controllers
                     if (updateResult)
                     {
                         HttpContext.Session.SetString("TelegramChatID", "true");
+                        //Create Notification object
                         Notification newNotification = new Notification
                         {
                             chat_id = chatID.Value,
@@ -88,6 +98,7 @@ namespace PFD_Challenge_1.Controllers
                         };
                         string json = JsonConvert.SerializeObject(newNotification);
                         StringContent notificationContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+                        //send the message
                         response = await client.PostAsync("/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws/sendMessage", notificationContent);
                         if (response.IsSuccessStatusCode)
                         {
@@ -101,11 +112,13 @@ namespace PFD_Challenge_1.Controllers
                         }
                     }
                 }
+                //When user fails to key code on time
                 if (toolong)
                 {
                     ViewData["Message"] = "Took too long to respond.";
                     return View();
                 }
+                //When user key in wrong code
                 ViewData["Message"] = "Unable to retrieve chat_ID";
                 return View();
             }

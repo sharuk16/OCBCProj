@@ -249,6 +249,40 @@ namespace PFD_Challenge_1.DAL
             }
             return transac;
         }
+        public Transaction CheckNotNotified() //Checks for Notifications not send that are still incomplete
+        {
+            Transaction transac = null;
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT * FROM Transactions
+                                WHERE Notified = 'F'and Completed = 'T'";
+            conn.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    transac = new Transaction()
+                    {
+                        TransacID = reader.GetInt32(0),
+                        Recipient = reader.GetString(1),
+                        Sender = reader.GetString(2),
+                        Amount = reader.GetDecimal(3),
+                        TimeTransfer = reader.GetDateTime(4),
+                        Notified = reader.GetString(5),
+                        Completed = reader.GetString(6),
+                        Type = reader.GetString(7),
+                    };
+
+                }
+            }
+            reader.Close();
+            conn.Close();
+            if (transac == null)
+            {
+                return null;
+            }
+            return transac;
+        }
 
         public bool ValidateTransactionLimit(BankAccount bankAcc, decimal transAmt) //Checks if transfer amount exceeds transfer limit
         {

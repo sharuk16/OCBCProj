@@ -23,6 +23,7 @@ namespace PFD_Challenge_1.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        //For accessing DAL and SQL databases
         BankAccountDAL bankAccountContext = new BankAccountDAL();
         BankUserDAL bankUserContext = new BankUserDAL();
         FutureTransferDAL futureTransferContext = new FutureTransferDAL();

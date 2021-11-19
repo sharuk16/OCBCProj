@@ -22,6 +22,7 @@ namespace PFD_Challenge_1.Controllers
             BankAccount ba = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
             List<Transaction> tList = transactionContext.GetAllTransaction(ba.AccNo);
             List<TransactionHistory> thList = new List<TransactionHistory>();
+            //This is for the display of transaction history of user
             foreach(Transaction t in tList)
             {
                 if (t.Sender == ba.AccNo)
