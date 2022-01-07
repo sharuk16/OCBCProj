@@ -55,13 +55,14 @@ namespace PFD_Challenge_1
                                 {
                                     //Get information of the transfer
                                     transactionContext.UpdateTransactionComplete(transacID);
-                                    BankAccount ba = bankAccContext.GetBankAccount(f.Sender);
-                                    BankAccount sa = bankAccContext.GetBankAccount(f.Recipient);
+                                    BankAccount ba = bankAccContext.GetBankAccount(f.Recipient);
+                                    BankAccount sa = bankAccContext.GetBankAccount(f.Sender);
                                     BankUser bu = bankUserContext.GetBankUser(ba.Nric);
-                                    BankUser su = bankUserContext.GetBankUser(bu.Nric);
-                                    if (bu != null)
+                                    BankUser su = bankUserContext.GetBankUser(sa.Nric);
+                                    if (su != null)
                                     {
-                                        int? chatID = bankUserContext.GetUserChatID(bu.Nric);
+                                        //Get sender chat id
+                                        int? chatID = bankUserContext.GetUserChatID(su.Nric);
                                         if (chatID != null)
                                         {//Method to send telegram notification
                                             SendNotificationAsync(chatID, bu, su, transacID, f.Amount).ContinueWith(t => Console.WriteLine(t.Exception),
@@ -103,7 +104,7 @@ namespace PFD_Challenge_1
             Notification newNotification = new Notification
             {
                 chat_id = chatID.Value,
-                text = "Dear " + bu.Name + "! You have successfully transfered $" + amount.ToString() + " to " + su.Name + "! Date and Time of Transfer: " + DateTime.Now.ToString(),
+                text = "Dear " + su.Name + "! You have successfully transfered $" + amount.ToString() + " to " + bu.Name + "! Date and Time of Transfer: " + DateTime.Now.ToString(),
             };
             string json = JsonConvert.SerializeObject(newNotification);
             StringContent notificationContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
