@@ -220,6 +220,7 @@ namespace PFD_Challenge_1.Controllers
             string data="";
             try
             {
+                //Method: Create Transactions record and FutureTransfer record separately.
                 //Execute this portion if tranaction is a future transfer. This is to store the future transfer object
                 if (tc.FutureTransfer == "true")
                 {

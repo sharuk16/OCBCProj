@@ -248,5 +248,24 @@ namespace PFD_Challenge_1.DAL
                 return false;
             }
         }
+
+        public bool DeleteFutureTransfer(FutureTransfer futureTrans)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"DELETE FROM FutureTransfer WHERE
+                                FutureID = @futureID";
+            cmd.Parameters.AddWithValue("@futureID", futureTrans.FutureId);
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (count > 0)  //Returns true/false based on whether update is successful
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

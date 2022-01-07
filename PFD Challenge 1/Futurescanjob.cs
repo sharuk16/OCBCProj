@@ -47,6 +47,7 @@ namespace PFD_Challenge_1
                                 {
                                     transacID=transactionContext.AddTransactionRecord(newTransac);
                                 }
+                                futureTransContext.DeleteFutureTransfer(f);
                                 //Checks and validations to ensure transaction can be completed
                                 transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(f.Sender).Nric, f.Amount);
                                 futureTransContext.UpdateFutureComplete(f);
