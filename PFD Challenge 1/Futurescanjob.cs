@@ -22,7 +22,7 @@ namespace PFD_Challenge_1
         BankUserDAL bankUserContext = new BankUserDAL();
         public Task Execute(IJobExecutionContext context)
         {
- 
+            Console.WriteLine("Initiating Future Transfer scan");
             if (futureTransContext.ScanFutureTransfer().Count() != 0)
             {
                 List<FutureTransfer> incompleteTransList = futureTransContext.ScanFutureTransfer();
@@ -68,9 +68,18 @@ namespace PFD_Challenge_1
                                             SendNotificationAsync(chatID, bu, su, transacID, f.Amount).ContinueWith(t => Console.WriteLine(t.Exception),
         TaskContinuationOptions.OnlyOnFaulted);
                                         }                                        
-                                    }                                    
+                                    }
+                                    if (bu != null)
+                                    {
+                                        //Get sender chat id
+                                        int? chatID = bankUserContext.GetUserChatID(bu.Nric);
+                                        if (chatID != null)
+                                        {//Method to send telegram notification
+                                            SendNotifReceiverAsync(chatID, bu, su, f.Amount).ContinueWith(t => Console.WriteLine(t.Exception),
+                TaskContinuationOptions.OnlyOnFaulted);
+                                        }
+                                    }
                                 }
-                                Console.WriteLine("Initiating Future Transfer scan") ;
                             }
                             else
                             {
@@ -85,6 +94,56 @@ namespace PFD_Challenge_1
                     else
                     {
                         continue;
+                    }
+                }
+            }
+            else if (transactionContext.ScanNotNotifiedTransaction().Count()!=0)
+            {
+                foreach(Transaction t in transactionContext.ScanNotNotifiedTransaction())
+                {
+                    if (t.Completed == "T")
+                    {
+                        BankAccount ba = bankAccContext.GetBankAccount(t.Recipient);
+                        BankAccount sa = bankAccContext.GetBankAccount(t.Sender);
+                        BankUser bu = bankUserContext.GetBankUser(ba.Nric);
+                        BankUser su = bankUserContext.GetBankUser(sa.Nric);
+                        if (su != null)
+                        {
+                            //Get sender chat id
+                            int? chatID = bankUserContext.GetUserChatID(su.Nric);
+                            if (chatID != null)
+                            {//Method to send telegram notification
+                                SendNotificationAsync(chatID, bu, su, t.TransacID, t.Amount).ContinueWith(t => Console.WriteLine(t.Exception),
+    TaskContinuationOptions.OnlyOnFaulted);
+                            }
+                        }
+    //                    if (bu != null)
+    //                    {
+    //                        //Get sender chat id
+    //                        int? chatID = bankUserContext.GetUserChatID(bu.Nric);
+    //                        if (chatID != null)
+    //                        {//Method to send telegram notification
+    //                            SendNotifReceiverAsync(chatID, bu, su, t.Amount).ContinueWith(t => Console.WriteLine(t.Exception),
+    //TaskContinuationOptions.OnlyOnFaulted);
+    //                        }
+    //                    }
+                    }
+                    else
+                    {
+                        BankAccount ba = bankAccContext.GetBankAccount(t.Recipient);
+                        BankAccount sa = bankAccContext.GetBankAccount(t.Sender);
+                        BankUser bu = bankUserContext.GetBankUser(ba.Nric);
+                        BankUser su = bankUserContext.GetBankUser(sa.Nric);
+                        if (su != null)
+                        {
+                            //Get sender chat id
+                            int? chatID = bankUserContext.GetUserChatID(su.Nric);
+                            if (chatID != null)
+                            {//Method to send telegram notification
+                                SendFailedTransactionAsync(chatID, bu, su, t.Amount).ContinueWith(t => Console.WriteLine(t.Exception),
+    TaskContinuationOptions.OnlyOnFaulted);
+                            }
+                        }
                     }
                 }
             }
@@ -113,6 +172,46 @@ namespace PFD_Challenge_1
             if (response.IsSuccessStatusCode)
             {
                 transactionContext.UpdateTransactionNotified(transacID.Value);
+            }
+        }
+        public async Task SendNotifReceiverAsync(int? chatID, BankUser su, BankUser bu, decimal amount)
+        {
+            //Method to send Telegram notification
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("https://api.telegram.org");
+            //Create notification object
+            Notification newNotification = new Notification
+            {
+                chat_id = chatID.Value,
+                text = "Dear " + su.Name + "! You have successfully received $" + amount.ToString() + " from " + bu.Name + "! Date and Time of Transfer: " + DateTime.Now.ToString(),
+            };
+            string json = JsonConvert.SerializeObject(newNotification);
+            StringContent notificationContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+            //Sending telegram notifications and if response is 200 will update database
+            HttpResponseMessage response = await client.PostAsync("/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws/sendMessage", notificationContent);
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Message sent successfully");
+            }
+        }
+        public async Task SendFailedTransactionAsync(int? chatID, BankUser bu, BankUser su, decimal amount)
+        {
+            //Method to send Telegram notification
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("https://api.telegram.org");
+            //Create notification object
+            Notification newNotification = new Notification
+            {
+                chat_id = chatID.Value,
+                text = "Dear " + su.Name + "! Your transfer of $" + amount.ToString() + " to " + bu.Name + " is unsucessful! Please contact helpdesk! Date and Time of Transfer: " + DateTime.Now.ToString() ,
+            };
+            string json = JsonConvert.SerializeObject(newNotification);
+            StringContent notificationContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+            //Sending telegram notifications and if response is 200 will update database
+            HttpResponseMessage response = await client.PostAsync("/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws/sendMessage", notificationContent);
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Message sent successfully");
             }
         }
     }

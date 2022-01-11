@@ -87,7 +87,7 @@ namespace PFD_Challenge_1.DAL
                 return false;
             }
         }
-       
+
         public int AddTransactionRecord(Transaction transac)
         {
             SqlCommand cmd = conn.CreateCommand();
@@ -238,7 +238,7 @@ namespace PFD_Challenge_1.DAL
                         Completed = reader.GetString(6),
                         Type = reader.GetString(7),
                     };
-                    
+
                 }
             }
             reader.Close();
@@ -286,14 +286,14 @@ namespace PFD_Challenge_1.DAL
 
         public bool ValidateTransactionLimit(BankAccount bankAcc, decimal transAmt) //Checks if transfer amount exceeds transfer limit
         {
-            bool validLimit  = false;
+            bool validLimit = false;
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = @"SELECT TransLimit, DailySpend FROM BankUser
                                 WHERE NRIC = @NRIC";
             cmd.Parameters.AddWithValue("@NRIC", bankAcc.Nric);
             conn.Open();
             SqlDataReader reader = cmd.ExecuteReader();
-            if(reader.HasRows)
+            if (reader.HasRows)
             {
                 while (reader.Read())
                 {
@@ -303,7 +303,7 @@ namespace PFD_Challenge_1.DAL
                     }
                     else
                     {
-                        if(reader.GetDecimal(0) < reader.GetDecimal(1)+transAmt)
+                        if (reader.GetDecimal(0) < reader.GetDecimal(1) + transAmt)
                         {
                             validLimit = false;
                         }
@@ -359,7 +359,7 @@ namespace PFD_Challenge_1.DAL
         public string TransactionStatusMsg(bool status)
         {
             string message;
-            if (status==true)
+            if (status == true)
             {
                 message = "Transaction Successful.";
             }
@@ -387,6 +387,37 @@ namespace PFD_Challenge_1.DAL
             {
                 return false;
             }
+        }
+
+        public List<Transaction> ScanNotNotifiedTransaction()
+        {
+            List<Transaction> futureTransList = new List<Transaction>();
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT * FROM Transactions
+                                WHERE notified = 'F' AND TimeTransfer <= DATEADD(hh,-1,GETDATE())";
+            conn.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    futureTransList.Add(
+                        new Transaction
+                        {
+                            TransacID = reader.GetInt32(0),
+                            Recipient = reader.GetString(1),
+                            Sender = reader.GetString(2),
+                            Amount = reader.GetDecimal(3),
+                            TimeTransfer = reader.GetDateTime(4),
+                            Notified = reader.GetString(5),
+                            Completed = reader.GetString(6),
+                            Type = reader.GetString(7),
+                        });
+                }
+            }
+            reader.Close();
+            conn.Close();
+            return futureTransList;
         }
     }
 }
