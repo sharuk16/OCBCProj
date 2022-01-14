@@ -52,6 +52,7 @@ namespace PFD_Challenge_1.DAL
                         Notified = reader.GetString(5),
                         Completed = reader.GetString(6),
                         Type = reader.GetString(7),
+                        Confirm = reader.GetString(8)
                     };
                 }
             }
@@ -94,10 +95,10 @@ namespace PFD_Challenge_1.DAL
             //SQL query to create a new Transactions object in the database for records.
             cmd.CommandText = @"INSERT INTO Transactions
                                 (Recipient, Sender, Amount, 
-                                TimeTransfer, Notified, Completed, Type)
+                                TimeTransfer, Notified, Completed, Type, Confirm)
                                 OUTPUT INSERTED.TransacID
                                 VALUES(@recipient, @sender, @amount,
-                                @timetransfer, @notified, @completed, @type)";
+                                @timetransfer, @notified, @completed, @type, @confirm)";
             cmd.Parameters.AddWithValue("@recipient", transac.Recipient);
             cmd.Parameters.AddWithValue("@sender", transac.Sender);
             cmd.Parameters.AddWithValue("@amount", transac.Amount);
@@ -105,6 +106,7 @@ namespace PFD_Challenge_1.DAL
             cmd.Parameters.AddWithValue("@notified", "F");
             cmd.Parameters.AddWithValue("@completed", "F");
             cmd.Parameters.AddWithValue("@type", transac.Type);
+            cmd.Parameters.AddWithValue("@confirm", "F");
 
             conn.Open();
 
@@ -118,6 +120,25 @@ namespace PFD_Challenge_1.DAL
         {
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = @"UPDATE Transactions SET Completed = 'T'
+                                WHERE TransacID = @TransacID"; //Updates the Transactions's Completed Status
+            cmd.Parameters.AddWithValue("@TransacID", transacID);
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateTransactionConfirm(int transacID)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE Transactions SET Confirm = 'T'
                                 WHERE TransacID = @TransacID"; //Updates the Transactions's Completed Status
             cmd.Parameters.AddWithValue("@TransacID", transacID);
             conn.Open();
@@ -419,5 +440,7 @@ namespace PFD_Challenge_1.DAL
             conn.Close();
             return futureTransList;
         }
+
+        
     }
 }

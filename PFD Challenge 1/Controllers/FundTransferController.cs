@@ -144,9 +144,21 @@ namespace PFD_Challenge_1.Controllers
             {
                 ftr.FutureTransfer = "false";
             }
+            //Insert Transaction Record
             TransferConfirmation tc;
             if (ftr.FutureTransfer == "true")
             {
+                Transaction transac = new Transaction
+                {
+                    Recipient = ba.AccNo,
+                    Sender = senderAccount.AccNo,
+                    Amount = ftr.TransferAmount,
+                    TimeTransfer = DateTime.Now,
+                    Type = "Immediate"
+                };
+
+                int transacID = transactionContext.AddTransactionRecord(transac);
+
                 tc = new TransferConfirmation
                 {
                     Recipient = bu.Name,
@@ -167,6 +179,7 @@ namespace PFD_Challenge_1.Controllers
                     TimeTransfer = "",
                 };
             }
+            
             return RedirectToAction("Confirmation", tc);
         }
 
@@ -190,6 +203,7 @@ namespace PFD_Challenge_1.Controllers
                 FutureTransfer = futureTransfer,
                 TimeTransfer = timeTransfer,
             };
+
             return View(tc);
         }
         [HttpPost]
@@ -247,22 +261,14 @@ namespace PFD_Challenge_1.Controllers
                     else if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount does not exceed the transaction limit
                         == true)
                     {
-                        Transaction newTransac = new Transaction //Create new transaction object
+                        
+                        if (transferAmount <= senderAccount.Balance)
                         {
-                            Recipient = receiverAccount.AccNo,
-                            Sender = senderAccount.AccNo,
-                            Amount = tc.TransferAmount,
-                            TimeTransfer = DateTime.Now,
-                            Type = "Immediate"
-                        };
-                        if (newTransac.Amount <= senderAccount.Balance)
-                        {
-                            transacID = transactionContext.AddTransactionRecord(newTransac); //Add transaction object to database
                             bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, transferAmount); //Updates bank account balance records
                             if (updatedAccounts == true) //If balance updates successfully
                             {
                                 transactionContext.UpdateDailySpend(senderAccount.Nric, transferAmount);
-                                transactionContext.UpdateTransactionComplete(transacID); //Updates transaction "Completed" status
+                                //transactionContext.UpdateTransactionComplete(); //Updates transaction "Completed" status, change transacID
                                 message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
                                 data = "Dear " + bu.Name + "! You have successfully transfered $" + transferAmount.ToString() + " to " + su.Name + "! Date and Time of Transfer"+DateTime.Now.ToString();
                             }
