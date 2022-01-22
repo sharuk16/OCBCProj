@@ -52,7 +52,6 @@ namespace PFD_Challenge_1.DAL
                         Notified = reader.GetString(5),
                         Completed = reader.GetString(6),
                         Type = reader.GetString(7),
-                        Confirm = reader.GetString(8)
                     };
                 }
             }
@@ -440,7 +439,41 @@ namespace PFD_Challenge_1.DAL
             conn.Close();
             return futureTransList;
         }
-
+        public Transaction GetTransaction(int transacid)
+        {
+            Transaction t = null;
+            //Create a SqlCommand object from connection object
+            SqlCommand cmd = conn.CreateCommand();
+            //Specify the SELECT SQL statement
+            cmd.CommandText = @"Select * from Transactions WHERE TransacID = @TransacID";
+            cmd.Parameters.AddWithValue("@TransacID", transacid);
+            //Open a database connection
+            conn.Open();
+            //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    t = new Transaction
+                    {
+                        TransacID = reader.GetInt32(0),
+                        Recipient = reader.GetString(1),
+                        Sender = reader.GetString(2),
+                        Amount = reader.GetDecimal(3),
+                        TimeTransfer = reader.GetDateTime(4),
+                        Notified = reader.GetString(5),
+                        Completed = reader.GetString(6),
+                        Type = reader.GetString(7),
+                    };
+                }
+            }
+            //Close DataReader
+            reader.Close();
+            //Close the database connection
+            conn.Close();
+            return t;
+        }
         
     }
 }

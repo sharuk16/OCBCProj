@@ -42,8 +42,5 @@ namespace PFD_Challenge_1.Models
         [Required]
         [ValidateTransactionType]
         public string Type { get; set; }
-
-        [Required]
-        public string Confirm { get; set; }
     }
 }
