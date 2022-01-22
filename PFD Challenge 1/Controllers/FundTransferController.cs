@@ -39,10 +39,17 @@ namespace PFD_Challenge_1.Controllers
                 account = ba,
                 transactions = t,
             };
+            BankUser bu = bankUserContext.GetBankUser(ba.Nric);
+            ViewData["User"] = bu.Name;
             return View(ft);
         }
         public IActionResult FundTransferReview()
         {
+            //Check if there are existing transactions left in the restdb
+            //
+            //
+            //
+
             //Get bank Account details
             BankAccount ba = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
             if (ba == null)
@@ -56,6 +63,7 @@ namespace PFD_Challenge_1.Controllers
             };
             return View(ftr);
         }
+        //Receiving the transaction information
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult FundTransferReview(FundTransferReview ftr)
@@ -144,20 +152,10 @@ namespace PFD_Challenge_1.Controllers
             {
                 ftr.FutureTransfer = "false";
             }
-            //Insert Transaction Record
+            
             TransferConfirmation tc;
             if (ftr.FutureTransfer == "true")
             {
-                Transaction transac = new Transaction
-                {
-                    Recipient = ba.AccNo,
-                    Sender = senderAccount.AccNo,
-                    Amount = ftr.TransferAmount,
-                    TimeTransfer = DateTime.Now,
-                    Type = "Immediate"
-                };
-
-                int transacID = transactionContext.AddTransactionRecord(transac);
 
                 tc = new TransferConfirmation
                 {
@@ -170,6 +168,26 @@ namespace PFD_Challenge_1.Controllers
             }
             else
             {
+                // Create a record and post to Rest DB
+                // Update Checkpoint 1
+
+                //Insert Transaction Record
+                Transaction transac = new Transaction
+                {
+                    Recipient = ba.AccNo,
+                    Sender = senderAccount.AccNo,
+                    Amount = ftr.TransferAmount,
+                    TimeTransfer = DateTime.Now,
+                    Type = "Immediate"
+                };
+
+                int transacID = transactionContext.AddTransactionRecord(transac);
+                HttpContext.Session.SetInt32("transacID", transacID);
+                // Update Checkpoint 2
+                // Check line 46 (remove when completed)
+
+
+                //
                 tc = new TransferConfirmation
                 {
                     Recipient = bu.Name,
@@ -211,7 +229,7 @@ namespace PFD_Challenge_1.Controllers
         public async Task<IActionResult> ConfirmationAsync(TransferConfirmation tc)
         {
             string message = "";
-            int transacID = -1;
+            
             if (!ModelState.IsValid)
             {
                 return View(tc);
@@ -221,47 +239,66 @@ namespace PFD_Challenge_1.Controllers
                 ViewData["Message"] = "For future transfer please state time.";
                 return RedirectToAction("FundTransferReview");
             }
-            if (HttpContext.Session.GetString("NRIC") == null)
+            if (HttpContext.Session.GetString("NRIC") == null || HttpContext.Session.GetInt32("transacID")==null)
             {
                 return RedirectToAction("Index", "Home");
             }
-            //Get relevant information from the confirmation page
-            BankAccount senderAccount = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
-            BankAccount receiverAccount = bankAccountContext.GetBankAccount(tc.BankAccount);
             BankUser bu = bankUserContext.GetBankUser(HttpContext.Session.GetString("NRIC"));
-            decimal transferAmount = tc.TransferAmount;
-            BankUser su = bankUserContext.GetBankUser(receiverAccount.Nric);
             string data="";
+            
             try
             {
+               
                 //Method: Create Transactions record and FutureTransfer record separately.
                 //Execute this portion if tranaction is a future transfer. This is to store the future transfer object
                 if (tc.FutureTransfer == "true")
-                {
+                {//Get relevant information from the confirmation page
+                    BankAccount senderAccount = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
+                    BankAccount receiverAccount = bankAccountContext.GetBankAccount(tc.BankAccount);
+                    int transacID = -1;
+                    
+                    decimal transferAmount = tc.TransferAmount;
+                    BankUser su = bankUserContext.GetBankUser(receiverAccount.Nric);
                     FutureTransfer newFutureTrans = new FutureTransfer
                     {
                         Recipient = receiverAccount.AccNo,
                         Sender = senderAccount.AccNo,
                         Amount = tc.TransferAmount,
-                        PlanTime =Convert.ToDateTime(tc.TimeTransfer),
+                        PlanTime = Convert.ToDateTime(tc.TimeTransfer),
                     };
                     transacID = futureTransferContext.AddFutureRecord(newFutureTrans);
                     //Information to alert user
                     data = "Dear " + bu.Name + "! You have saved future funds transfer of $" + transferAmount.ToString() + " to " + su.Name + " is successful!";
+                    //Method to send the transaction messages
+                    await SendTelegramAsync(data, true, transacID);
                 }
                 else
                 {
-                    if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount exceeds transaction limit
+                    // Load data from the records
+                    int transacID = HttpContext.Session.GetInt32("transacID").Value;
+                    Transaction savedTrans = transactionContext.GetTransaction(transacID);
+                    BankAccount senderAccount = bankAccountContext.GetBankAccount(savedTrans.Sender);
+                    BankAccount receiverAccount = bankAccountContext.GetBankAccount(savedTrans.Recipient);
+                    decimal transferAmount = savedTrans.Amount;
+                    BankUser ru = bankUserContext.GetBankUser(receiverAccount.Nric);
+
+
+                    if (transactionContext.ValidateTransactionLimit(senderAccount, savedTrans.Amount) //If the amount exceeds transaction limit
                         == false)
                     {
                         //Notification message for user
-                        data = "Dear " + bu.Name + "! Your funds transfer of $" + transferAmount.ToString() + " to " + su.Name + " is Unsuccessful! Date of transfer: " + DateTime.Now +
+                        data = "Dear " + bu.Name + "! Your funds transfer of $" + savedTrans.Amount.ToString() + " to " + ru.Name + " is Unsuccessful! Date of transfer: " + DateTime.Now +
                             " Reason for failed transaction: The transaction you are trying to make exceeds your daily limit. Change your daily transaction limit or make a smaller transaction.";
+                        //Method to send the transaction messages
+                        await SendTelegramAsync(data, true, transacID);
+                        ViewData["Message"] = "Transaction limit reached";
+                        //Redirect to user to transaction history
+                        return RedirectToAction("Failure");
                     }
                     else if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount does not exceed the transaction limit
                         == true)
                     {
-                        
+
                         if (transferAmount <= senderAccount.Balance)
                         {
                             bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, transferAmount); //Updates bank account balance records
@@ -270,25 +307,39 @@ namespace PFD_Challenge_1.Controllers
                                 transactionContext.UpdateDailySpend(senderAccount.Nric, transferAmount);
                                 //transactionContext.UpdateTransactionComplete(); //Updates transaction "Completed" status, change transacID
                                 message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
-                                data = "Dear " + bu.Name + "! You have successfully transfered $" + transferAmount.ToString() + " to " + su.Name + "! Date and Time of Transfer"+DateTime.Now.ToString();
+                                data = "Dear " + bu.Name + "! You have successfully transfered $" + transferAmount.ToString() + " to " + ru.Name + "! Date and Time of Transfer" + DateTime.Now.ToString();
+                                //Method to send the transaction messages
+                                await SendTelegramAsync(data, true, transacID);
+                                ViewData["Message"] = message;
+                                //Redirect to user to transaction history
+                                return RedirectToAction("Success");
                             }
                             else
                             {
                                 message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
-                                data = "Dear " + bu.Name + "! You are unsuccessful in transfering $" + transferAmount.ToString() + " to " + su.Name + "! Date and Time of attempted Transfer" + DateTime.Now.ToString();
+                                data = "Dear " + bu.Name + "! You are unsuccessful in transfering $" + transferAmount.ToString() + " to " + ru.Name + "! Date and Time of attempted Transfer" + DateTime.Now.ToString();
+                                //Method to send the transaction messages
+                                await SendTelegramAsync(data, false, transacID);
+                                ViewData["Message"] = "Balanced failed to update.";
+                                //Redirect to user to transaction history
+                                return RedirectToAction("Failure");
                             }
                         }
                         else
                         {
                             data = "Dear " + bu.Name + "! You do not have enough balance left in your account to complete this transaction. Please make a smaller transaction.";
+                            //Method to send the transaction messages
+                            await SendTelegramAsync(data, false, transacID);
+                            ViewData["Message"] = "Insufficient Balance";
+                            //Redirect to user to transaction history
+                            return RedirectToAction("Failure");
                         }
                     }
+
                 }
-                //Method to send the transaction messages
-                await SendTelegramAsync(data, true, transacID);
-                ViewData["Message"] = message;
+                ViewData["Message"] = "Error";
                 //Redirect to user to transaction history
-                return RedirectToAction("Index", "Transaction");
+                return RedirectToAction("Failure");
             }
             catch (TimeoutException)
             {//Method to catch if any calls from database takes too long to execute
@@ -309,7 +360,7 @@ namespace PFD_Challenge_1.Controllers
                         HttpResponseMessage response = await client.PostAsync("/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws/sendMessage", notificationContent);
                         if (response.IsSuccessStatusCode)
                         {
-                            transactionContext.UpdateTransactionNotified(transacID);
+                            
                         }
                     }
                 }catch(Exception e)
@@ -347,6 +398,13 @@ namespace PFD_Challenge_1.Controllers
 
                 }
             }
+        }
+        public IActionResult Success()
+        {
+            return View();
+        }public IActionResult Failure()
+        {
+            return View();
         }
     }
 }
