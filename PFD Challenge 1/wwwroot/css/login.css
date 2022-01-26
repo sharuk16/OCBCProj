@@ -42,9 +42,9 @@ h2{
 }
 
 .input ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-    color: white;
+    color: #2D4263;
     opacity: 1; /* Firefox */
-    font-size:20px;
+    font-size: 15px;
 }
 
 /*Input CSS*/
@@ -79,7 +79,7 @@ input:read-only, textarea:read-only {
 
 textarea:read-write {
     box-shadow: inset 1px 1px 3px #ccc;
-    border-radius: 5px;
+    border-radius: 3px;
 }
 
 /*'Login via Face Recognition' Button CSS*/
@@ -104,4 +104,3 @@ textarea:read-write {
     font-weight: 700;
     border-color: #DDBE93;
 }
-
