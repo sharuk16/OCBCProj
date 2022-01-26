@@ -2,7 +2,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Mukta:wght@300&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500&display=swap");
 body {
-    background-color: #E7625F;
+    background-color: #ECDBBA;
     font: Poppins;
 }
 
@@ -32,5 +32,5 @@ p {
 }
 .footer {
     bottom: 0;
-    width: 100%;
+    width: 40%;
 }
