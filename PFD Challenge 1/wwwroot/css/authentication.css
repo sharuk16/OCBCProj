@@ -55,14 +55,14 @@
     }
 
 h1, h6{
-    color:white;
+    color:black;
 }
 
 /*Input CSS*/
 .input {
     box-sizing: border-box;
     background-color: transparent;
-    border: 2px solid white;
+    border: 2px solid black;
     border-radius: 0.6em;
     color: white;
     cursor: pointer;
@@ -84,7 +84,7 @@ h1, h6{
 input:read-only, textarea:read-only {
     border: 0;
     box-shadow: none;
-    color: white;
+    color: black;
 
 }
 

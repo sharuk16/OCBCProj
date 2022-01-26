@@ -11,31 +11,31 @@
 }
 <div class="container" id="mainContainer2">
     <div class="first-container">
-        <div style="text-align: center; margin-top:5%">
-            <img id="imgLogo" src="~/images/Home Page (after login).jpeg"
-                 style="width: 70%" />
+        <div style="text-align: center; margin-top:5%;">
+            <img id="imgLogo" src="~/images/FundTransfer.png"
+                 style="width: 40%" />
         </div>
     </div>
 </div>
 <div class="container">
-    <div>
-        Greetings, @ViewData["User"]
-    </div>
     <div class="row">
         <div class="col text-center">
             <div class="container">
                 <form>
-                    <div class="form-group" style="color: white;">
-                        <h2><label for="balance">What you have (SGD)</label></h2>
+                    <div class="form-group" style="color: #BA2B43; margin-top: 5%; margin-bottom: 5%;">
+                        <h2>Greetings, @ViewData["User"]</h2>
                     </div>
-                    <div class="form-group" style="color: white">
-                        <div class="input" style="padding-top: 20px; padding-right: 140px; padding-left: 140px; display: inline-block;">@Html.DisplayFor(model => model.account.Balance)</div>
+                    <div class="form-group" style="color: black; font-family: 'Rampart One', cursive; margin-bottom: 0% ">
+                        <h4><label for="balance">What you have (SGD)</label></h4>
                     </div>
-                    <div class="form-group" style="color: white;">
-                        <h2><label for="activity">Your activity</label></h2>
+                    <div class="form-group" style="color: #2D4263;">
+                        <div class="input" style="padding-top: 10px; padding-bottom: 10px; padding-right: 140px; padding-left: 140px; display: inline-block; color: black; border-color: white; ">@Html.DisplayFor(model => model.account.Balance)</div>
                     </div>
-                    <div class="form-group" style="color: white;">
-                        <div class="input" style="padding-top: 20px; padding-right: 20px; padding-left: 20px; display: inline-block;">
+                    <div class="form-group" style="color: black; font-family: 'Rampart One', cursive; margin-bottom: 0% ">
+                        <h4><label for="activity">Your activity</label></h4>
+                    </div>
+                    <div class="form-group" style="color: #2D4263;">
+                        <div class="input" style="padding-top: 10px; padding-bottom: 10px; padding-right: 20px; padding-left: 20px; display: inline-block; color: black; border-color: white; ">
                             @{ if (Model.transactions.Amount == 0)
                                 {
                                     <div>No transactions</div>

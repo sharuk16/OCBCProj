@@ -12,8 +12,8 @@
 <div class="container" id="mainContainer2">
     <div class="first-container">
         <div style="text-align: center; margin-top:2%">
-            <img id="imgLogo" src="~/images/FutureTransferReview(4).jpg"
-                 style="width: 45%" />
+            <img id="imgLogo" src="~/images/FundTransferReview.png"
+                 style="width: 38%" />
             <h1 style="margin-top:2%">Transfer</h1>
         </div>
     </div>
@@ -22,7 +22,7 @@
 <div class="container">
     @{      if (ViewData["Message"] != null)
             {
-        <div style="color: whitesmoke; font-size: 30px; padding-bottom: 20px; text-align: center; ">Notice: @ViewData["Message"]</div>
+        <div style="color: #AA1945; font-size: 30px; padding-bottom: 20px; text-align: center; ">Notice: @ViewData["Message"]</div>
             }
 
         }
@@ -34,10 +34,10 @@
                     <div class="form-group form-check-inline" style="padding-top: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
                         <div class="form-group" style="color: white">
                             <div class="to" style="padding-top: 2px;">
-                                <div class="to" style="background-color: #AA1945;font-size:20px;">To</div>
+                                <div class="to" style="background-color: #AA1945; font-size: 20px; ">To</div>
                             </div>
                             <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
-                                <input asp-for="Recipient" type="text" class="form-control" id="to" style="background-color: #E7625F; border: transparent; color: white; text-align: center; font-size:25px;">
+                                <input asp-for="Recipient" type="text" class="form-control" id="to" style="background-color: #ECDBBA; border: transparent; color: black; text-align: center; font-size: 25px;">
                             </div>
                         </div>
                     </div>
@@ -47,7 +47,7 @@
                                 <div class="accountbalance" style="background-color: #AA1945; font-size: 20px;">Account Balance</div>
                             </div>
                             <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 60px; padding-left: 60px; display: inline-block;">
-                                <input readonly asp-for="Balance" class="form-control" id="accountbalance" style="padding-left: 80px; padding-right: 70px; background-color: #E7625F; font-size: 25px; text-align:center;" />
+                                <input readonly asp-for="Balance" class="form-control" id="accountbalance" style="padding-left: 80px; padding-right: 70px; background-color: #ECDBBA; font-size: 25px; text-align: center;color:black;" />
                             </div>
                         </div>
                     </div>
@@ -57,7 +57,7 @@
                                 <div class="transferamount" style="background-color: #AA1945; font-size: 20px;">Transfer Amount</div>
                             </div>
                             <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 115px; padding-left: 115px; display: inline-block;">
-                                <input asp-for="TransferAmount" type="text" class="form-control" id="transfer" style="background-color: #E7625F; border: transparent; color: white; text-align: center; font-size: 25px;">
+                                <input asp-for="TransferAmount" type="text" class="form-control" id="transfer" style="background-color: #ECDBBA; border: transparent; color: black; text-align: center; font-size: 25px;">
                             </div>
                         </div>
                     </div>
@@ -78,7 +78,7 @@
                                             <input name="futureTransfer" type="radio" value="false" class="form-check-input" id="immediateRadio" />
                                         }
                                     </label>
-                                    <span style="font-weight:normal; padding-right:20px">Immediate</span>
+                                    <span style="font-weight:normal; padding-right:20px; color:black;">Immediate</span>
                                 </div>
                                 <div class="input" style="padding-top: 2px; padding-bottom: 0px; padding-right: 50px; padding-left: 50px; display: inline-block;">
                                     <label class="col-form-label">
@@ -90,7 +90,7 @@
                                         {
                                             <input name="futureTransfer" type="radio" value="true" class="form-check-input" id="futureRadio" checked="checked" />
                                         }
-                                        <span style="font-weight:normal; padding-right:20px">Schedule</span>
+                                        <span style="font-weight:normal; padding-right:20px; color:black;">Schedule</span>
                                     </label>
                                 </div>
                             </div>
@@ -119,7 +119,7 @@
         </div>
     </div>
 </div>
-<div class="alert" style="text-align:center">
+<div class="alert" style="text-align:center; color:black;">
     <div>digibank Alert</div>
     <br /><strong>Insufficient balance in your account.</strong>
     <strong>Please enter a lower amount and try again.</strong>
