@@ -185,5 +185,73 @@ namespace PFD_Challenge_1.DAL
                 return false;
             }
         }
+        public string GetWindowsHello(string nric)
+        {
+            string windowsEnabled="";
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT * FROM BankUser Where NRIC = @select";
+            cmd.Parameters.AddWithValue("@select", nric);
+            conn.Open();
+            //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    windowsEnabled = reader.GetString(8);
+                }
+            }
+            //Close DataReader
+            reader.Close();
+            //Close the database connection
+            conn.Close();
+            return windowsEnabled;
+        }
+        public bool UpdateWindowsHello(string nric, string id)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE BankUser SET CredentialID = @condition
+                                WHERE NRIC = @NRIC"; //Updates the Transactions's Notified Status
+            
+            cmd.Parameters.AddWithValue("@condition", id);
+            cmd.Parameters.AddWithValue("@NRIC", nric);
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (count > 0)  //Returns true/false based on whether update is successful
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public bool WindowsHelloExists(string nric)
+        {
+            string windowsEnabled = "";
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT * FROM BankUser Where NRIC = @select";
+            cmd.Parameters.AddWithValue("@select", nric);
+            conn.Open();
+            //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    windowsEnabled = reader.GetString(8);
+                }
+            }
+            //Close DataReader
+            reader.Close();
+            //Close the database connection
+            conn.Close();
+            if(windowsEnabled == "")
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }
