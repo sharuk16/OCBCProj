@@ -500,5 +500,29 @@ namespace PFD_Challenge_1.DAL
             return t;
         }
         
+        public bool GetTelegramConfirmValue(int transacID)
+        {
+            bool confirmStatus = false;
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT TelegramConfirm FROM Transactions
+                                WHERE TransacID = @TransacID"; //Updates the Transactions's Completed Status
+            cmd.Parameters.AddWithValue("@TransacID", transacID);
+            conn.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    if (!reader.IsDBNull(0) != true)
+                    {
+                        confirmStatus = true;
+                    }
+                }
+            }
+            //Close DataReader
+            reader.Close();
+            conn.Close();
+            return confirmStatus;
+        }
     }
 }

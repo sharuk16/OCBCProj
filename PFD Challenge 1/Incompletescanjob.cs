@@ -11,6 +11,10 @@ using System.Net.Http;
 using PFD_Challenge_1.TelegramModel;
 using Newtonsoft.Json;
 using System.Text;
+using Microsoft.AspNetCore.Http;
+
+using JsonSerializer = System.Text.Json.JsonSerializer;
+using Microsoft.AspNetCore.Mvc;
 
 namespace PFD_Challenge_1
 {
@@ -21,7 +25,7 @@ namespace PFD_Challenge_1
         BankUserDAL bankUserContext = new BankUserDAL();
         public Task Execute(IJobExecutionContext context)
         {
-          if (transactionContext.CheckIncompleteExists() == null&& transactionContext.CheckNotNotified()==null)
+            if (transactionContext.CheckIncompleteExists() == null&& transactionContext.CheckNotNotified()==null)
             {
                 return Task.FromResult<Transaction>(null);
             }
@@ -66,29 +70,35 @@ namespace PFD_Challenge_1
                     {
                         if (incompleteTrans.Amount <= bankAccContext.GetBankAccount(incompleteTrans.Sender).Balance)
                         {
-                            if (transactionContext.CheckTransactionConfirm(incompleteTrans.TransacID) == true)
+                            bool updatedAccounts = transactionContext.UpdateTransactionChanges(bankAccContext.GetBankAccount(incompleteTrans.Recipient),
+                            bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount); //Updates bank account balance records
+                            if (updatedAccounts == true) //If balance updates successfully
                             {
-                                bool updatedAccounts = transactionContext.UpdateTransactionChanges(bankAccContext.GetBankAccount(incompleteTrans.Recipient),
-                                bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount); //Updates bank account balance records
-                                if (updatedAccounts == true) //If balance updates successfully
+                                if (transactionContext.GetTelegramConfirmValue(incompleteTrans.TransacID) == false 
+                                    && (DateTime.UtcNow.Subtract(incompleteTrans.TimeTransfer).TotalMinutes >= 20 
+                                    && transactionContext.CheckTransactionConfirm(incompleteTrans.TransacID) == false))
                                 {
-                                    transactionContext.UpdateTransactionComplete(incompleteTrans.TransacID); //Updates transaction "Completed" status
-                                    transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(incompleteTrans.Sender).Nric, incompleteTrans.Amount);
-                                    string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
-                                    Console.WriteLine("Database check completed");
-                                    return Task.FromResult<Transaction>(incompleteTrans);
-
+                                    transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
                                 }
                                 else
                                 {
-                                    string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
+                                    transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(incompleteTrans.Sender).Nric, incompleteTrans.Amount);
+                                    transactionContext.UpdateTransactionComplete(incompleteTrans.TransacID); //Updates transaction "Completed" status
+                                    transactionContext.UpdateTransactionConfirm(incompleteTrans.TransacID); //Updates transaction "Confirm" status
+                                    string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
+                                    CheckRestDBIncomplete(incompleteTrans).Wait();
+                                    Console.WriteLine(message);
                                     return Task.FromResult<Transaction>(incompleteTrans);
                                 }
                             }
                             else
                             {
+                                string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
+                                Console.WriteLine(message);
                                 return Task.FromResult<Transaction>(incompleteTrans);
                             }
+                            
+                            return Task.FromResult<Transaction>(incompleteTrans);
                         }
                         else
                         {
@@ -98,6 +108,7 @@ namespace PFD_Challenge_1
                 }
 
             }
+
             return Task.FromResult<Transaction>(null);
         }
         //Method to send telegram notification
@@ -118,6 +129,50 @@ namespace PFD_Challenge_1
             if (response.IsSuccessStatusCode)
             {
                 transactionContext.UpdateTransactionNotified(transacID.Value);
+            }
+        }
+
+        //Scans the database for False in checkpoints 3 and 4 and should send a Telegram message to inform them of action taken
+        public async Task CheckRestDBIncomplete(Transaction transac)
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("https://ocbcdatabase-0c55.restdb.io");
+            client.DefaultRequestHeaders.Add("x-api-key", "61f2742d7e55272295017175");
+            HttpResponseMessage getResponse = await client.GetAsync("/rest/temptransac");
+            if (getResponse.IsSuccessStatusCode)
+            {
+                string data = await getResponse.Content.ReadAsStringAsync();
+                if (data != null)
+                {
+                    List<TempTransac> tempTransacList = JsonConvert.DeserializeObject<List<TempTransac>>(data);
+                    foreach (TempTransac tempTransac in tempTransacList)
+                    {
+                        //If either 3 or 4 are false, delete the record.
+                        if (tempTransac.Checkpoint3 == "False" || tempTransac.Checkpoint4 == "False")
+                        {
+                            HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + tempTransac._id);
+                        }
+                        //If Checkpoint 4 is true, carry out the transaction in the backend.
+                        else if (tempTransac.Checkpoint4 == "True")
+                        {
+                            bool updatedAccounts = transactionContext.UpdateTransactionChanges(bankAccContext.GetBankAccount(transac.Recipient),
+                                bankAccContext.GetBankAccount(transac.Sender), transac.Amount); //Updates bank account balance records
+                            if (updatedAccounts == true) //If balance updates successfully
+                            {
+                                transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(transac.Sender).Nric, transac.Amount);
+                                transactionContext.UpdateTransactionComplete(transac.TransacID); //Updates transaction "Completed" status
+                                transactionContext.UpdateTransactionConfirm(transac.TransacID); //Updates transaction "Confirm" status
+                                string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
+                                Console.WriteLine(message);
+                            }
+                            else
+                            {
+                                string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
+                                Console.WriteLine(message);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
