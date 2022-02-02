@@ -47,7 +47,7 @@ namespace PFD_Challenge_1
                         {
                             Console.WriteLine("test2");
                             SendNotificationAsync(chatID, bu, su, notNotified.TransacID, notNotified.Amount,notNotified.TimeTransfer).ContinueWith(t => Console.WriteLine(t.Exception),
-TaskContinuationOptions.OnlyOnFaulted);
+                                                    TaskContinuationOptions.OnlyOnFaulted);
                         }
                     }
                 }
@@ -66,20 +66,27 @@ TaskContinuationOptions.OnlyOnFaulted);
                     {
                         if (incompleteTrans.Amount <= bankAccContext.GetBankAccount(incompleteTrans.Sender).Balance)
                         {
-                            bool updatedAccounts = transactionContext.UpdateTransactionChanges(bankAccContext.GetBankAccount(incompleteTrans.Recipient),
-                            bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount); //Updates bank account balance records
-                            if (updatedAccounts == true) //If balance updates successfully
+                            if (transactionContext.CheckTransactionConfirm(incompleteTrans.TransacID) == true)
                             {
-                                transactionContext.UpdateTransactionComplete(incompleteTrans.TransacID); //Updates transaction "Completed" status
-                                transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(incompleteTrans.Sender).Nric, incompleteTrans.Amount);
-                                string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
-                                Console.WriteLine("Database check completed");
-                                return Task.FromResult<Transaction>(incompleteTrans);
+                                bool updatedAccounts = transactionContext.UpdateTransactionChanges(bankAccContext.GetBankAccount(incompleteTrans.Recipient),
+                                bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount); //Updates bank account balance records
+                                if (updatedAccounts == true) //If balance updates successfully
+                                {
+                                    transactionContext.UpdateTransactionComplete(incompleteTrans.TransacID); //Updates transaction "Completed" status
+                                    transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(incompleteTrans.Sender).Nric, incompleteTrans.Amount);
+                                    string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
+                                    Console.WriteLine("Database check completed");
+                                    return Task.FromResult<Transaction>(incompleteTrans);
 
+                                }
+                                else
+                                {
+                                    string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
+                                    return Task.FromResult<Transaction>(incompleteTrans);
+                                }
                             }
                             else
                             {
-                                string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
                                 return Task.FromResult<Transaction>(incompleteTrans);
                             }
                         }
