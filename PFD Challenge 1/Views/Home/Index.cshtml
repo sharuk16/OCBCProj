@@ -20,43 +20,72 @@
             </div>
         </div>
     </div>
-    <div  style="margin-left:600px;">
-        <div class="container form">
-            <div class="row">
-                <div class="col text-center">
-                    <form asp-action="Login">
-                        <div class="container">
-                            <div class="form-group" style="color: #2D4263; font-size: 25px; font-family: 'Bowlby One SC', cursive;">
-                                <label for="balance">Username</label>
-                            </div>
-                            <div class="input" style="text-align: right; display: inline-block; border-color: #2D4263; margin-top:0px;">
-                                <input name="Username" type="text" placeholder="Enter Username" class="form-control" id="to" style="background-color: #ECDBBA; border: transparent; color: #2D4263; text-align: center;" required>
-                            </div>
-                            <div class="form-group" style="color: #2D4263; font-size: 25px; font-family: 'Bowlby One SC', cursive;">
-                                <label for="balance">Password</label>
-                            </div>
-                            <div class="input" style="display: inline-block; border-color: #2D4263; margin-top:0px;">
-                                <input name="password" type="password" placeholder="Enter Password" class="form-control" id="to" style="background-color: #ECDBBA; border: transparent; color: #2D4263; text-align: center;" required>
+    @if (Context.Session.GetString("NRIC") == null || Context.Session.GetString("NRIC") == "")
+    {
+<div style="margin-left:600px;">
+    <div class="container form">
+        <div class="row">
+            <div class="col text-center">
+                <form asp-action="Login">
+                    <div class="container">
+                        <div class="form-group form-check-inline" style="margin-top:15px">
+                            <label class="col-form-label">
+                                <input name="signInOption" type="radio" value="windows" class="form-check-input" id="windows" checked="checked" />
+                                <span style="font-weight:normal; padding-right:20px">Windows Hello</span>
+                            </label>
+                            <label class="col-form-label">
+                                <input name="signInOption" type="radio" value="normal" class="form-check-input" id="normal" />
+                                <span style="font-weight:normal; padding-right:20px">Password</span>
+                            </label>
+                        </div>
+                        
+                        <div id="toShow" class="form-group">
+                            <div class="every" style="display: inline-block;">
+                                <button class="btn2" id="windowsHello">Log in</button>
                             </div>
                         </div>
-                        <!-- Login Button -->
-                        <div class="every" style="display: inline-block;">
-                            <button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2" id="login">Log In</button>
+                        <div id="normalInput" class="form-group">
+                            <div>
+                                <div class="form-group" style="color: #2D4263; font-size: 25px; font-family: 'Bowlby One SC', cursive;">
+                                    <label for="balance">Username</label>
+                                </div>
+                                <div class="input" style="text-align: right; display: inline-block; border-color: #2D4263; margin-top:0px;">
+                                    <input name="Username" type="text" placeholder="Enter Username" class="form-control" id="to" style="background-color: #ECDBBA; border: transparent; color: #2D4263; text-align: center;" required>
+                                </div>
+                                <div class="form-group" style="color: #2D4263; font-size: 25px; font-family: 'Bowlby One SC', cursive;">
+                                    <label for="balance">Password</label>
+                                </div>
+                                <div class="input" style="display: inline-block; border-color: #2D4263; margin-top:0px;">
+                                    <input name="password" type="password" placeholder="Enter Password" class="form-control" id="pwd" style="background-color: #ECDBBA; border: transparent; color: #2D4263; text-align: center;" required>
+                                </div>
+                            </div>
+                            <div class="every" style="display: inline-block;">
+                                <button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2" id="login">Log In</button>
+                            </div>
                         </div>
-                    </form>
-                </div>
+
+                    </div>
+                    <!-- Login Button -->
+
+                </form>
             </div>
         </div>
     </div>
+</div>
+    }
+    else
+    {
+                <h1>You have logged in.</h1>
+
 
     <div id="add-update-msg" style="text-align:center;">
         <div>
             <lottie-player src="https://assets1.lottiefiles.com/packages/lf20_sawdagxh.json" background="transparent" speed="1" style="text-align:center; width: 600px; height: 600px;margin: auto;" loop autoplay></lottie-player>
         </div>
-    </div>
+    </div>}
 
     <!--This is for the modal(pop-up) for webcam facial detection-->
-    <div class="modal fade" id="facialRecog" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <!--<div class="modal fade" id="facialRecog" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content" style="height:auto;width:auto;">
                 <div class="container">
@@ -69,25 +98,60 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>-->
 </body>
 
 @section Scripts{
     <script src="~/js/login.js"></script>
     <script src="https://unpkg.com/@@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <script>
-        setTimeout(myFunction, 3000); //function to change the window location to homepage
-    </script>
-    <script>
-        $(document).ready(function () {
-            $("#add-update-msg").hide();
-        })
         $("#login a").click(function (e) {
             $(".form").hide();
-            $("#add-update-msg").show();
-            setTimeout(function () {
-                location.reload();
-            }, 2000);
         })
     </script>
+    <script>
+        $(document).ready(function (e) {
+            if ($("#normal").is(':checked')) {
+                $("#normalInput").show()
+                $("#toShow").hide()
+            } else {
+                $("#normalInput").hide()
+                $("#toShow").show()
+            }
+        })
+        $("#normal").click(function () {
+            $("#normalInput").show()
+            $("#toShow").hide()
+        })
+        $("#windows").click(function () {
+            $("#normalInput").hide()
+            $("#toShow").show()
+        })
+    </script>
+    <script src="https://cdn.passwordless.dev/dist/0.2.0/passwordless.iife.js"
+            crossorigin="anonymous"></script>
+<script>
+    const API_KEY = "Xiang:public:c386297a606f4af8a997cac6b7ebf410 ";
+    const BACKEND_URL = "";
+    async function handleSignInSubmit(e) {
+        console.log("test")
+        e.preventDefault();
+        const alias = $("#to").value;
+        const p = new Passwordless.Client({
+            apiKey: API_KEY,
+        });
+        console.log("yes")
+        try {
+            const token = await p.signinWithAlias(alias);
+            console.log("Received token", token);
+            const user = await fetch(BACKEND_URL + "/verify-signin?token=" + token)
+            location.reload();
+        } catch (e) {
+            console.error("Things went really bad: ", e);
+        }
+    }
+    document
+        .getElementById("windowsHello")
+        .addEventListener("click", handleSignInSubmit);
+</script>
 }
