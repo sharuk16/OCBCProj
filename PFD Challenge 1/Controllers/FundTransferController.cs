@@ -13,6 +13,7 @@ using PFD_Challenge_1.TelegramModel;
 using Newtonsoft.Json;
 using System.Text;
 using System.Net.Mail;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace PFD_Challenge_1.Controllers
 {
@@ -40,23 +41,70 @@ namespace PFD_Challenge_1.Controllers
                 transactions = t,
             };
             BankUser bu = bankUserContext.GetBankUser(ba.Nric);
+
             ViewData["User"] = bu.Name;
             return View(ft);
         }
-        public IActionResult FundTransferReview()
+        public async Task<ActionResult> FundTransferReview()
         {
+            BankAccount ba;
+            FundTransferReview ftr;
             //Check if there are existing transactions left in the restdb
-            //
-            //
-            //
-
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("https://ocbcdatabase-0c55.restdb.io");
+            client.DefaultRequestHeaders.Add("x-api-key", "61f2742d7e55272295017175");
+            HttpResponseMessage response = await client.GetAsync("/rest/temptransac");
+            if (response.IsSuccessStatusCode)
+            {
+                string data = await response.Content.ReadAsStringAsync();
+                if(data != null)
+                {
+                    List<TempTransac> tempTransacList = JsonConvert.DeserializeObject<List<TempTransac>>(data);
+                    foreach(TempTransac tempTransac in tempTransacList)
+                    {
+                        if (HttpContext.Session.GetString("NRIC") == tempTransac.Nric)
+                        {
+                            //Get bank Account details
+                            ba = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
+                            if (ba == null)
+                            {
+                                return RedirectToAction("Index", "Home");
+                            }
+                            ftr = new FundTransferReview
+                            {
+                                Recipient = tempTransac.Recipient,
+                                Balance = ba.Balance,
+                                TransferAmount = tempTransac.Amount,
+                                FutureTransfer = "false",
+                            };
+                            HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/"+tempTransac._id);
+                            return View(ftr);
+                        }
+                        else
+                        {
+                            //Get bank Account details
+                           ba = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
+                            if (ba == null)
+                            {
+                                return RedirectToAction("Index", "Home");
+                            }
+                            ftr = new FundTransferReview
+                            {
+                                Balance = ba.Balance,
+                                FutureTransfer = "false",
+                            };
+                            return View(ftr);
+                        }
+                    }
+                }
+            }
             //Get bank Account details
-            BankAccount ba = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
+            ba = bankAccountContext.GetBankAccount(HttpContext.Session.GetString("NRIC"));
             if (ba == null)
             {
                 return RedirectToAction("Index", "Home");
             }
-            FundTransferReview ftr = new FundTransferReview
+            ftr = new FundTransferReview
             {
                 Balance = ba.Balance,
                 FutureTransfer = "false",
@@ -66,7 +114,7 @@ namespace PFD_Challenge_1.Controllers
         //Receiving the transaction information
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult FundTransferReview(FundTransferReview ftr)
+        public async Task<ActionResult> FundTransferReview(FundTransferReview ftr)
         {
             if (!ModelState.IsValid)
             {
@@ -168,9 +216,36 @@ namespace PFD_Challenge_1.Controllers
             }
             else
             {
-                // Create a record and post to Rest DB
+                // Create a record and post to Rest DB (done in JS)
                 // Update Checkpoint 1
-
+                HttpClient client = new HttpClient();
+                client.BaseAddress = new Uri("https://ocbcdatabase-0c55.restdb.io");
+                client.DefaultRequestHeaders.Add("x-api-key", "61f2742d7e55272295017175");
+                HttpResponseMessage getResponse = await client.GetAsync("/rest/temptransac");
+                if (getResponse.IsSuccessStatusCode)
+                {
+                    string data = await getResponse.Content.ReadAsStringAsync();
+                    if (data != null)
+                    {
+                        List<TempTransac> tempTransacList = JsonConvert.DeserializeObject<List<TempTransac>>(data);
+                        foreach (TempTransac tempTransac in tempTransacList)
+                        {
+                            if (HttpContext.Session.GetString("NRIC") == tempTransac.Nric)
+                            {
+                                var checkpoint1Transac = JsonSerializer.Serialize(new
+                                {
+                                    _id = tempTransac._id,
+                                    checkpoint1 = "True"
+                                });
+                                HttpContent updateCheckpoint1 = new StringContent(checkpoint1Transac, Encoding.UTF8, "application/json");
+                                HttpResponseMessage updateResponse = await client.PutAsync("/rest/temptransac/"+tempTransac._id, updateCheckpoint1);
+                                string updateData = await updateResponse.Content.ReadAsStringAsync();
+                                Console.WriteLine(JsonConvert.DeserializeObject<TempTransac>(updateData).Checkpoint1);
+                            }
+                        }
+                    }
+                }
+                
                 //Insert Transaction Record
                 Transaction transac = new Transaction
                 {
@@ -183,9 +258,34 @@ namespace PFD_Challenge_1.Controllers
 
                 int transacID = transactionContext.AddTransactionRecord(transac);
                 HttpContext.Session.SetInt32("transacID", transacID);
+
                 // Update Checkpoint 2
                 // Check line 46 (remove when completed)
-
+               if (getResponse.IsSuccessStatusCode)
+                {
+                    string data = await getResponse.Content.ReadAsStringAsync();
+                    if (data != null)
+                    {
+                        List<TempTransac> tempTransacList = JsonConvert.DeserializeObject<List<TempTransac>>(data);
+                        foreach (TempTransac tempTransac in tempTransacList)
+                        {
+                            if (HttpContext.Session.GetString("NRIC") == tempTransac.Nric)
+                            {
+                                var checkpoint2Transac = JsonSerializer.Serialize(new
+                                {
+                                    _id = tempTransac._id,
+                                    checkpoint2 = "True"
+                                });
+                                HttpContent updateCheckpoint2 = new StringContent(checkpoint2Transac, Encoding.UTF8, "application/json");
+                                HttpResponseMessage updateResponse = await client.PutAsync("/rest/temptransac/" + tempTransac._id, updateCheckpoint2);
+                                string updateData = await updateResponse.Content.ReadAsStringAsync();
+                                Console.WriteLine(JsonConvert.DeserializeObject<TempTransac>(updateData).Checkpoint2);
+                                HttpContext.Session.SetString("RestID", tempTransac._id);
+                            }
+                        }
+                    }
+                }
+               
 
                 //
                 tc = new TransferConfirmation
@@ -248,8 +348,6 @@ namespace PFD_Challenge_1.Controllers
             
             try
             {
-               
-                //Method: Create Transactions record and FutureTransfer record separately.
                 //Execute this portion if tranaction is a future transfer. This is to store the future transfer object
                 if (tc.FutureTransfer == "true")
                 {//Get relevant information from the confirmation page
@@ -282,7 +380,6 @@ namespace PFD_Challenge_1.Controllers
                     decimal transferAmount = savedTrans.Amount;
                     BankUser ru = bankUserContext.GetBankUser(receiverAccount.Nric);
 
-
                     if (transactionContext.ValidateTransactionLimit(senderAccount, savedTrans.Amount) //If the amount exceeds transaction limit
                         == false)
                     {
@@ -298,19 +395,50 @@ namespace PFD_Challenge_1.Controllers
                     else if (transactionContext.ValidateTransactionLimit(senderAccount, transferAmount) //If the amount does not exceed the transaction limit
                         == true)
                     {
-
+                        //Update Checkpoint 4: User Clicks on Confirm on Confirmation page
+                        HttpClient client = new HttpClient();
+                        client.BaseAddress = new Uri("https://ocbcdatabase-0c55.restdb.io");
+                        client.DefaultRequestHeaders.Add("x-api-key", "61f2742d7e55272295017175");
+                        HttpResponseMessage getResponse = await client.GetAsync("/rest/temptransac");
+                        if (getResponse.IsSuccessStatusCode)
+                        {
+                            string restData = await getResponse.Content.ReadAsStringAsync();
+                            if (restData != null)
+                            {
+                                List<TempTransac> tempTransacList = JsonConvert.DeserializeObject<List<TempTransac>>(restData);
+                                foreach (TempTransac tempTransac in tempTransacList)
+                                {
+                                    if (HttpContext.Session.GetString("NRIC") == tempTransac.Nric)
+                                    {
+                                        var checkpoint4Transac = JsonSerializer.Serialize(new
+                                        {
+                                            _id = tempTransac._id,
+                                            checkpoint4 = "True"
+                                        });
+                                        HttpContent updateCheckpoint4 = new StringContent(checkpoint4Transac, Encoding.UTF8, "application/json");
+                                        HttpResponseMessage updateResponse = await client.PutAsync("/rest/temptransac/" + tempTransac._id, updateCheckpoint4);
+                                        string updateData = await updateResponse.Content.ReadAsStringAsync();
+                                        Console.WriteLine(JsonConvert.DeserializeObject<TempTransac>(updateData).Checkpoint1);
+                                    }
+                                }
+                            }
+                        }
                         if (transferAmount <= senderAccount.Balance)
                         {
                             bool updatedAccounts = transactionContext.UpdateTransactionChanges(receiverAccount, senderAccount, transferAmount); //Updates bank account balance records
                             if (updatedAccounts == true) //If balance updates successfully
                             {
                                 transactionContext.UpdateDailySpend(senderAccount.Nric, transferAmount);
+                                //Updates Confirm column in database to "T", as user has confirmed the transfer
+                                transactionContext.UpdateTransactionConfirm(transacID);
                                 //transactionContext.UpdateTransactionComplete(); //Updates transaction "Completed" status, change transacID
                                 message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
                                 data = "Dear " + bu.Name + "! You have successfully transfered $" + transferAmount.ToString() + " to " + ru.Name + "! Date and Time of Transfer" + DateTime.Now.ToString();
                                 //Method to send the transaction messages
                                 await SendTelegramAsync(data, true, transacID);
                                 ViewData["Message"] = message;
+                                //Delete record from NoSQL database due to transaction complete.
+                                HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + HttpContext.Session.GetString("RestID"));
                                 //Redirect to user to transaction history
                                 return RedirectToAction("Success");
                             }
@@ -321,6 +449,8 @@ namespace PFD_Challenge_1.Controllers
                                 //Method to send the transaction messages
                                 await SendTelegramAsync(data, false, transacID);
                                 ViewData["Message"] = "Balanced failed to update.";
+                                //Delete record from NoSQL database if transaction fails due to unexpected issues.
+                                HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + HttpContext.Session.GetString("RestID"));
                                 //Redirect to user to transaction history
                                 return RedirectToAction("Failure");
                             }
@@ -331,6 +461,8 @@ namespace PFD_Challenge_1.Controllers
                             //Method to send the transaction messages
                             await SendTelegramAsync(data, false, transacID);
                             ViewData["Message"] = "Insufficient Balance";
+                            //Delete record from NoSQL database if transaction fails due to reasons other than connection issues.
+                            HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + HttpContext.Session.GetString("RestID"));
                             //Redirect to user to transaction history
                             return RedirectToAction("Failure");
                         }

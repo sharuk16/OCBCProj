@@ -133,7 +133,32 @@ namespace PFD_Challenge_1.DAL
                 return false;
             }
         }
-
+        public bool CheckTransactionConfirm(int transacID)
+        {
+            bool confirmStatus = false;
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT Confirm FROM Transactions
+                                WHERE TransacID = @TransacID"; //Updates the Transactions's Completed Status
+            cmd.Parameters.AddWithValue("@TransacID", transacID);
+            conn.Open();
+            
+            
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    if(reader.GetString(0) == "T")
+                    {
+                        confirmStatus = true;
+                    }
+                }
+            }
+            //Close DataReader
+            reader.Close();
+            conn.Close();
+            return confirmStatus;
+        }
         public bool UpdateTransactionConfirm(int transacID)
         {
             SqlCommand cmd = conn.CreateCommand();

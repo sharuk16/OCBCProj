@@ -95,4 +95,30 @@
 @section scripts{
     @*Add JavaScripts specifically for this view here*@
     <script src="~/js/confirmation.js"></script>
+<script>
+    $(document).ready(function () {
+        const APIKEY = "61f2742d7e55272295017175";
+        let restId = "@Context.Session.GetString("RestID")";
+        let jsondata = {
+            "checkpoint3": "True"
+        };
+        let settings = {
+            "async": "true",
+            "crossDomain": "true",
+            "url": "https://ocbcdatabase-0c55.restdb.io/rest/temptransac/"+restId,
+            "method": "PUT",
+            "headers": {
+                "content-type": "application/json",
+                "x-apikey": APIKEY,
+                "cache-control": "no-cache"
+            },
+            "processData": false,
+            "data": JSON.stringify(jsondata)
+        }
+
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+        });
+    })
+</script>
 }

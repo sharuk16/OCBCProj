@@ -2,6 +2,7 @@
     *Main page for transfer
     Remember to declare model used
 *@
+@using Microsoft.AspNetCore.Http;
 @model PFD_Challenge_1.Models.FundTransferReview
 @section css{
     @*Add specific css script here*@
@@ -20,13 +21,13 @@
 </div>
 
 <div class="container">
-    @{      if (ViewData["Message"] != null)
+    @{ if (ViewData["Message"] != null)
             {
         <div style="color: #AA1945; font-size: 30px; padding-bottom: 20px; text-align: center; ">Notice: @ViewData["Message"]</div>
             }
 
-        }
-
+    }
+    <input type="hidden" id="nric" value="@Context.Session.GetString("NRIC")" />
     <div class="row">
         <div class="col text-center">
             <form asp-action="FundTransferReview" style="text-align: center">
@@ -71,11 +72,11 @@
                                     <label class="col-form-label">
                                         @if (Model.FutureTransfer == "false")
                                         {
-                                            <input name="futureTransfer" type="radio" value="false" class="form-check-input" id="immediateRadio" checked="checked" />
+                                        <input name="futureTransfer" type="radio" value="false" class="form-check-input" id="immediateRadio" checked="checked" />
                                         }
                                         else
                                         {
-                                            <input name="futureTransfer" type="radio" value="false" class="form-check-input" id="immediateRadio" />
+                                        <input name="futureTransfer" type="radio" value="false" class="form-check-input" id="immediateRadio" />
                                         }
                                     </label>
                                     <span style="font-weight:normal; padding-right:20px; color:black;">Immediate</span>
@@ -84,11 +85,11 @@
                                     <label class="col-form-label">
                                         @if (Model.FutureTransfer == "false")
                                         {
-                                            <input name="futureTransfer" type="radio" value="true" class="form-check-input" id="futureRadio" />
+                                        <input name="futureTransfer" type="radio" value="true" class="form-check-input" id="futureRadio" />
                                         }
                                         else
                                         {
-                                            <input name="futureTransfer" type="radio" value="true" class="form-check-input" id="futureRadio" checked="checked" />
+                                        <input name="futureTransfer" type="radio" value="true" class="form-check-input" id="futureRadio" checked="checked" />
                                         }
                                         <span style="font-weight:normal; padding-right:20px; color:black;">Schedule</span>
                                     </label>
@@ -113,7 +114,7 @@
                     </div>
                 </div>
                 <div class="every" style="padding-top: 0px; padding-right:50px;padding-left:50px; display: inline-block;">
-                    <div><button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2">Confirm</button></div>
+                    <div><button action="submit" style="width:auto;display: inline-block;" id="transac-submit" class="btn2">Confirm</button></div>
                 </div>
             </form>
         </div>
@@ -136,6 +137,44 @@
             } else {
                 $("#futureTime").hide()
             }
+           const APIKEY = "61f2742d7e55272295017175";
+            $("#transac-submit").on("click", function (e) {
+                e.preventDefault();
+                let nric = $("#nric").val();
+                let recipient = $("#to").val();
+                let amount = $("#transfer").val();
+                let timeTransfer = Date.now();
+
+                let jsonData = {
+                    "nric": nric,
+                    "recipient": recipient,
+                    "amount": amount,
+                    "checkpoint1": "False",
+                    "checkpoint2": "False",
+                    "checkpoint3": "False",
+                    "checkpoint4": "False",
+                    "timeTransfer": timeTransfer
+                };
+
+                let settings = {
+                    "async": "true",
+                    "crossDomain": "true",
+                    "url": "https://ocbcdatabase-0c55.restdb.io/rest/temptransac",
+                    "method": "POST",
+                    "headers": {
+                        "content-type": "application/json",
+                        "x-apikey": APIKEY,
+                        "cache-control": "no-cache"
+                    },
+                    "processData": "false",
+                    "data": JSON.stringify(jsonData)
+                }
+
+                $.ajax(settings).done(function (response) {
+                    console.log(response);
+                });
+                $('#transac-submit').unbind().submit();
+            }) 
         })
         $("#futureRadio").click(function () {
             $("#futureTime").show()
@@ -156,6 +195,8 @@
         })
         $(".closebtn").click(function () {
             $(".alert").hide();
+
         })
+
     </script>
 }
