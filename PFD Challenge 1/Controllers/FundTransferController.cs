@@ -252,7 +252,7 @@ namespace PFD_Challenge_1.Controllers
                     Recipient = ba.AccNo,
                     Sender = senderAccount.AccNo,
                     Amount = ftr.TransferAmount,
-                    TimeTransfer = DateTime.Now,
+                    TimeTransfer = DateTime.UtcNow,
                     Type = "Immediate"
                 };
 

@@ -24,11 +24,11 @@ namespace PFD_Challenge_1
         TransactionDAL transactionContext = new TransactionDAL();
         BankAccountDAL bankAccContext = new BankAccountDAL();
         BankUserDAL bankUserContext = new BankUserDAL();
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
             if (transactionContext.CheckIncompleteExists() == null&& transactionContext.CheckNotNotified()==null)
             {
-                return Task.FromResult<Transaction>(null);
+                return;
             }
             else
             {
@@ -52,71 +52,18 @@ namespace PFD_Challenge_1
                         {
                             string msgtext = "Dear " + bu.Name + ", We are pleased to inform you that your transfer of funds to " +
                                 su.Name + " is successful! Have a great day ahead!";
-                            SendNotificationAsync(chatID,notNotified.TransacID,msgtext).ContinueWith(t => Console.WriteLine(t.Exception),
-                                                    TaskContinuationOptions.OnlyOnFaulted);
+                            await SendNotificationAsync(chatID, notNotified.TransacID, msgtext);
                         }
+
                     }
                 }
                 // check for incomplete transactions
                 Console.WriteLine("Restdb Scan");
-                Task task = getRestDBIncomplete();
-
-
-                //Check for incomplete transactions
-                //if (transactionContext.CheckIncompleteExists() != null)
-                //{
-                //    Transaction incompleteTrans = transactionContext.CheckIncompleteExists();
-                //    //Check for transactions that cannot occur due to user reaching transaction limit
-                //    if (transactionContext.ValidateTransactionLimit(bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount) //If the amount exceeds transaction limit
-                //            == false)
-                //    {
-                //        return Task.FromResult<Transaction>(null);
-                //    }
-                //    else if (transactionContext.ValidateTransactionLimit(bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount) //If the amount does not exceed the transaction limit
-                //        == true)
-                //    {
-                //        if (incompleteTrans.Amount <= bankAccContext.GetBankAccount(incompleteTrans.Sender).Balance)
-                //        {
-                //            bool updatedAccounts = transactionContext.UpdateTransactionChanges(bankAccContext.GetBankAccount(incompleteTrans.Recipient),
-                //            bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount); //Updates bank account balance records
-                //            if (updatedAccounts == true) //If balance updates successfully
-                //            {
-                //                if (transactionContext.GetTelegramConfirmValue(incompleteTrans.TransacID) == false
-                //                    && (DateTime.UtcNow.Subtract(incompleteTrans.TimeTransfer).TotalMinutes >= 20
-                //                    && transactionContext.CheckTransactionConfirm(incompleteTrans.TransacID) == false))
-                //                {
-                //                    transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
-                //                }
-                //                else
-                //                {
-                //                    transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(incompleteTrans.Sender).Nric, incompleteTrans.Amount);
-                //                    transactionContext.UpdateTransactionComplete(incompleteTrans.TransacID); //Updates transaction "Completed" status
-                //                    transactionContext.UpdateTransactionConfirm(incompleteTrans.TransacID); //Updates transaction "Confirm" status
-                //                    string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
-                //                    CheckRestDBIncomplete(incompleteTrans).Wait();
-                //                    Console.WriteLine(message);
-                //                    return Task.FromResult<Transaction>(incompleteTrans);
-                //                }
-                //            }
-                //            else
-                //            {
-                //                string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
-                //                Console.WriteLine(message);
-                //                return Task.FromResult<Transaction>(incompleteTrans);
-                //            }
-
-                //            return Task.FromResult<Transaction>(incompleteTrans);
-                //        }
-                //        else
-                //        {
-                //            transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
-                //        }
-                //    }
-                //}
+                await GetRestDBIncomplete();
 
             }
 
-            return Task.FromResult<Transaction>(null);
+            return;
         }
         //Method to send telegram notification
         public async Task SendNotificationAsync(int? chatID, int? transacID, string msgtext)
@@ -141,8 +88,9 @@ namespace PFD_Challenge_1
                 }                
             }
         }
-        public async Task getRestDBIncomplete()
+        public async Task GetRestDBIncomplete()
         {
+            List<TempTransac> complicated = new List<TempTransac>();
             // time limit variable declared.
             //For demo purposes it will be kept at 0.5 or 30 seconds actual can be 10 mins or 20 mins
             double timeLimit = 0.5;
@@ -158,8 +106,7 @@ namespace PFD_Challenge_1
             {
                 string data = await response.Content.ReadAsStringAsync();
                 List<TempTransac> removal = new List<TempTransac>();
-                List<TempTransac> complicated = new List<TempTransac>();
-                //if there are records
+                   //if there are records
                 if (data != null)
                 {
                     
@@ -237,8 +184,26 @@ namespace PFD_Challenge_1
                         {
                             string senderId = b.Nric;
                             string receiverId = b.Recipient;
+                            Regex bankacc = new Regex(@"[0-9]{3}-[0-9]{6}-[0-9]{3}");
+                            BankAccount senderAccount = bankAccContext.GetBankAccount(receiverId);
+                            //Validation
+                            //Check if recipient exists
+                            string receiverNRIC = "";
+                            if (bankacc.IsMatch(receiverId))
+                            {
+                                BankAccount ba = bankAccContext.GetBankAccount(receiverId);
+                                receiverNRIC = ba.Nric;
+                            }
                             BankUser sender = bankUserContext.GetBankUser(senderId);
-                            BankUser receiver = bankUserContext.GetBankUser(receiverId);
+                            BankUser receiver = null;
+                            if (receiverNRIC != "")
+                            {
+                                receiver = bankUserContext.GetBankUser(receiverNRIC);
+                            }
+                            else
+                            {
+                                receiver = bankUserContext.GetBankUser(receiverNRIC);
+                            }
                             string receiverName = "non-existent user";
                             if (receiver != null)
                             {
@@ -256,319 +221,361 @@ namespace PFD_Challenge_1
                             HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + b._id);
                         }
                     }
-                    //For those that lack confirmation or it is confirmed but failed to transfer
-                    if (complicated.Count > 0)
+                    
+                }
+            }
+            if (complicated.Count > 0)
+            {
+                Console.WriteLine("List retrieved");
+                await RecoveryAction(complicated);
+            }            
+        }
+        public async Task RecoveryAction(List<TempTransac> complicated)
+        {
+            //For those that lack confirmation or it is confirmed but failed to transfer
+            if (complicated.Count > 0)
+            {
+                foreach (TempTransac b in complicated)
+                {
+                    Console.WriteLine("Handling checkpoint 3 and 4");
+                    if (b.Checkpoint3 == "False" || b.Checkpoint4 == "False")
                     {
-                        foreach (TempTransac b in complicated)
+                        Transaction incompleteTrans = transactionContext.GetTransaction(b.TransacID);
+                        //catch no transid in restdb
+                        if (incompleteTrans == null)
                         {
-                            if (b.Checkpoint3 == "False" || b.Checkpoint4 == "False")
+                            string senderId = b.Nric;
+                            string receiverId = b.Recipient;
+                            Regex bankacc = new Regex(@"[0-9]{3}-[0-9]{6}-[0-9]{3}");
+                            BankAccount senderAccount = bankAccContext.GetBankAccount(receiverId);
+                            //Validation
+                            //Check if recipient exists
+                            string receiverNRIC = "";
+                            if (bankacc.IsMatch(receiverId))
                             {
-                                Transaction incompleteTrans = transactionContext.GetTransaction(b.TransacID);
-                                //catch no transid in restdb
-                                if (incompleteTrans == null)
-                                {
-                                    string senderId = b.Nric;
-                                    string receiverId = b.Recipient;
-                                    Regex bankacc = new Regex(@"[0-9]{3}-[0-9]{6}-[0-9]{3}");
-                                    BankAccount senderAccount = bankAccContext.GetBankAccount(receiverId);
-                                    //Validation
-                                    //Check if recipient exists
-                                    string receiverNRIC = "";
-                                    if (bankacc.IsMatch(receiverId))
-                                    {
-                                        BankAccount ba = bankAccContext.GetBankAccount(receiverId);
-                                        receiverNRIC = ba.Nric;
-                                    }
-                                    BankUser sender = bankUserContext.GetBankUser(senderId);
-                                    BankUser receiver = null;
-                                    if (receiverNRIC != "")
-                                    {
-                                        receiver = bankUserContext.GetBankUser(receiverNRIC);
-                                    }
-                                    else
-                                    {
-                                        receiver = bankUserContext.GetBankUser(receiverNRIC);
-                                    }
-                                    string receiverName = "non-existent user";
-                                    if (receiver != null)
-                                    {
-                                        receiverName = receiver.Name;
-                                    }
-                                    int? chatID = bankUserContext.GetUserChatID(senderId);
-                                    int? transacID = null;
-                                    if (chatID != null)
-                                    {
-                                        string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                            receiverName + " is not successful! No funds were deducted. Have a good day! :)";
-                                        await SendNotificationAsync(chatID, transacID, msgtext);
-                                    }
-                                    //delete record from the restdb
-                                    HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + b._id);
-                                }
-                                else
-                                {//If the amount exceeds transaction limit
-                                    if (transactionContext.ValidateTransactionLimit(bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount)
-                                == false)
-                                    {
-                                        string senderId = incompleteTrans.Sender;
-                                        string receiverId = incompleteTrans.Recipient;
-                                        BankAccount ba = bankAccContext.GetBankAccount(senderId);
-                                        BankAccount sa = bankAccContext.GetBankAccount(receiverId);
-                                        BankUser sender = bankUserContext.GetBankUser(ba.Nric);
-                                        BankUser receiver = bankUserContext.GetBankUser(sa.Nric);
-                                        string receiverName = receiverName = receiver.Name;
-                                        int? chatID = bankUserContext.GetUserChatID(senderId);
-                                        int? transacID = null;
-                                        if (chatID != null)
-                                        {
-                                            string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                                receiverName + " is not successful! No funds were deducted due to transaction limit reached." +
-                                                "If you would like to make the transfer again. Please set your transaction limit higher. Have a good day! :)";
-                                            await SendNotificationAsync(chatID, transacID, msgtext);
-
-                                        }
-                                        //delete record from the restdb
-                                        HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + b._id);
-                                        //delete record from sqldb
-                                        transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
-
-                                    }
-                                    else if (transactionContext.ValidateTransactionLimit(bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount)
-                                        == true)//If the amount does not exceed the transaction limit
-                                    {
-                                        DateTime? teleConfirmSent = transactionContext.getTelegramDate(incompleteTrans.TransacID);
-                                        if (teleConfirmSent == null)
-                                        {
-                                            string senderId = incompleteTrans.Sender;
-                                            string receiverId = incompleteTrans.Recipient;
-                                            BankAccount ba = bankAccContext.GetBankAccount(senderId);
-                                            BankAccount sa = bankAccContext.GetBankAccount(receiverId);
-                                            BankUser sender = bankUserContext.GetBankUser(ba.Nric);
-                                            BankUser receiver = bankUserContext.GetBankUser(sa.Nric);
-                                            string receiverName = receiverName = receiver.Name;
-                                            int? chatID = bankUserContext.GetUserChatID(senderId);
-                                            int? transacID = null;
-                                            if (chatID != null)
-                                            {
-                                                string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                                    receiverName + " has no confirmation! To confirm the transfer please reply with your nric within 15 mins! To cancel the transaction do not reply to this message.";
-                                                await SendNotificationAsync(chatID, transacID, msgtext);
-                                                transactionContext.setTelegramDate(incompleteTrans.TransacID, DateTime.UtcNow);
-                                            }
-                                            else
-                                            {
-                                                //delete record from the restdb
-                                                HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + b._id);
-                                                transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
-                                            }
-
-                                        }
-                                        else
-                                        {
-                                            if (teleConfirmSent.Value.Subtract(DateTime.UtcNow).TotalMinutes <= 15)
-                                            {
-                                                string senderId = incompleteTrans.Sender;
-                                                string receiverId = incompleteTrans.Recipient;
-                                                BankAccount ba = bankAccContext.GetBankAccount(senderId);
-                                                BankAccount sa = bankAccContext.GetBankAccount(receiverId);
-                                                BankUser sender = bankUserContext.GetBankUser(ba.Nric);
-                                                BankUser receiver = bankUserContext.GetBankUser(sa.Nric);
-                                                string nric = sender.Nric;
-                                                if (bankUserContext.GetUserChatID(nric) != null)
-                                                {
-                                                    if (incompleteTrans.Amount <= bankAccContext.GetBankAccount(incompleteTrans.Sender).Balance)
-                                                    {
-                                                        bool telegramConfirm = await CheckTeleConfirm(nric, bankUserContext.GetUserChatID(nric).Value, teleConfirmSent.Value);
-                                                        if (!telegramConfirm)
-                                                        {
-                                                            string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                                            receiver.Name + " has no confirmation! The transfer will be terminated. No funds have been transferred.";
-                                                            await SendNotificationAsync(bankUserContext.GetUserChatID(nric).Value, null, msgtext);
-                                                            transactionContext.setTelegramDate(incompleteTrans.TransacID, DateTime.UtcNow);
-
-                                                            //delete record from the restdb
-                                                            HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + b._id);
-                                                            transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
-                                                        }
-                                                        else
-                                                        {
-                                                            bool updatedaccounts = transactionContext.UpdateTransactionChanges(bankAccContext.GetBankAccount(incompleteTrans.Recipient),
-                                                            bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount);
-                                                            if (updatedaccounts == true) //if balance updates successfully
-                                                            {
-
-                                                                transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(incompleteTrans.Sender).Nric, incompleteTrans.Amount);
-                                                                transactionContext.UpdateTransactionConfirm(incompleteTrans.TransacID); //updates transaction "completed" status
-                                                                transactionContext.UpdateTransactionConfirm(incompleteTrans.TransacID); //updates transaction "confirm" status
-                                                                string message = transactionContext.TransactionStatusMsg(updatedaccounts); //notification message string for success
-                                                                Console.WriteLine(message);
-
-                                                            }
-                                                            else
-                                                            {
-                                                                string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                                                receiver.Name + " has an error occured! The transfer will be terminated. No funds have been transferred.";
-                                                                await SendNotificationAsync(bankUserContext.GetUserChatID(nric).Value, null, msgtext);
-
-                                                                //delete record from the restdb
-                                                                HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + b._id);
-                                                                transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
-                                                            }
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        int? chatID = bankUserContext.GetUserChatID(senderId);
-                                                        int? transacID = null;
-                                                        if (chatID != null)
-                                                        {
-                                                            string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                                            receiver.Name + " has lack of funds! The transfer will be terminated. No funds have been transferred.";
-                                                            await SendNotificationAsync(chatID, transacID, msgtext);
-                                                            transactionContext.setTelegramDate(incompleteTrans.TransacID, DateTime.UtcNow);
-                                                            //delete record from the restdb
-                                                            HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + b._id);
-                                                            transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
-                                                        }
-                                                        else
-                                                        {
-                                                            //delete record from the restdb
-                                                            HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + b._id);
-                                                            transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-
-                                                    //delete record from the restdb
-                                                    HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + b._id);
-                                                    transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
-
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                                BankAccount ba = bankAccContext.GetBankAccount(receiverId);
+                                receiverNRIC = ba.Nric;
+                            }
+                            BankUser sender = bankUserContext.GetBankUser(senderId);
+                            BankUser receiver = null;
+                            if (receiverNRIC != "")
+                            {
+                                receiver = bankUserContext.GetBankUser(receiverNRIC);
                             }
                             else
                             {
-                                Transaction incompleteTrans = transactionContext.CheckIncompleteExists();
-                                if (incompleteTrans == null)
+                                receiver = bankUserContext.GetBankUser(receiverNRIC);
+                            }
+                            string receiverName = "non-existent user";
+                            if (receiver != null)
+                            {
+                                receiverName = receiver.Name;
+                            }
+                            int? chatID = bankUserContext.GetUserChatID(senderId);
+                            int? transacID = null;
+                            if (chatID != null)
+                            {
+                                string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
+                                    receiverName + " is not successful! No funds were deducted. Have a good day! :)";
+                                await SendNotificationAsync(chatID, transacID, msgtext);
+                            }
+                            //delete record from the restdb
+                            
+                        }
+                        else
+                        {//If the amount exceeds transaction limit
+                            if (transactionContext.ValidateTransactionLimit(bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount)
+                        == false)
+                            {
+                                string senderId = incompleteTrans.Sender;
+                                string receiverId = incompleteTrans.Recipient;
+                                BankAccount ba = bankAccContext.GetBankAccount(senderId);
+                                BankAccount sa = bankAccContext.GetBankAccount(receiverId);
+                                BankUser sender = bankUserContext.GetBankUser(ba.Nric);
+                                BankUser receiver = bankUserContext.GetBankUser(sa.Nric);
+                                string receiverName = receiverName = receiver.Name;
+                                int? chatID = bankUserContext.GetUserChatID(ba.Nric);
+                                int? transacID = null;
+                                if (chatID != null)
                                 {
-                                    string senderId = b.Nric;
-                                    string receiverId = b.Recipient;
-                                    BankUser sender = bankUserContext.GetBankUser(senderId);
-                                    BankUser receiver = bankUserContext.GetBankUser(receiverId);
-                                    string receiverName = "non-existent user";
-                                    if (receiver != null)
-                                    {
-                                        receiverName = receiver.Name;
-                                    }
-                                    int? chatID = bankUserContext.GetUserChatID(senderId);
+                                    string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
+                                        receiverName + " is not successful! No funds were deducted due to transaction limit reached." +
+                                        "If you would like to make the transfer again. Please set your transaction limit higher. Have a good day! :)";
+                                    await SendNotificationAsync(chatID, transacID, msgtext);
+
+                                }
+                                //delete record from the restdb
+                                await DeleteRecord(b);
+                                //delete record from sqldb
+                                transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
+
+                            }
+                            else if (transactionContext.ValidateTransactionLimit(bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount)
+                                == true)//If the amount does not exceed the transaction limit
+                            {
+                                DateTime? teleConfirmSent = transactionContext.getTelegramDate(incompleteTrans.TransacID);
+                                if (teleConfirmSent == null)
+                                {
+                                    string senderId = incompleteTrans.Sender;
+                                    string receiverId = incompleteTrans.Recipient;
+                                    BankAccount ba = bankAccContext.GetBankAccount(senderId);
+                                    BankAccount sa = bankAccContext.GetBankAccount(receiverId);
+                                    BankUser sender = bankUserContext.GetBankUser(ba.Nric);
+                                    BankUser receiver = bankUserContext.GetBankUser(sa.Nric);
+                                    string receiverName = receiverName = receiver.Name;
+                                    int? chatID = bankUserContext.GetUserChatID(ba.Nric);
                                     int? transacID = null;
                                     if (chatID != null)
                                     {
                                         string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                            receiverName + " is not successful! No funds were deducted. Have a good day! :)";
+                                            receiverName + " has no confirmation! To confirm the transfer please reply with your nric within 15 mins! To cancel the transaction do not reply to this message.";
                                         await SendNotificationAsync(chatID, transacID, msgtext);
+                                        transactionContext.setTelegramDate(incompleteTrans.TransacID, DateTime.UtcNow);
                                     }
-                                    //delete record from the restdb
-                                    HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + b._id);
+                                    else
+                                    {
+                                        //delete record from the restdb
+                                        await DeleteRecord(b);
+                                        transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
+                                    }
+
                                 }
                                 else
                                 {
-                                    //Check for transactions that cannot occur due to user reaching transaction limit
-                                    if (transactionContext.ValidateTransactionLimit(bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount) //If the amount exceeds transaction limit
-                                            == false)
+                                    if (teleConfirmSent.Value.Subtract(DateTime.UtcNow).TotalMinutes <= 15)
                                     {
                                         string senderId = incompleteTrans.Sender;
                                         string receiverId = incompleteTrans.Recipient;
                                         BankAccount ba = bankAccContext.GetBankAccount(senderId);
-                                        BankAccount sa = bankAccContext.GetBankAccount(receiverId);
+                                        BankAccount ra = bankAccContext.GetBankAccount(receiverId);
                                         BankUser sender = bankUserContext.GetBankUser(ba.Nric);
-                                        BankUser receiver = bankUserContext.GetBankUser(sa.Nric);
-                                        string receiverName = receiverName = receiver.Name;
-                                        int? chatID = bankUserContext.GetUserChatID(senderId);
-                                        int? transacID = null;
-                                        if (chatID != null)
+                                        BankUser receiver = bankUserContext.GetBankUser(ra.Nric);
+                                        string nric = sender.Nric;
+                                        await CheckTeleConfirm(nric, bankUserContext.GetUserChatID(nric).Value, teleConfirmSent.Value,incompleteTrans.TransacID);
+                                        if (bankUserContext.GetUserChatID(nric) != null)
                                         {
-                                            string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                                receiverName + " is not successful! No funds were deducted due to transaction limit reached." +
-                                                "If you would like to make the transfer again. Please set your transaction limit higher. Have a good day! :)";
-                                            await SendNotificationAsync(chatID, transacID, msgtext);
-
-                                        }
-                                        //delete record from the restdb
-                                        HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + b._id);
-                                        //delete record from sqldb
-                                        transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
-                                    }
-                                    else if (transactionContext.ValidateTransactionLimit(bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount) //If the amount does not exceed the transaction limit
-                                        == true)
-                                    {
-                                        if (incompleteTrans.Amount <= bankAccContext.GetBankAccount(incompleteTrans.Sender).Balance)
-                                        {
-                                            bool updatedaccounts = transactionContext.UpdateTransactionChanges(bankAccContext.GetBankAccount(incompleteTrans.Recipient),
-                                                            bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount);
-                                            if (updatedaccounts == true) //if balance updates successfully
+                                            if (incompleteTrans.Amount <= bankAccContext.GetBankAccount(incompleteTrans.Sender).Balance)
                                             {
+                                                
+                                                bool telegramConfirm = transactionContext.GetTelegramConfirmValue(incompleteTrans.TransacID);                                                
+                                                if (telegramConfirm)
+                                                {
+                                                    bool updatedaccounts = transactionContext.UpdateTransactionChanges(bankAccContext.GetBankAccount(incompleteTrans.Recipient),
+                                                    bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount);
+                                                    if (updatedaccounts == true) //if balance updates successfully
+                                                    {
+                                                        transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(incompleteTrans.Sender).Nric, incompleteTrans.Amount);
+                                                        transactionContext.UpdateTransactionConfirm(incompleteTrans.TransacID); //updates transaction "confirm" status
+                                                        string message = transactionContext.TransactionStatusMsg(updatedaccounts); //notification message string for success
+                                                        Console.WriteLine(message);
+                                                        string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds $"+ incompleteTrans.Amount +" to " +
+                                                        receiver.Name + " is successful.";
+                                                        await SendNotificationAsync(bankUserContext.GetUserChatID(nric).Value, null, msgtext);
 
-                                                transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(incompleteTrans.Sender).Nric, incompleteTrans.Amount);
-                                                transactionContext.UpdateTransactionConfirm(incompleteTrans.TransacID); //updates transaction "completed" status
-                                                transactionContext.UpdateTransactionConfirm(incompleteTrans.TransacID); //updates transaction "confirm" status
-                                                string message = transactionContext.TransactionStatusMsg(updatedaccounts); //notification message string for success
-                                                Console.WriteLine(message);
+                                                        //delete record from the restdb
+                                                        await DeleteRecord(b);
+                                                        transactionContext.UpdateTransactionNotified(incompleteTrans.TransacID);
+                                                        transactionContext.UpdateTransactionComplete(incompleteTrans.TransacID);//updates transaction "completed" status
+                                                    }
+                                                    else
+                                                    {
+                                                        string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
+                                                        receiver.Name + " has an error occured! The transfer will be terminated. No funds have been transferred.";
+                                                        await SendNotificationAsync(bankUserContext.GetUserChatID(nric).Value, null, msgtext);
 
+                                                        //delete record from the restdb
+                                                        await DeleteRecord(b);
+                                                        transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
+                                                    }
+                                                }
                                             }
                                             else
                                             {
-                                                string senderId = incompleteTrans.Sender;
-                                                string receiverId = incompleteTrans.Recipient;
-                                                BankAccount ba = bankAccContext.GetBankAccount(senderId);
-                                                BankAccount sa = bankAccContext.GetBankAccount(receiverId);
-                                                BankUser sender = bankUserContext.GetBankUser(ba.Nric);
-                                                BankUser receiver = bankUserContext.GetBankUser(sa.Nric);
-                                                string receiverName = receiverName = receiver.Name;
                                                 int? chatID = bankUserContext.GetUserChatID(senderId);
                                                 int? transacID = null;
                                                 if (chatID != null)
                                                 {
                                                     string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                                                receiver.Name + " has an error occured! The transfer will be terminated. No funds have been transferred.";
+                                                    receiver.Name + " has lack of funds! The transfer will be terminated. No funds have been transferred.";
                                                     await SendNotificationAsync(chatID, transacID, msgtext);
-
+                                                    transactionContext.setTelegramDate(incompleteTrans.TransacID, DateTime.UtcNow);
+                                                    //delete record from the restdb
+                                                    await DeleteRecord(b);
+                                                    transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
                                                 }
-                                                //delete record from the restdb
-                                                HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + b._id);
-                                                //delete record from sqldb
-                                                transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
+                                                else
+                                                {
+                                                    //delete record from the restdb
+                                                    await DeleteRecord(b);
+                                                    transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
+                                                }
                                             }
                                         }
                                         else
                                         {
-                                            string senderId = incompleteTrans.Sender;
-                                            string receiverId = incompleteTrans.Recipient;
-                                            BankAccount ba = bankAccContext.GetBankAccount(senderId);
-                                            BankAccount sa = bankAccContext.GetBankAccount(receiverId);
-                                            BankUser sender = bankUserContext.GetBankUser(ba.Nric);
-                                            BankUser receiver = bankUserContext.GetBankUser(sa.Nric);
-                                            string receiverName = receiverName = receiver.Name;
-                                            int? chatID = bankUserContext.GetUserChatID(senderId);
-                                            int? transacID = null;
-                                            if (chatID != null)
-                                            {
-                                                string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                                            receiver.Name + " has lack of funds! The transfer will be terminated. No funds have been transferred.";
-                                                await SendNotificationAsync(chatID, transacID, msgtext);
 
-                                            }
                                             //delete record from the restdb
-                                            HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + b._id);
-                                            //delete record from sqldb
+                                            await DeleteRecord(b);
                                             transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
+
                                         }
                                     }
+                                    else
+                                    {
+                                        string senderId = incompleteTrans.Sender;
+                                        string receiverId = incompleteTrans.Recipient;
+                                        BankAccount ba = bankAccContext.GetBankAccount(senderId);
+                                        BankAccount ra = bankAccContext.GetBankAccount(receiverId);
+                                        BankUser sender = bankUserContext.GetBankUser(ba.Nric);
+                                        BankUser receiver = bankUserContext.GetBankUser(ra.Nric);
+                                        string nric = sender.Nric;
+                                        string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
+                                                    receiver.Name + " has no confirmation! The transfer will be terminated. No funds have been transferred.";
+                                        await SendNotificationAsync(bankUserContext.GetUserChatID(nric).Value, null, msgtext);
+                                        transactionContext.setTelegramDate(incompleteTrans.TransacID, DateTime.UtcNow);
+
+                                        //delete record from the restdb
+                                        await DeleteRecord(b);
+                                        transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Transaction incompleteTrans = transactionContext.GetTransaction(b.TransacID);
+                        if (incompleteTrans == null)
+                        {
+                            string senderId = b.Nric;
+                            string receiverId = b.Recipient;
+                            Regex bankacc = new Regex(@"[0-9]{3}-[0-9]{6}-[0-9]{3}");
+                            BankAccount senderAccount = bankAccContext.GetBankAccount(receiverId);
+                            //Validation
+                            //Check if recipient exists
+                            string receiverNRIC = "";
+                            if (bankacc.IsMatch(receiverId))
+                            {
+                                BankAccount ba = bankAccContext.GetBankAccount(receiverId);
+                                receiverNRIC = ba.Nric;
+                            }
+                            BankUser sender = bankUserContext.GetBankUser(senderId);
+                            BankUser receiver = null;
+                            if (receiverNRIC != "")
+                            {
+                                receiver = bankUserContext.GetBankUser(receiverNRIC);
+                            }
+                            else
+                            {
+                                receiver = bankUserContext.GetBankUser(receiverNRIC);
+                            }
+                            string receiverName = "non-existent user";
+                            if (receiver != null)
+                            {
+                                receiverName = receiver.Name;
+                            }
+                            int? chatID = bankUserContext.GetUserChatID(senderId);
+                            int? transacID = null;
+                            if (chatID != null)
+                            {
+                                string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
+                                    receiverName + " is not successful! No funds were deducted. Have a good day! :)";
+                                await SendNotificationAsync(chatID, transacID, msgtext);
+                            }
+                            //delete record from the restdb
+                            await DeleteRecord(b);
+                        }
+                        else
+                        {
+                            //Check for transactions that cannot occur due to user reaching transaction limit
+                            if (transactionContext.ValidateTransactionLimit(bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount) //If the amount exceeds transaction limit
+                                    == false)
+                            {
+                                string senderId = incompleteTrans.Sender;
+                                string receiverId = incompleteTrans.Recipient;
+                                BankAccount ba = bankAccContext.GetBankAccount(senderId);
+                                BankAccount sa = bankAccContext.GetBankAccount(receiverId);
+                                BankUser sender = bankUserContext.GetBankUser(ba.Nric);
+                                BankUser receiver = bankUserContext.GetBankUser(sa.Nric);
+                                string receiverName = receiverName = receiver.Name;
+                                int? chatID = bankUserContext.GetUserChatID(senderId);
+                                int? transacID = null;
+                                if (chatID != null)
+                                {
+                                    string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
+                                        receiverName + " is not successful! No funds were deducted due to transaction limit reached." +
+                                        "If you would like to make the transfer again. Please set your transaction limit higher. Have a good day! :)";
+                                    await SendNotificationAsync(chatID, transacID, msgtext);
+
+                                }
+                                //delete record from the restdb
+                                await DeleteRecord(b);
+                                //delete record from sqldb
+                                transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
+                            }
+                            else if (transactionContext.ValidateTransactionLimit(bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount) //If the amount does not exceed the transaction limit
+                                == true)
+                            {
+                                string senderId = incompleteTrans.Sender;
+                                string receiverId = incompleteTrans.Recipient;
+                                BankAccount ba = bankAccContext.GetBankAccount(senderId);
+                                BankAccount sa = bankAccContext.GetBankAccount(receiverId);
+                                BankUser sender = bankUserContext.GetBankUser(ba.Nric);
+                                BankUser receiver = bankUserContext.GetBankUser(sa.Nric);
+                                string receiverName = receiverName = receiver.Name;
+                                if (incompleteTrans.Amount <= bankAccContext.GetBankAccount(incompleteTrans.Sender).Balance)
+                                {
+                                    bool updatedaccounts = transactionContext.UpdateTransactionChanges(bankAccContext.GetBankAccount(incompleteTrans.Recipient),
+                                                    bankAccContext.GetBankAccount(incompleteTrans.Sender), incompleteTrans.Amount);
+                                    if (updatedaccounts == true) //if balance updates successfully
+                                    {
+
+                                        transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(incompleteTrans.Sender).Nric, incompleteTrans.Amount);
+                                        transactionContext.UpdateTransactionConfirm(incompleteTrans.TransacID); //updates transaction "confirm" status
+                                        transactionContext.UpdateTransactionComplete(incompleteTrans.TransacID); //updates transaction "completed" status
+                                        string message = transactionContext.TransactionStatusMsg(updatedaccounts); //notification message string for success
+                                        Console.WriteLine(message);
+                                        string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds $" + incompleteTrans.Amount + " to " +
+                                        receiver.Name + " is successful.";
+                                        await SendNotificationAsync(bankUserContext.GetUserChatID(sender.Nric).Value, null, msgtext);
+
+                                        //delete record from the restdb
+                                        await DeleteRecord(b);
+                                        transactionContext.UpdateTransactionNotified(incompleteTrans.TransacID);
+
+                                    }
+                                    else
+                                    {
+                                        int? chatID = bankUserContext.GetUserChatID(senderId);
+                                        int? transacID = null;
+                                        if (chatID != null)
+                                        {
+                                            string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
+                                                        receiver.Name + " has an error occured! The transfer will be terminated. No funds have been transferred.";
+                                            await SendNotificationAsync(chatID, transacID, msgtext);
+
+                                        }
+                                        //delete record from the restdb
+                                        await DeleteRecord(b);
+                                        //delete record from sqldb
+                                        transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
+                                    }
+                                }
+                                else
+                                {
+                                    int? chatID = bankUserContext.GetUserChatID(senderId);
+                                    int? transacID = null;
+                                    if (chatID != null)
+                                    {
+                                        string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
+                                                    receiver.Name + " has lack of funds! The transfer will be terminated. No funds have been transferred.";
+                                        await SendNotificationAsync(chatID, transacID, msgtext);
+
+                                    }
+                                    //delete record from the restdb
+                                    await DeleteRecord(b);
+                                    //delete record from sqldb
+                                    transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
                                 }
                             }
                         }
@@ -576,70 +583,39 @@ namespace PFD_Challenge_1
                 }
             }
         }
-        public async Task<bool> CheckTeleConfirm(string nric,int chatId, DateTime teleConfirm)
+        public async Task DeleteRecord(TempTransac b)
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("https://ocbcdatabase-0c55.restdb.io");
+            client.DefaultRequestHeaders.Add("x-api-key", "61f2742d7e55272295017175");
+            HttpResponseMessage response = await client.GetAsync("/rest/temptransac");
+            HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + b._id);
+        }
+        public async Task CheckTeleConfirm(string nric,int chatId, DateTime teleConfirm, int transacID)
         {
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri("https://api.telegram.org");
             HttpResponseMessage response = await client.GetAsync("/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws/getUpdates");
             string data = await response.Content.ReadAsStringAsync();
             Root result = JsonConvert.DeserializeObject<Root>(data);
+            result.result.Reverse();
             foreach (Result r in result.result)
             {
                 //Check if message is the same as code
                 if (r.message.text == nric && r.message.chat.id== chatId)
                 {
-                    if (teleConfirm.Subtract(Convert.ToDateTime(r.message.date)).TotalMinutes < 15)
+                    Console.WriteLine("Time needed");
+                    DateTime t = DateTimeOffset.FromUnixTimeSeconds(r.message.date).DateTime;
+                    if (teleConfirm.Subtract(t).TotalMinutes < 15)
                     {
-                        return true;
+                        transactionContext.setTelegramConfirmValue(transacID, nric);
                     }
                     //messageCapture should be later than time accessed to the page
                     //endtime should be within duration                    
                 }
             }
-            return false;
         }
-        ////Scans the database for False in checkpoints 3 and 4 and should send a Telegram message to inform them of action taken
-        //public async Task CheckRestDBIncomplete(Transaction transac)
-        //{
-        //    HttpClient client = new HttpClient();
-        //    client.BaseAddress = new Uri("https://ocbcdatabase-0c55.restdb.io");
-        //    client.DefaultRequestHeaders.Add("x-api-key", "61f2742d7e55272295017175");
-        //    HttpResponseMessage getResponse = await client.GetAsync("/rest/temptransac");
-        //    if (getResponse.IsSuccessStatusCode)
-        //    {
-        //        string data = await getResponse.Content.ReadAsStringAsync();
-        //        if (data != null)
-        //        {
-        //            List<TempTransac> tempTransacList = JsonConvert.DeserializeObject<List<TempTransac>>(data);
-        //            foreach (TempTransac tempTransac in tempTransacList)
-        //            {
-        //                //If either 3 or 4 are false, delete the record.
-        //                if (tempTransac.Checkpoint3 == "False" || tempTransac.Checkpoint4 == "False")
-        //                {
-        //                    HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + tempTransac._id);
-        //                }
-        //                //If Checkpoint 4 is true, carry out the transaction in the backend.
-        //                else if (tempTransac.Checkpoint4 == "True")
-        //                {
-        //                    bool updatedAccounts = transactionContext.UpdateTransactionChanges(bankAccContext.GetBankAccount(transac.Recipient),
-        //                        bankAccContext.GetBankAccount(transac.Sender), transac.Amount); //Updates bank account balance records
-        //                    if (updatedAccounts == true) //If balance updates successfully
-        //                    {
-        //                        transactionContext.UpdateDailySpend(bankAccContext.GetBankAccount(transac.Sender).Nric, transac.Amount);
-        //                        transactionContext.UpdateTransactionComplete(transac.TransacID); //Updates transaction "Completed" status
-        //                        transactionContext.UpdateTransactionConfirm(transac.TransacID); //Updates transaction "Confirm" status
-        //                        string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for success
-        //                        Console.WriteLine(message);
-        //                    }
-        //                    else
-        //                    {
-        //                        string message = transactionContext.TransactionStatusMsg(updatedAccounts); //Notification message string for failure
-        //                        Console.WriteLine(message);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
+        
         
     }
 }

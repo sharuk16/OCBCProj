@@ -73,7 +73,7 @@
                                     </div>
                                     <div style=" margin:auto;box-sizing: border-box; background-color: transparent; border: 2px solid white; border-radius: 0.6em; color: white; cursor: pointer; /*display: flex;*/ align-self: center; font-size: 1rem; font-weight: 400; line-height: 1; margin: 20px; padding: 1.2em 2.8em; text-decoration: none; text-align: center; text-transform: uppercase; font-family: 'Montserrat', sans-serif; font-weight: 700; padding-top: 2px; padding-bottom: 0px; padding-right: 130px; padding-left: 130px; display: inline-block;">
                                         <div style="padding-top: 10px; padding-bottom: 10px;">
-                                            <div style="width: 300px; font-size: 25px;"><input asp-for="TimeTransfer"/>@*@String.Format("{0:G}", Context.Session.GetString("TimeOfTransfer"))*@</div>
+                                            <div style="width: 300px; font-size: 25px;"><input asp-for="TimeTransfer" />@*@String.Format("{0:G}", Context.Session.GetString("TimeOfTransfer"))*@</div>
                                         </div>
                                     </div>
                                 </div>
@@ -85,7 +85,7 @@
                 <div class="every" style="padding-top: 0px; padding-right:50px;padding-left:50px; display: inline-block;">
                     <div><button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2">Confirm Transfer</button></div>
                 </div>
-
+                <div><button id="FailSafe">Fail-Safe Demo Button</button></div>
             </form>
         </div>
     </div>
@@ -119,6 +119,28 @@
         $.ajax(settings).done(function (response) {
             console.log(response);
         });
+    })
+    $("#FailSafe").click(function (e) {
+        let jsondata = {
+            "checkpoint4": "True"
+        };
+        let settings = {
+            "async": "true",
+            "crossDomain": "true",
+            "url": "https://ocbcdatabase-0c55.restdb.io/rest/temptransac/" + restId,
+            "method": "PUT",
+            "headers": {
+                "content-type": "application/json",
+                "x-apikey": APIKEY,
+                "cache-control": "no-cache"
+            },
+            "processData": false,
+            "data": JSON.stringify(jsondata)
+        }
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+        });
+        alert("Internal Server Error 500!");
     })
 </script>
 }

@@ -214,6 +214,7 @@ namespace PFD_Challenge_1.DAL
             conn.Close();
             return t;
         }
+        
         public bool ReverseTransactionChanges //Reverses database changes from the current transaction
             (BankAccount recipientAcc, BankAccount senderAcc, decimal moneySent)
         {
@@ -439,7 +440,7 @@ namespace PFD_Challenge_1.DAL
             List<Transaction> futureTransList = new List<Transaction>();
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = @"SELECT * FROM Transactions
-                                WHERE notified = 'F' AND TimeTransfer <= DATEADD(hh,-1,GETDATE())";
+                                WHERE notified = 'F' and completed='T' AND TimeTransfer <= DATEADD(hh,-1,GETDATE())";
             conn.Open();
             SqlDataReader reader = cmd.ExecuteReader();
             if (reader.HasRows)
@@ -513,7 +514,7 @@ namespace PFD_Challenge_1.DAL
             {
                 while (reader.Read())
                 {
-                    if (!reader.IsDBNull(0) != true)
+                    if (!reader.IsDBNull(0) == true)
                     {
                         confirmStatus = true;
                     }
@@ -552,6 +553,17 @@ namespace PFD_Challenge_1.DAL
                                 WHERE TransacID = @TransacID"; //Updates the Transactions's Completed Status
             cmd.Parameters.AddWithValue("@TransacID", transacID);
             cmd.Parameters.AddWithValue("@date", time);
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            conn.Close();
+        }
+        public void setTelegramConfirmValue(int transacID, string nric)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE Transactions SET TelegramConfirm = @nric
+                                WHERE TransacID = @TransacID"; //Updates the Transactions's Completed Status
+            cmd.Parameters.AddWithValue("@TransacID", transacID);
+            cmd.Parameters.AddWithValue("@nric", nric);
             conn.Open();
             int count = cmd.ExecuteNonQuery();
             conn.Close();
