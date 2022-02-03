@@ -260,7 +260,6 @@ namespace PFD_Challenge_1.Controllers
                 HttpContext.Session.SetInt32("transacID", transacID);
 
                 // Update Checkpoint 2
-                // Check line 46 (remove when completed)
                if (getResponse.IsSuccessStatusCode)
                 {
                     string data = await getResponse.Content.ReadAsStringAsync();
@@ -274,6 +273,7 @@ namespace PFD_Challenge_1.Controllers
                                 var checkpoint2Transac = JsonSerializer.Serialize(new
                                 {
                                     _id = tempTransac._id,
+                                    transacID = transacID,
                                     checkpoint2 = "True"
                                 });
                                 HttpContent updateCheckpoint2 = new StringContent(checkpoint2Transac, Encoding.UTF8, "application/json");

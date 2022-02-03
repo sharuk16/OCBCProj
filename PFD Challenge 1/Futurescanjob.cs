@@ -140,7 +140,7 @@ namespace PFD_Challenge_1
                             int? chatID = bankUserContext.GetUserChatID(su.Nric);
                             if (chatID != null)
                             {//Method to send telegram notification
-                                SendFailedTransactionAsync(chatID, bu, su, t.Amount).ContinueWith(t => Console.WriteLine(t.Exception),
+                                SendFailedTransactionAsync(chatID, bu, su, t.Amount,t.TransacID).ContinueWith(t => Console.WriteLine(t.Exception),
     TaskContinuationOptions.OnlyOnFaulted);
                             }
                         }
@@ -194,7 +194,7 @@ namespace PFD_Challenge_1
                 Console.WriteLine("Message sent successfully");
             }
         }
-        public async Task SendFailedTransactionAsync(int? chatID, BankUser bu, BankUser su, decimal amount)
+        public async Task SendFailedTransactionAsync(int? chatID, BankUser bu, BankUser su, decimal amount, int? transacID)
         {
             //Method to send Telegram notification
             HttpClient client = new HttpClient();
@@ -212,6 +212,11 @@ namespace PFD_Challenge_1
             if (response.IsSuccessStatusCode)
             {
                 Console.WriteLine("Message sent successfully");
+                if (transacID != null)
+                {
+                    transactionContext.DeleteTransactionRecord(transacID.Value);
+                }
+                
             }
         }
     }

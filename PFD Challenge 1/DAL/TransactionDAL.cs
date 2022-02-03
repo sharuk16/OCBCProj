@@ -418,7 +418,7 @@ namespace PFD_Challenge_1.DAL
         public bool DeleteTransactionRecord(int transacID)
         {
             SqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = @"DELETE * FROM Transactions
+            cmd.CommandText = @"DELETE FROM Transactions
                                 WHERE TransacID = @TransacID";
             cmd.Parameters.AddWithValue("@TransacID", transacID);
             conn.Open();
@@ -523,6 +523,38 @@ namespace PFD_Challenge_1.DAL
             reader.Close();
             conn.Close();
             return confirmStatus;
+        }
+        public DateTime? getTelegramDate(int transacID)
+        {
+            DateTime? t=null;
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT TelegramConfirmDate FROM Transactions
+                                WHERE TransacID = @TransacID"; //Updates the Transactions's Completed Status
+            cmd.Parameters.AddWithValue("@TransacID", transacID);
+            conn.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    t = !reader.IsDBNull(0) ? reader.GetDateTime(0) : (DateTime?)null;
+                }
+            }
+            //Close DataReader
+            reader.Close();
+            conn.Close();
+            return t;
+        }
+        public void setTelegramDate(int transacID, DateTime time)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE Transactions SET TelegramConfirmDate = @date
+                                WHERE TransacID = @TransacID"; //Updates the Transactions's Completed Status
+            cmd.Parameters.AddWithValue("@TransacID", transacID);
+            cmd.Parameters.AddWithValue("@date", time);
+            conn.Open();
+            int count = cmd.ExecuteNonQuery();
+            conn.Close();
         }
     }
 }
