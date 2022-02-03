@@ -3,37 +3,54 @@
 *@
 @{
 }
-@using Microsoft.AspNetCore.Http
-<h1>Windows Hello Settings</h1>
-<div>@ViewData["Message"]</div>
- 
-        <div id="disableWindowsHello">
-        <div class="container">
-            <div class="row">
-                <div class="col-6">
-                    Disable Windows Hello:
-                </div>
-                <div class="col-6">
-                    <button id="Disable">Disable Windows Hello</button>
-                </div>
 
-            </div>
-        </div>
-            </div>
-    <div id="enableWindowsHello">
+@section css{
+    @*Add specific css script here*@
+    <link rel="stylesheet" href="~/css/windowshellosettings.css" />
+}
+
+@using Microsoft.AspNetCore.Http
+
+<div style="text-align:center;">
+    <div style=" margin-top:15%; margin-bottom:15%;">
+        <img id="imgLogo" src="~/images/Windows Hello Settings.png"
+             style="width: 100%" />
+    </div>
+
+    <div>@ViewData["Message"]</div>
+
+    <div id="disableWindowsHello">
         <div class="container">
             <div class="row">
                 <div class="col-6">
-                    Enable for Windows Hello:
+                    <h1 style="color:white;">Disable Windows Hello:</h1>
                 </div>
                 <div class="col-6">
-                    <button id="Enable">Enable Windows Hello</button>
+                    <div class="every" style="padding-top: 0px; padding-right:50px;padding-left:50px; display: inline-block;">
+                        <div><button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2" id="Disable">Disable Windows Hello</button></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <div id="enableWindowsHello">
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    <h1 style="color:white;">Enable for Windows Hello:</h1>
+                </div>
+                <div class="col-6">
+                    <div class="every" style="display: inline-block;">
+                        <div><button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2" id="Enable">Enable Windows Hello</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts{
+    <script src="~/js/login.js"></script>
     <script src="https://cdn.passwordless.dev/dist/0.2.0/passwordless.iife.js"
             crossorigin="anonymous"></script>
     <script>
@@ -50,58 +67,58 @@ var value = ""+@Context.Session.GetString("windowsHello")
         }
     })
     </script>
-<script>
-    const API_KEY = "Xiang:public:c386297a606f4af8a997cac6b7ebf410 "; // Replace this value with your API Key
-    const BACKEND_URL = "";
-    async function RegisterPasswordless(e) {
-        e.preventDefault();
-        /**
-         * Initiate the Passwordless client with your public api key
-         */
-        const p = new Passwordless.Client({
-            apiKey: API_KEY,
-        });
+    <script>
+        const API_KEY = "Xiang:public:c386297a606f4af8a997cac6b7ebf410 "; // Replace this value with your API Key
+        const BACKEND_URL = "";
+        async function RegisterPasswordless(e) {
+            e.preventDefault();
+            /**
+             * Initiate the Passwordless client with your public api key
+             */
+            const p = new Passwordless.Client({
+                apiKey: API_KEY,
+            });
 
-        /**
-         * Create token - Call backend to retrieve a token that register a key to an alias
-         */
-        const myToken = await fetch(
-            BACKEND_URL + "/createtoken"
-        ).then((r) => r.text());
-        
-        /**
-         *  Register a key - The Passwordless API and browser creates and stores a key, based on the token.
-         */
-        try {
-            await p.register(myToken);
-            const wait = await fetch(
-                BACKEND_URL + "/update"
-            )
-            location.reload()
-        } catch (e) {
-            console.error("Things went bad", e);
-        }
-    }
-
-    document
-        .getElementById("Enable")
-        .addEventListener("click", RegisterPasswordless);
-</script>
-<script>
-    async function Delete(e) {
-        e.preventDefault();
-        try {
+            /**
+             * Create token - Call backend to retrieve a token that register a key to an alias
+             */
             const myToken = await fetch(
-                BACKEND_URL + "/delete"
-            ).then();
-            location.reload()
-        } catch (e) {
-            console.error("Things went bad", e);
-        }
-    }
+                BACKEND_URL + "/createtoken"
+            ).then((r) => r.text());
 
-    document
-        .getElementById("Disable")
-        .addEventListener("click", Delete);
-</script>
+            /**
+             *  Register a key - The Passwordless API and browser creates and stores a key, based on the token.
+             */
+            try {
+                await p.register(myToken);
+                const wait = await fetch(
+                    BACKEND_URL + "/update"
+                )
+                location.reload()
+            } catch (e) {
+                console.error("Things went bad", e);
+            }
+        }
+
+        document
+            .getElementById("Enable")
+            .addEventListener("click", RegisterPasswordless);
+    </script>
+    <script>
+        async function Delete(e) {
+            e.preventDefault();
+            try {
+                const myToken = await fetch(
+                    BACKEND_URL + "/delete"
+                ).then();
+                location.reload()
+            } catch (e) {
+                console.error("Things went bad", e);
+            }
+        }
+
+        document
+            .getElementById("Disable")
+            .addEventListener("click", Delete);
+    </script>
 }
