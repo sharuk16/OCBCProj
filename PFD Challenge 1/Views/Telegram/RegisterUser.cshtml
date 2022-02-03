@@ -1,6 +1,12 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+
+@section css{
+    @*Add specific css script here*@
+    <link rel="stylesheet" href="~/css/telegram.css" />
+}
+
 <div class="container" id="mainContainer2">
     <div class="first-container">
         <div style="text-align: center; margin-top:2%">
@@ -14,6 +20,14 @@
 <div style="background-color: white; padding-top: 33px; padding-left: 22px; padding-right: 22px; padding-bottom: 33px; border-radius: 25px; margin-left: 0px; text-align: center;">
     <h1 style="font-size:30px;">@ViewData["Message"]</h1>
 </div>
-<div>
-    @Html.ActionLink("Next","Index","Home")
+
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <!-- Login Button -->
+            <div class="every" style="padding-top:40px;padding-right:50px;padding-left:50px; display: inline-block;">
+                <div class="btn">@Html.ActionLink("Next", "Index", "Home")</div>
+            </div>
+        </div>
+    </div>
 </div>

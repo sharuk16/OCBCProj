@@ -8,82 +8,84 @@
 }
 
 <body>
-    <div class="container form" id="mainContainer2">
-        <div class="first-container">
-            <div style="text-align: center; margin-top:5%">
-                <img id="imgLogo" src="~/images/User Profile_Monochromatic.png"
-                     style="width: 30%" />
-            </div>
-            <div style="text-align: left; margin-top:5%; margin-left:5%">
-                <img id="imgLogo" src="~/images/Welcome toOCBC iBanking!.png"
-                     style="width: 55%" />
-            </div>
-        </div>
-    </div>
     @if (Context.Session.GetString("NRIC") == null || Context.Session.GetString("NRIC") == "")
     {
-<div style="margin-left:600px;">
-    <div class="container form">
-        <div class="row">
-            <div class="col text-center">
-                <form asp-action="Login">
-                    <div class="container">
-                        <div class="form-group form-check-inline" style="margin-top:15px">
-                            <label class="col-form-label">
-                                <input name="signInOption" type="radio" value="windows" class="form-check-input" id="windows" checked="checked" />
-                                <span style="font-weight:normal; padding-right:20px">Windows Hello</span>
-                            </label>
-                            <label class="col-form-label">
-                                <input name="signInOption" type="radio" value="normal" class="form-check-input" id="normal" />
-                                <span style="font-weight:normal; padding-right:20px">Password</span>
-                            </label>
-                        </div>
-                        
-                        <div id="toShow" class="form-group">
-                            <div>Note: First-time users to login via password and Telegram OTP. Head to windows hello settings to enable the windows hello sign in</div>
-                            <div class="every" style="display: inline-block;">
-                                <button class="btn2" id="windowsHello">Log in</button>
-                            </div>
-                        </div>
-                        <div id="normalInput" class="form-group">
-                            <div>
-                                <div class="form-group" style="color: #2D4263; font-size: 25px; font-family: 'Bowlby One SC', cursive;">
-                                    <label for="balance">Username</label>
-                                </div>
-                                <div class="input" style="text-align: right; display: inline-block; border-color: #2D4263; margin-top:0px;">
-                                    <input name="Username" type="text" placeholder="Enter Username" class="form-control" id="to" style="background-color: #ECDBBA; border: transparent; color: #2D4263; text-align: center;" required>
-                                </div>
-                                <div class="form-group" style="color: #2D4263; font-size: 25px; font-family: 'Bowlby One SC', cursive;">
-                                    <label for="balance">Password</label>
-                                </div>
-                                <div class="input" style="display: inline-block; border-color: #2D4263; margin-top:0px;">
-                                    <input name="password" type="password" placeholder="Enter Password" class="form-control" id="pwd" style="background-color: #ECDBBA; border: transparent; color: #2D4263; text-align: center;" required>
-                                </div>
-                            </div>
-                            <div class="every" style="display: inline-block;">
-                                <button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2" id="login">Log In</button>
-                            </div>
-                        </div>
-
-                    </div>
-                    <!-- Login Button -->
-
-                </form>
+        <div class="container form" id="mainContainer2">
+            <div class="first-container">
+                <div style="text-align: center; margin-top:5%">
+                    <img id="imgLogo" src="~/images/User Profile_Monochromatic.png"
+                         style="width: 30%" />
+                </div>
+                <div style="text-align: left; margin-top:5%; margin-left:5%">
+                    <img id="imgLogo" src="~/images/Welcome toOCBC iBanking!.png"
+                         style="width: 55%" />
+                </div>
             </div>
         </div>
-    </div>
-</div>
+        <div style="margin-left:600px;">
+            <div class="container form">
+                <div class="row">
+                    <div class="col text-center">
+                        <form asp-action="Login">
+                            <div class="container">
+                                <div class="form-group form-check-inline" style="margin-top:15px">
+                                    <label class="col-form-label">
+                                        <input name="signInOption" type="radio" value="windows" class="form-check-input" id="windows" checked="checked" />
+                                        <span style="font-weight: normal; font-family: 'Rowdies', cursive; font-size: 20px; padding-right: 20px;">Windows Hello</span>
+                                    </label>
+                                    <label class="col-form-label">
+                                        <input name="signInOption" type="radio" value="normal" class="form-check-input" id="normal" />
+                                        <span style="font-weight: normal; font-family: 'Rowdies', cursive; font-size: 20px; padding-right: 20px;">Password</span>
+                                    </label>
+                                </div>
+
+                                <div id="toShow" class="form-group">
+                                    <div>Note: First-time users to login via password and Telegram OTP. Head to windows hello settings to enable the windows hello sign in</div>
+                                    <div class="every" style="display: inline-block;">
+                                        <button class="btn2" id="windowsHello">Log in</button>
+                                    </div>
+                                </div>
+                                <div id="normalInput" class="form-group">
+                                    <div>
+                                        <div class="form-group" style="color: #2D4263; font-size: 20px; font-family: 'Rowdies', cursive;">
+                                            <label for="balance">Username</label>
+                                        </div>
+                                        <div class="input" style="text-align: right; display: inline-block; border-color: #2D4263; margin-top:0px;">
+                                            <input name="Username" type="text" placeholder="Enter Username" class="form-control" id="to" style="background-color: white; border: transparent; color: black; text-align: center;" required>
+                                        </div>
+                                        <div class="form-group" style="color: #2D4263; font-size: 20px; font-family: 'Rowdies', cursive;">
+                                            <label for="balance">Password</label>
+                                        </div>
+                                        <div class="input" style="display: inline-block; border-color: #2D4263; margin-top:0px;">
+                                            <input name="password" type="password" placeholder="Enter Password" class="form-control" id="pwd" style="background-color: white; border: transparent; color: black; text-align: center;" required>
+                                        </div>
+                                    </div>
+                                    <div class="every" style="display: inline-block;">
+                                        <button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2" id="login">Log In</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- Login Button -->
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     }
     else
     {
+        <div id="add-update-msg" style="text-align:center;">
+            <div>
+                <div style="margin-top: 5%;">
+                    <img id="imgLogo" src="~/images/Welcome toOCBC iBanking!.png"
+                         style="width: 50%" />
+                </div>
+                <lottie-player src="https://assets1.lottiefiles.com/packages/lf20_sawdagxh.json" background="transparent" speed="1" style="text-align:center; width: 400px; height: 400px;margin: auto;" loop autoplay></lottie-player>
                 <h1>You have logged in.</h1>
-
-
-    <div id="add-update-msg" style="text-align:center;">
-        <div>
-            <lottie-player src="https://assets1.lottiefiles.com/packages/lf20_sawdagxh.json" background="transparent" speed="1" style="text-align:center; width: 600px; height: 600px;margin: auto;" loop autoplay></lottie-player>
-        </div>
-    </div>}
+            </div>
+        </div>}
 
     <!--This is for the modal(pop-up) for webcam facial detection-->
     <!--<div class="modal fade" id="facialRecog" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
