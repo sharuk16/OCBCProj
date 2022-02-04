@@ -31,6 +31,8 @@
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.3.3" />
     <PackageReference Include="Quartz.Jobs" Version="3.3.3" />
     <PackageReference Include="RestSharp" Version="107.1.2" />
+    <PackageReference Include="SendGrid" Version="9.25.2" />
+    <PackageReference Include="SendGrid.Extensions.DependencyInjection" Version="1.0.1" />
     <PackageReference Include="System.Composition.TypedParts" Version="6.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
 	 <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
