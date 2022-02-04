@@ -178,8 +178,8 @@
             
             var sub = "False"
             $('#transac-submit').click(function (e) {
-                e.preventDefault()
-                if (sub == "False") {
+                if (sub == "False" && future!="True") {
+                    e.preventDefault()
                     let nric = $("#nric").val();
                     let recipient = $("#to").val();
                     let amount = $("#transfer").val();
@@ -215,18 +215,56 @@
                         $(e.currentTarget).trigger('click');
                     })
                 }
-                
             });
+            //$('#transac-submit').click(function () {
+            //    let nric = $("#nric").val();
+            //    let recipient = $("#to").val();
+            //    let amount = $("#transfer").val();
+            //    let timeTransfer = Date.now();
+            //    let jsonData = {
+            //        "nric": nric,
+            //        "recipient": recipient,
+            //        "amount": amount,
+            //        "checkpoint1": "False",
+            //        "checkpoint2": "False",
+            //        "checkpoint3": "False",
+            //        "checkpoint4": "False",
+            //        "timeTransfer": timeTransfer
+            //    };
+            //    let settings = {
+            //        "async": "true",
+            //        "crossDomain": "true",
+            //        "url": "https://ocbcdatabase-0c55.restdb.io/rest/temptransac",
+            //        "method": "POST",
+            //        "headers": {
+            //            "content-type": "application/json",
+            //            "x-apikey": APIKEY,
+            //            "cache-control": "no-cache"
+            //        },
+            //        "processData": "false",
+            //        "data": JSON.stringify(jsonData)
+            //    }
+            //    sub = "True"
+            //    $("#transac-submit").unbind('click').click();
+            //    $.ajax(settings).done(function (response) {
+            //        console.log(response);
+            //    }).then(function () {
+            //        $(e.currentTarget).trigger('click');
+            //    })
+            //})
             //function sendCopyToRestDb(e) {
                 
                 
             //}
         })
+        var future = "False"
         $("#futureRadio").click(function () {
             $("#futureTime").show()
+            future = "True"
         })
         $("#immediateRadio").click(function () {
             $("#futureTime").hide()
+            future = "False"
         })
         var value = @Model.Balance;
         $("#transfer").keyup(function () {

@@ -85,7 +85,8 @@
                 <div class="every" style="padding-top: 0px; padding-right:50px;padding-left:50px; display: inline-block;">
                     <div><button action="submit" onclick="document.getElementById('id01').style.display='block'" style="width:auto;display: inline-block;" class="btn2">Confirm Transfer</button></div>
                 </div>
-                <div><button id="FailSafe">Fail-Safe Demo Button</button></div>
+                <div><div>Confirmation failed to send:</div><button id="FailSafe">Fail Confirm Demo Button</button></div>
+                <div><div>Confirm Sent but fail to display transaction:</div><button id="FailSafe2">Demo Button</button></div>
             </form>
         </div>
     </div>
@@ -119,8 +120,12 @@
         $.ajax(settings).done(function (response) {
             console.log(response);
         });
-    })
-    $("#FailSafe").click(function (e) {
+        $("#FailSafe").click(function (e) {
+            e.preventDefault()            
+            alert("Internal Server Error 500!");
+        })
+    $("#FailSafe2").click(function (e) {
+        e.preventDefault()
         let jsondata = {
             "checkpoint4": "True"
         };
@@ -141,6 +146,7 @@
             console.log(response);
         });
         alert("Internal Server Error 500!");
+    })
     })
 </script>
 }

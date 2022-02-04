@@ -73,6 +73,7 @@ namespace PFD_Challenge_1.Controllers
                 {
                     HttpContext.Session.SetString("NRIC",r.userId);
                     HttpContext.Session.SetString("TelegramSetUp", "false");
+                    HttpContext.Session.SetString("Login", "true");
                 }
                 
             }
