@@ -444,6 +444,7 @@ namespace PFD_Challenge_1.Controllers
                                 data = "Dear " + bu.Name + "! You have successfully transfered $" + transferAmount.ToString() + " to " + ru.Name + "! Date and Time of Transfer" + DateTime.Now.ToString();
                                 //Method to send the transaction messages
                                 await SendTelegramAsync(data, true, transacID);
+                                await SendEmail(data, bu.Email);
                                 ViewData["Message"] = message;
                                 transactionContext.UpdateTransactionComplete(transacID);
                                 //Delete record from NoSQL database due to transaction complete.
@@ -540,16 +541,15 @@ namespace PFD_Challenge_1.Controllers
                 }
             }
         }
-        static async Task SendEmail()
+        static async Task SendEmail(string con, string mail)
         {
-
             var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
             var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("joelong161@gmail.com", "yay User");
-            var subject = "Sending with SendGrid is Fun";
-            var to = new EmailAddress("joelong161@gmail.com", "Example User");
-            var plainTextContent = "and easy to do anywhere, even with C#";
-            var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
+            var from = new EmailAddress("joelong161@gmail.com", "PFD OCBC");
+            var subject = "Fund Transaction Details";
+            var to = new EmailAddress(mail);
+            string plainTextContent = "SHEEEESH";
+            var htmlContent = con;
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             var response = await client.SendEmailAsync(msg);
         }
