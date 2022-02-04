@@ -24,7 +24,7 @@
 {
 
         <ul class="navbar-nav mr-auto">
-            @if (Context.Session.GetString("TelegramSetUp") == "false")
+            @if (Context.Session.GetString("Login") =="true")
             {
                 <li class="nav-item">
                     <!--Orginal version-->

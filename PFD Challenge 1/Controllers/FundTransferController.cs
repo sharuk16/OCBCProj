@@ -78,6 +78,10 @@ namespace PFD_Challenge_1.Controllers
                                 FutureTransfer = "false",
                             };
                             HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/"+tempTransac._id);
+                            if (transactionContext.GetTransaction(tempTransac.TransacID) != null)
+                            {
+                                transactionContext.DeleteTransactionRecord(tempTransac.TransacID);
+                            }
                             return View(ftr);
                         }
                         else
@@ -213,6 +217,7 @@ namespace PFD_Challenge_1.Controllers
                     FutureTransfer = ftr.FutureTransfer,
                     TimeTransfer = ftr.TimeTransfer.Value.ToString(),
                 };
+                HttpContext.Session.SetInt32("transacID", 0);
             }
             else
             {
@@ -221,10 +226,11 @@ namespace PFD_Challenge_1.Controllers
                 HttpClient client = new HttpClient();
                 client.BaseAddress = new Uri("https://ocbcdatabase-0c55.restdb.io");
                 client.DefaultRequestHeaders.Add("x-api-key", "61f2742d7e55272295017175");
+                HttpResponseMessage response = await client.GetAsync("/rest/temptransac");
                 HttpResponseMessage getResponse = await client.GetAsync("/rest/temptransac");
-                if (getResponse.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
-                    string data = await getResponse.Content.ReadAsStringAsync();
+                    string data = await response.Content.ReadAsStringAsync();
                     if (data != null)
                     {
                         List<TempTransac> tempTransacList = JsonConvert.DeserializeObject<List<TempTransac>>(data);
@@ -238,9 +244,8 @@ namespace PFD_Challenge_1.Controllers
                                     checkpoint1 = "True"
                                 });
                                 HttpContent updateCheckpoint1 = new StringContent(checkpoint1Transac, Encoding.UTF8, "application/json");
-                                HttpResponseMessage updateResponse = await client.PutAsync("/rest/temptransac/"+tempTransac._id, updateCheckpoint1);
+                                HttpResponseMessage updateResponse = await client.PutAsync("/rest/temptransac/" + tempTransac._id, updateCheckpoint1);
                                 string updateData = await updateResponse.Content.ReadAsStringAsync();
-                                Console.WriteLine(JsonConvert.DeserializeObject<TempTransac>(updateData).Checkpoint1);
                             }
                         }
                     }
@@ -369,6 +374,7 @@ namespace PFD_Challenge_1.Controllers
                     data = "Dear " + bu.Name + "! You have saved future funds transfer of $" + transferAmount.ToString() + " to " + su.Name + " is successful!";
                     //Method to send the transaction messages
                     await SendTelegramAsync(data, true, transacID);
+                    return RedirectToAction("Success");
                 }
                 else
                 {
@@ -437,6 +443,7 @@ namespace PFD_Challenge_1.Controllers
                                 //Method to send the transaction messages
                                 await SendTelegramAsync(data, true, transacID);
                                 ViewData["Message"] = message;
+                                transactionContext.UpdateTransactionComplete(transacID);
                                 //Delete record from NoSQL database due to transaction complete.
                                 HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + HttpContext.Session.GetString("RestID"));
                                 //Redirect to user to transaction history

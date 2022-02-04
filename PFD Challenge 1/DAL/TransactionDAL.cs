@@ -32,7 +32,7 @@ namespace PFD_Challenge_1.DAL
             //Create a SqlCommand object from connection object
             SqlCommand cmd = conn.CreateCommand();
             //Specify the SELECT SQL statement
-            cmd.CommandText = @"Select * from Transactions where Sender = @AccNo";
+            cmd.CommandText = @"Select * from Transactions where Sender = @AccNo and Completed='T'";
             cmd.Parameters.AddWithValue("@AccNo", accNo);
             //Open a database connection
             conn.Open();

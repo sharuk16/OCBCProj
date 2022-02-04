@@ -593,6 +593,7 @@ namespace PFD_Challenge_1
         }
         public async Task CheckTeleConfirm(string nric,int chatId, DateTime teleConfirm, int transacID)
         {
+            double timeLimit = 0.5;
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri("https://api.telegram.org");
             HttpResponseMessage response = await client.GetAsync("/bot2113305321:AAEX37w64aTAImIvrqmAO6yF1gQO4eG7-ws/getUpdates");
@@ -606,7 +607,7 @@ namespace PFD_Challenge_1
                 {
                     Console.WriteLine("Time needed");
                     DateTime t = DateTimeOffset.FromUnixTimeSeconds(r.message.date).DateTime;
-                    if (teleConfirm.Subtract(t).TotalMinutes < 15)
+                    if (teleConfirm.Subtract(t).TotalMinutes > timeLimit && teleConfirm.Subtract(t).TotalMinutes < 15)
                     {
                         transactionContext.setTelegramConfirmValue(transacID, nric);
                     }
