@@ -16,12 +16,6 @@ using Microsoft.AspNetCore.Http;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
-using Twilio;
-using Twilio.Rest.Api.V2010.Account;
-using Twilio.Types;
-using SendGrid;
-using SendGrid.Helpers.Mail;
-
 
 namespace PFD_Challenge_1
 {
@@ -59,19 +53,6 @@ namespace PFD_Challenge_1
                             string msgtext = "Dear " + bu.Name + ", We are pleased to inform you that your transfer of funds to " +
                                 su.Name + " is successful! Have a great day ahead!";
                             await SendNotificationAsync(chatID, notNotified.TransacID, msgtext);
-
-                            //sms notification
-                            var accountSid = "ACd6f362fa803740c50cf79f811830334f";
-                            var authToken = "30add63344d6bedca106755ab0790fd8";
-                            TwilioClient.Init(accountSid, authToken);
-
-                            var message = MessageResource.Create(
-                            to: new PhoneNumber("+6598311996"),
-                            from: new PhoneNumber("+19034626819"),
-                            body: "Dear " + bu.Name + ", We are pleased to inform you that your transfer of funds to " +
-                                su.Name + " is successful! Have a great day ahead!"
-                            );
-                            Console.WriteLine(message.DateCreated);
                         }
 
                     }
@@ -186,21 +167,6 @@ namespace PFD_Challenge_1
                                 string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
                                     receiverName + " is not successful! No funds were deducted. Have a good day! :)";
                                 await SendNotificationAsync(chatID, transacID, msgtext);
-
-                                //sms notification
-                                var accountSid = "ACd6f362fa803740c50cf79f811830334f";
-                                var authToken = "30add63344d6bedca106755ab0790fd8";
-                                TwilioClient.Init(accountSid, authToken);
-
-                                var message = MessageResource.Create(
-                                to: new PhoneNumber("+6598311996"),
-                                from: new PhoneNumber("+19034626819"),
-                                body: "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                    receiverName + " is not successful! No funds were deducted. Have a good day! :)"
-                                );
-                                Console.WriteLine(message.DateCreated);
-
-                                
                             }
                             //delete record from the restdb
                             HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + t._id);
@@ -250,19 +216,6 @@ namespace PFD_Challenge_1
                                 string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
                                     receiverName + " is not successful! No funds were deducted. Have a good day! :)";
                                 await SendNotificationAsync(chatID, transacID, msgtext);
-
-                                //sms notification
-                                var accountSid = "ACd6f362fa803740c50cf79f811830334f";
-                                var authToken = "30add63344d6bedca106755ab0790fd8";
-                                TwilioClient.Init(accountSid, authToken);
-
-                                var message = MessageResource.Create(
-                                to: new PhoneNumber("+6598311996"),
-                                from: new PhoneNumber("+19034626819"),
-                                body: "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                    receiverName + " is not successful! No funds were deducted. Have a good day! :)"
-                                );
-                                Console.WriteLine(message.DateCreated);
                             }
                             //delete record from the restdb
                             HttpResponseMessage deleteResponse = await client.DeleteAsync("/rest/temptransac/" + b._id);
@@ -325,18 +278,6 @@ namespace PFD_Challenge_1
                                 string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
                                     receiverName + " is not successful! No funds were deducted. Have a good day! :)";
                                 await SendNotificationAsync(chatID, transacID, msgtext);
-                                //sms notification
-                                var accountSid = "ACd6f362fa803740c50cf79f811830334f";
-                                var authToken = "30add63344d6bedca106755ab0790fd8";
-                                TwilioClient.Init(accountSid, authToken);
-
-                                var message = MessageResource.Create(
-                                to: new PhoneNumber("+6598311996"),
-                                from: new PhoneNumber("+19034626819"),
-                                body: "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                    receiverName + " is not successful! No funds were deducted. Have a good day! :)"
-                                );
-                                Console.WriteLine(message.DateCreated);
                             }
                             //delete record from the restdb
                             
@@ -361,20 +302,6 @@ namespace PFD_Challenge_1
                                         receiverName + " is not successful! No funds were deducted due to transaction limit reached." +
                                         "If you would like to make the transfer again. Please set your transaction limit higher. Have a good day! :)";
                                     await SendNotificationAsync(chatID, transacID, msgtext);
-
-                                    //sms notification
-                                    var accountSid = "ACd6f362fa803740c50cf79f811830334f";
-                                    var authToken = "30add63344d6bedca106755ab0790fd8";
-                                    TwilioClient.Init(accountSid, authToken);
-
-                                    var message = MessageResource.Create(
-                                    to: new PhoneNumber("+6598311996"),
-                                    from: new PhoneNumber("+19034626819"),
-                                    body: "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                        receiverName + " is not successful! No funds were deducted due to transaction limit reached." +
-                                        "If you would like to make the transfer again. Please set your transaction limit higher. Have a good day! :)"
-                                    );
-                                    Console.WriteLine(message.DateCreated);
 
                                 }
                                 //delete record from the restdb
@@ -403,20 +330,7 @@ namespace PFD_Challenge_1
                                         string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
                                             receiverName + " has no confirmation! To confirm the transfer please reply with your nric within 15 mins! To cancel the transaction do not reply to this message.";
                                         await SendNotificationAsync(chatID, transacID, msgtext);
-
-                                        //sms notification
-                                        var accountSid = "ACd6f362fa803740c50cf79f811830334f";
-                                        var authToken = "30add63344d6bedca106755ab0790fd8";
-                                        TwilioClient.Init(accountSid, authToken);
-
-                                        var message = MessageResource.Create(
-                                        to: new PhoneNumber("+6598311996"),
-                                        from: new PhoneNumber("+19034626819"),
-                                        body: "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                            receiverName + " has no confirmation! To confirm the transfer please reply with your nric within 15 mins! To cancel the transaction do not reply to this message."
-                                        );
                                         transactionContext.setTelegramDate(incompleteTrans.TransacID, DateTime.UtcNow);
-
                                     }
                                     else
                                     {
@@ -469,18 +383,6 @@ namespace PFD_Challenge_1
                                                         receiver.Name + " has an error occured! The transfer will be terminated. No funds have been transferred.";
                                                         await SendNotificationAsync(bankUserContext.GetUserChatID(nric).Value, null, msgtext);
 
-                                                        //sms notification
-                                                        var accountSid = "ACd6f362fa803740c50cf79f811830334f";
-                                                        var authToken = "30add63344d6bedca106755ab0790fd8";
-                                                        TwilioClient.Init(accountSid, authToken);
-
-                                                        var message = MessageResource.Create(
-                                                        to: new PhoneNumber("+6598311996"),
-                                                        from: new PhoneNumber("+19034626819"),
-                                                        body: "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                                        receiver.Name + " has an error occured! The transfer will be terminated. No funds have been transferred."
-                                                        );
-
                                                         //delete record from the restdb
                                                         await DeleteRecord(b);
                                                         transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
@@ -497,17 +399,6 @@ namespace PFD_Challenge_1
                                                     receiver.Name + " has lack of funds! The transfer will be terminated. No funds have been transferred.";
                                                     await SendNotificationAsync(chatID, transacID, msgtext);
                                                     transactionContext.setTelegramDate(incompleteTrans.TransacID, DateTime.UtcNow);
-                                                    //sms notification
-                                                    var accountSid = "ACd6f362fa803740c50cf79f811830334f";
-                                                    var authToken = "30add63344d6bedca106755ab0790fd8";
-                                                    TwilioClient.Init(accountSid, authToken);
-
-                                                    var message = MessageResource.Create(
-                                                    to: new PhoneNumber("+6598311996"),
-                                                    from: new PhoneNumber("+19034626819"),
-                                                    body: "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                                    receiver.Name + " has lack of funds! The transfer will be terminated. No funds have been transferred."
-                                                    );
                                                     //delete record from the restdb
                                                     await DeleteRecord(b);
                                                     transactionContext.DeleteTransactionRecord(incompleteTrans.TransacID);
@@ -541,19 +432,6 @@ namespace PFD_Challenge_1
                                         string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
                                                     receiver.Name + " has no confirmation! The transfer will be terminated. No funds have been transferred.";
                                         await SendNotificationAsync(bankUserContext.GetUserChatID(nric).Value, null, msgtext);
-
-                                        //sms notification
-                                        var accountSid = "ACd6f362fa803740c50cf79f811830334f";
-                                        var authToken = "30add63344d6bedca106755ab0790fd8";
-                                        TwilioClient.Init(accountSid, authToken);
-
-                                        var message = MessageResource.Create(
-                                        to: new PhoneNumber(receiver.Phone),
-                                        from: new PhoneNumber("+19034626819"),
-                                        body: "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                                    receiver.Name + " has no confirmation! The transfer will be terminated. No funds have been transferred."
-                                                    );
-
                                         transactionContext.setTelegramDate(incompleteTrans.TransacID, DateTime.UtcNow);
 
                                         //delete record from the restdb
@@ -571,7 +449,6 @@ namespace PFD_Challenge_1
                         {
                             string senderId = b.Nric;
                             string receiverId = b.Recipient;
-                           
                             Regex bankacc = new Regex(@"[0-9]{3}-[0-9]{6}-[0-9]{3}");
                             BankAccount senderAccount = bankAccContext.GetBankAccount(receiverId);
                             //Validation
@@ -604,17 +481,6 @@ namespace PFD_Challenge_1
                                 string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
                                     receiverName + " is not successful! No funds were deducted. Have a good day! :)";
                                 await SendNotificationAsync(chatID, transacID, msgtext);
-                                //sms notification
-                                var accountSid = "ACd6f362fa803740c50cf79f811830334f";
-                                var authToken = "30add63344d6bedca106755ab0790fd8";
-                                TwilioClient.Init(accountSid, authToken);
-
-                                var message = MessageResource.Create(
-                                to: new PhoneNumber("+6598311996"),
-                                from: new PhoneNumber("+19034626819"),
-                                body: "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                    receiverName + " is not successful! No funds were deducted. Have a good day! :)"
-                                            );
                             }
                             //delete record from the restdb
                             await DeleteRecord(b);
@@ -640,19 +506,6 @@ namespace PFD_Challenge_1
                                         receiverName + " is not successful! No funds were deducted due to transaction limit reached." +
                                         "If you would like to make the transfer again. Please set your transaction limit higher. Have a good day! :)";
                                     await SendNotificationAsync(chatID, transacID, msgtext);
-
-                                    //sms notification
-                                    var accountSid = "ACd6f362fa803740c50cf79f811830334f";
-                                    var authToken = "30add63344d6bedca106755ab0790fd8";
-                                    TwilioClient.Init(accountSid, authToken);
-
-                                    var message = MessageResource.Create(
-                                    to: new PhoneNumber("+6598311996"),
-                                    from: new PhoneNumber("+19034626819"),
-                                    body: "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                        receiverName + " is not successful! No funds were deducted due to transaction limit reached." +
-                                        "If you would like to make the transfer again. Please set your transaction limit higher. Have a good day! :)"
-                                                );
 
                                 }
                                 //delete record from the restdb
@@ -700,17 +553,6 @@ namespace PFD_Challenge_1
                                             string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
                                                         receiver.Name + " has an error occured! The transfer will be terminated. No funds have been transferred.";
                                             await SendNotificationAsync(chatID, transacID, msgtext);
-                                            //sms notification
-                                            var accountSid = "ACd6f362fa803740c50cf79f811830334f";
-                                            var authToken = "30add63344d6bedca106755ab0790fd8";
-                                            TwilioClient.Init(accountSid, authToken);
-
-                                            var message = MessageResource.Create(
-                                            to: new PhoneNumber("+6598311996"),
-                                            from: new PhoneNumber("+19034626819"),
-                                            body: "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                                        receiver.Name + " has an error occured! The transfer will be terminated. No funds have been transferred."
-                                                        );
 
                                         }
                                         //delete record from the restdb
@@ -728,18 +570,6 @@ namespace PFD_Challenge_1
                                         string msgtext = "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
                                                     receiver.Name + " has lack of funds! The transfer will be terminated. No funds have been transferred.";
                                         await SendNotificationAsync(chatID, transacID, msgtext);
-                                        //sms noti
-                                        var accountSid = "ACd6f362fa803740c50cf79f811830334f";
-                                        var authToken = "30add63344d6bedca106755ab0790fd8";
-                                        TwilioClient.Init(accountSid, authToken);
-
-                                        var message = MessageResource.Create(
-                                        to: new PhoneNumber("+6598311996"),
-                                        from: new PhoneNumber("+19034626819"),
-                                        body: "Dear " + sender.Name + ", we would like to inform you that your transfer of funds to " +
-                                                    receiver.Name + " has lack of funds! The transfer will be terminated. No funds have been transferred."
-                                                    );
-
 
                                     }
                                     //delete record from the restdb
